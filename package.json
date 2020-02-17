@@ -1,0 +1,35 @@
+{
+    "name": "imhhbot",
+    "version": "0.0.1",
+    "description": "A simple twitch chatbot.",
+    "main": "chatbot.js",
+    "license": "MIT",
+    "keywords": [
+        "twitch",
+        "chatbots",
+        "irc"
+    ],
+    "author": {
+        "name": "InsanityMeetsHH",
+        "email": "software@insanitymeetshh.net"
+    },
+    "bugs": {
+        "url": "https://github.com/InsanityMeetsHH/twitch-chatbot/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/InsanityMeetsHH/twitch-chatbot.git"
+    },
+    "engines": {
+        "node": "8.x"
+    },
+    "dependencies": {
+        "dotenv": "^4.0.0",
+        "express": "^4.16.4",
+        "skateboard": "^2.0.0",
+        "tmi.js": "^1.2.1"
+    },
+    "scripts": {
+        "start": "node chatbot.js"
+    }
+}
