@@ -1,5 +1,5 @@
 {
-    "name": "imhhbot",
+    "name": "twitch-chatbot",
     "version": "0.0.1",
     "description": "A simple twitch chatbot.",
     "main": "chatbot.js",
