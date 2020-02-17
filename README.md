@@ -19,5 +19,6 @@ Open [localhost:3000](http://localhost:3000) for Web-GUI.
 Get `TWITCH_TOKEN` from [Twitch Chat OAuth Password Generator](https://twitchapps.com/tmi/).
 
 ## Sources
+* [Twitch Messaging Interface](https://github.com/tmijs/docs/tree/gh-pages/_posts)
 * [noopkat/twitch-count-chatbot](https://github.com/noopkat/twitch-count-chatbot)
 * [Glitch Twitch Chatbot](https://glitch.com/edit/#!/twitch-chatbot)
