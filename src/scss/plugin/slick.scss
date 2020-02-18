@@ -1,0 +1,4 @@
+// http://kenwheeler.github.io/slick/
+// File extension has to be written because CSS and SCSS are in the same folder
+@import '../../../node_modules/slick-carousel/slick/slick.scss'; // sass-lint:disable-line clean-import-paths
+@import '../../../node_modules/slick-carousel/slick/slick-theme.scss'; // sass-lint:disable-line clean-import-paths

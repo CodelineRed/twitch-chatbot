@@ -1,0 +1,92 @@
+.cc-window {
+    background-color: $theme-color-4;
+    z-index: 1000;
+    
+    &.cc-banner {
+        padding: 0;
+    }
+    
+    &.cc-bottom {
+        bottom: 0;
+    }
+    
+    &.cc-floating {
+        flex-direction: row;
+        max-width: none;
+        padding: 0;
+        
+        >.cc-link,
+        .cc-message {
+          margin-bottom: 0;
+        }
+        
+        &.cc-theme-classic {
+            border-radius: 0;
+            padding-bottom: 0;
+        }
+    }
+    
+    &~ footer {
+        margin-bottom: 200px;
+        
+        @include media-breakpoint-up('sm') {
+            margin-bottom: 160px;
+        }
+        
+        @include media-breakpoint-up('md') {
+            margin-bottom: 120px;
+        }
+        
+        @include media-breakpoint-up('lg') {
+            margin-bottom: 100px;
+        }
+    }
+    
+    .cc-btn {
+        border-width: 1px;
+        padding: .4em;
+        white-space: normal;
+        
+        &.cc-dismiss {
+            background-color: $theme-color-1;
+            border-color: $theme-color-1;
+            color: $white;
+        }
+        
+        &.cc-allow,
+        &.cc-deny {
+            border-color: $theme-color-1;
+            color: $white;
+        }
+        
+        &.cc-allow,
+        &.cc-deny,
+        &.cc-dismiss {
+            &:hover {
+                background-color: transparent;
+                border-color: $white;
+            }
+        }
+    }
+    
+    .cc-link {
+        color: $white;
+        padding: 0;
+    }
+    
+    .container {
+        background-color: $theme-color-4;
+        color: $white;
+        padding-bottom: 1em;
+        padding-top: 1em;
+    }
+}
+
+.cc-revoke {
+    background-color: $theme-color-4;
+    color: $white;
+    
+    &:hover {
+        text-decoration: none;
+    }
+}

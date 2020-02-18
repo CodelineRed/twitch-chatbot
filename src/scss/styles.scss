@@ -1,0 +1,14 @@
+@import 'variables';
+
+@import 'lib/bootstrap';
+//@import 'lib/fontawesome';
+
+@import 'plugin/cookieconsent';
+@import 'plugin/slick';
+
+@import 'module/general';
+@import 'module/cookieconsent';
+@import 'module/page';
+@import 'module/slick';
+@import 'module/slider';
+@import 'module/modal';

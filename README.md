@@ -5,17 +5,20 @@ This application based on [Gulp Skeleton 5](https://github.com/InsanityMeetsHH/g
 ## Required
 * [Node.js](http://nodejs.org/en/download/) 8
 * [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
+* [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
+* PHP => 5.3
+* [Docker](https://www.docker.com/)
 
 ## Quick start
 ```bash
 $ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git
 $ cd [app-name]
-$ cp .env-dist .env
-Open .env and fill up all
 $ npm i
+Open .env and fill out everything
+$ docker-compose up 
 $ node chatbot.js 
 ```
-Open [localhost:3000](http://localhost:3000) for Web-GUI.
+Open [localhost:8080](http://localhost:8080) for Web-GUI.
 Get `TWITCH_TOKEN` from [Twitch Chat OAuth Password Generator](https://twitchapps.com/tmi/).
 
 ## Sources

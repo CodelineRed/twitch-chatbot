@@ -1,0 +1,61 @@
+<div class="modal fade" id="cookie-policy" tabindex="-1" role="dialog" aria-labelledby="cookie-policy-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><?php echo $lang['cookie-policy-title']; ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <?php echo $lang['cl-message']; ?><br/>
+                <button class="btn btn-primary mt-2" type="button" data-toggle="collapse" data-target="#cookie-policy-collapse" aria-expanded="false" aria-controls="cookie-policy-collapse"><?php echo $lang['cpm-sdi']; ?></button>
+                
+                <div class="collapse" id="cookie-policy-collapse">
+                    <div class="table-responsive mt-3">
+                        <table class="table table-striped table-dark">
+                            <thead>
+                                <tr>
+                                    <th scope="col"><span class="text-nowrap"><?php echo $lang['name']; ?></span></th>
+                                    <th scope="col"><span class="text-nowrap"><?php echo $lang['provider']; ?></span></th>
+                                    <th scope="col"><span class="text-nowrap"><?php echo $lang['purpose']; ?></span></th>
+                                    <th scope="col"><span class="text-nowrap"><?php echo $lang['expires']; ?></span></th>
+                                    <th scope="col"><span class="text-nowrap"><?php echo vsprintf($lang['type'], ['']); ?></span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>PHPSESSID</td>
+                                    <td>gulp.insanitymeetshh.net</td>
+                                    <td><?php echo $lang['cpm-php']; ?></td>
+                                    <td><?php echo $lang['session']; ?></td>
+                                    <td><span class="text-nowrap"><?php echo vsprintf($lang['type'], ['1']); ?></span></td>
+                                </tr>
+                                <tr>
+                                    <td>cookieconsent_status</td>
+                                    <td>gulp.insanitymeetshh.net</td>
+                                    <td><?php echo $lang['cpm-cc-status']; ?></td>
+                                    <td><span class="text-nowrap"><?php echo vsprintf($lang['year'], ['1']); ?></span></td>
+                                    <td><span class="text-nowrap"><?php echo vsprintf($lang['type'], ['2']); ?></span></td>
+                                </tr>
+                                <tr>
+                                    <td>current_locale</td>
+                                    <td>gulp.insanitymeetshh.net</td>
+                                    <td><?php echo $lang['cpm-current-locale']; ?></td>
+                                    <td><span class="text-nowrap"><?php echo vsprintf($lang['year'], ['1']); ?></span></td>
+                                    <td><span class="text-nowrap"><?php echo vsprintf($lang['type'], ['2']); ?></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="pb-3">
+                            <?php echo $lang['cpm-type1']; ?><br/>
+                            <?php echo $lang['cpm-type2']; ?><br/>
+                            <?php echo $lang['cpm-type3']; ?><br/>
+                            <?php echo $lang['cpm-type4']; ?><br/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

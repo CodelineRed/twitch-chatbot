@@ -1,0 +1,20 @@
+version: '3'
+
+volumes:
+    logs:
+        driver: local
+
+services:
+    # http://localhost:8080
+    webserver:
+        image: php:7-alpine
+        container_name: twitch-chatbot
+        working_dir: /var/www
+        command: php -S 0.0.0.0:8080 -t public
+        environment:
+            docker: "true"
+        ports:
+            - 8080:8080
+        volumes:
+            - .:/var/www
+            - logs:/var/www/logs

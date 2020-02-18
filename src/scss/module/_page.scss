@@ -1,0 +1,14 @@
+.h1,
+h1 {
+    @include media-breakpoint-up(md) {
+        font-size: $font-size-base * 2.5;
+    }
+}
+
+a {
+    @extend .transition-all;
+    
+    &:hover {
+        text-decoration: none;
+    }
+}

@@ -1,0 +1,107 @@
+<?php
+if (isset($_ENV['docker']) && $_ENV['docker']) {
+    $gs->setBaseUrl('http://localhost:8080/');
+}
+?>
+
+<!DOCTYPE html>
+<html lang="<?php echo $lang['lang']; ?>" class="no-js">
+    <head>
+        <script>
+            function setCookie(e,t,n){var o=new Date;o.setTime(o.getTime()+24*n*60*60*1e3);var i="expires="+o.toUTCString();document.cookie=e+"="+t+";"+i+";path=/"}function getCookie(e){for(var t=e+"=",n=decodeURIComponent(document.cookie).split(";"),o=0;o<n.length;o++){for(var i=n[o];" "==i.charAt(0);)i=i.substring(1);if(0==i.indexOf(t))return i.substring(t.length,i.length)}return""}
+            var cookiesAllowed = getCookie('cookieconsent_status') !== 'deny';
+        </script>
+        
+        <title><?php echo $lang['meta-title']; ?></title>
+        <base href="<?php echo $gs->getBaseUrl(); ?>">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta name="keywords" content="<?php echo $lang['meta-keywords']; ?>"/>
+        <meta name="description" content="<?php echo $lang['meta-description']; ?>">
+        <meta name='robots' content="<?php echo $lang['meta-robots']; ?>">
+        <meta name="author" content="<?php echo $lang['meta-author']; ?>">
+        <meta property="fb:admins" content="<?php echo $lang['meta-fbAdmins']; ?>"/>
+        <meta property="fb:app_id" content="<?php echo $lang['meta-fbAppId']; ?>"/>
+        <meta property="og:type" content="<?php echo $lang['meta-type']; ?>"/>
+        <meta property="og:title" content="<?php echo $lang['meta-title']; ?>"/>
+        <meta property="og:description" content="<?php echo $lang['meta-description']; ?>"/>
+        <meta property="og:image" content="<?php echo $lang['meta-socialMediaImage']; ?>"/>
+        <meta property="og:site_name" content="<?php echo $lang['meta-siteName']; ?>"/>
+        <meta property="og:url" content="<?php echo $gs->getCurrentUrl(); ?>"/>
+        <meta property="og:locale" content="<?php echo $lang['locale']; ?>"/>
+        <meta property="article:publisher" content="<?php echo $lang['meta-publisher']; ?>"/>
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="<?php echo $lang['meta-twitterSite']; ?>">
+        <meta name="twitter:title" content="<?php echo $lang['meta-title']; ?>">
+        <meta name="twitter:description" content="<?php echo $lang['meta-description']; ?>">
+        <meta name="twitter:image" content="<?php echo $gs->getBaseUrl() . $lang['meta-socialMediaImage']; ?>">
+        <link rel="me" href="<?php echo $lang['meta-twitterUrl']; ?>">
+        <link rel="canonical" href="<?php echo $gs->getCurrentUrl(); ?>"/>
+        <link rel="alternate" hreflang="x-default" href="<?php echo $gs->getCurrentUrl(); ?>"/>
+        <!--<link rel="alternate" type="application/rss+xml" title="" href="<?php echo $lang['meta-rssUrl']; ?>"/>-->
+        <?php /** Favicon sizes 16, 32, 36, 48, 70, 72, 96, 144, 150, 180, 192, 256, 310, 310x150, 384, 512, SVG, ICO */ ?>
+        <link rel="apple-touch-icon" href="<?php echo $gs->getBaseUrl(); ?>img/favicons/favicon-180x180.png" sizes="180x180">
+        <link rel="icon" type="image/png" href="<?php echo $gs->getBaseUrl(); ?>img/favicons/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="<?php echo $gs->getBaseUrl(); ?>img/favicons/favicon-192x192.png" sizes="192x192">
+        <link rel="icon" type="image/png" href="<?php echo $gs->getBaseUrl(); ?>img/favicons/favicon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="<?php echo $gs->getBaseUrl(); ?>img/favicons/manifest.json">
+        <link rel="mask-icon" href="<?php echo $gs->getBaseUrl(); ?>img/favicons/favicon.svg" color="<?php echo $lang['meta-themeColor']; ?>">
+        <meta name="msapplication-TileColor" content="<?php echo $lang['meta-themeColor']; ?>">
+        <meta name="msapplication-TileImage" content="<?php echo $gs->getBaseUrl(); ?>img/favicons/favicon-144x144.png">
+        <meta name="msapplication-config" content="<?php echo $gs->getBaseUrl(); ?>img/favicons/browserconfig.xml">
+        <meta name="theme-color" content="<?php echo $lang['meta-themeColor']; ?>">
+        <link rel="shortcut icon" href="<?php echo $gs->getBaseUrl(); ?>img/favicons/favicon.ico">
+        
+        <link rel="stylesheet" href="css/styles.css?v=5.0.0">
+        <script type="application/javascript">
+            // if cookies allowed - load tracking code
+            if (cookiesAllowed) {
+                // Google Analaytics, Google Tag Manager, ...
+//                var s = document.createElement('script');
+//                s.type = 'text/javascript';
+//                s.async = true;
+//                s.src = 'https://www.googletagmanager.com/gtag/js?id=UA-NUMBER-X';
+//                var h = document.getElementsByTagName('head')[0];
+//                h.appendChild(s, h);
+//            
+//                window.dataLayer = window.dataLayer || [];
+//                function gtag(){dataLayer.push(arguments);}
+//                gtag('js', new Date());
+//                gtag('config', 'UA-NUMBER-X', {'anonymize_ip': true});
+            }
+            
+            var cookieLayer = {
+                header: '<?php echo $lang['cl-header']; ?>',
+                message: '<?php echo $lang['cl-message']; ?>',
+                allow: '<?php echo $lang['cl-allow']; ?>',
+                dismiss: '<?php echo $lang['cl-dismiss']; ?>',
+                deny: '<?php echo $lang['cl-deny']; ?>',
+                link: '<?php echo $lang['cl-link']; ?>',
+                messageLink: '<?php echo $lang['cl-message-link']; ?>',
+                dismissLink: '<?php echo $lang['cl-dismiss-link']; ?>',
+                allowLink: '<?php echo $lang['cl-allow-link']; ?>',
+                policy: '<?php echo $lang['cl-policy']; ?>',
+                href: '<?php echo $lang['cl-href']; ?>'
+            };
+        </script>
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <?php include __DIR__ . '/../partials/header.phtml'; ?>
+            </div>
+        </header>
+        <main>
+            <div class="container">
+                <?php include __DIR__ . '/../' . $gs->getTemplate() . '.phtml'; ?>
+            </div>
+        </main>
+        <footer>
+            <div class="container">
+                <?php include __DIR__ . '/../partials/footer.phtml'; ?>
+            </div>
+        </footer>
+        <?php include __DIR__ . '/../partials/modal.phtml'; ?>
+        <script src="js/scripts.js?v=5.0.0"></script>
+    </body>
+</html>
