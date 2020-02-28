@@ -5,7 +5,7 @@ volumes:
         driver: local
 
 services:
-    # http://localhost:8080
+    # http://localhost:3050
     webserver:
         image: php:7-alpine
         container_name: twitch-chatbot
@@ -14,7 +14,7 @@ services:
         environment:
             docker: "true"
         ports:
-            - 8080:8080
+            - 3050:8080
         volumes:
             - .:/var/www
             - logs:/var/www/logs

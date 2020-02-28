@@ -143,7 +143,17 @@ function cleanUp() {
 function browserSyncInit(done) {
     // start browsersync
     browserSync.init({
-        proxy: config.localServer
+        port: 3100,
+        server: {
+            baseDir: "public",
+            index: "index.html"
+        },
+        ui: {
+            port: 3101
+        },
+        // ui: false, // enable in production
+         server: false, // enable if you use Docker
+         proxy: config.localServer // enable if you use Docker
     });
     done();
 }

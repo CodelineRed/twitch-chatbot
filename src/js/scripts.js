@@ -1,12 +1,12 @@
-/*global cssua initCookieConsent initSlider initImageLazyLoad initCssuaMonitor*/
+/*global cssua skateboard initCookieConsent initSlider initImageLazyLoad initCssuaMonitor*/
 'use strict';
 
 function flashGif(element, duration) {
     element.style.display = 'inline';
-    setTimeout(function () {
+    setTimeout(function() {
         element.style.display = 'none';
     }, duration);
-};
+}
 
 // jQuery.noConflict();
 (function($) {

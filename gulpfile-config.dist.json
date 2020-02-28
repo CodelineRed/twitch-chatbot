@@ -1,5 +1,5 @@
 {
-    "localServer": "http://localhost:3000",
+    "localServer": "http://localhost:3050",
     "sourcePath": "src/",
     "publicPath": "public/",
     "systemPath": "path/to/system/"
