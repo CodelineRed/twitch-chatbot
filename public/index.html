@@ -14,10 +14,10 @@
   </head>
   <body>
     <h1 id="counter"></h1>
-        <img id="boo" src="img/slick/ajax-loader.gif" data-src="https://via.placeholder.com/266x140/2E97BF/0f0f0f?text=LazyLoad%20Image" alt="image" class="img-fluid" />
-        <img id="confetti" src="img/slick/ajax-loader.gif" data-src="https://via.placeholder.com/266x140/0c0c0c/212121?text=LazyLoad%20Image" alt="image" class="img-fluid" />
+        <img id="boo" src="https://via.placeholder.com/266x140/2E97BF/0f0f0f?text=LazyLoad%20Image" alt="image" />
+        <img id="confetti" src="https://via.placeholder.com/266x140/0c0c0c/212121?text=LazyLoad%20Image" alt="image" />
 
-   <script src="skateboard.min.js"></script>
+   <script src="js/skateboard.min.js"></script>
    <script>
     const counter = document.getElementById('counter');
     const boo = document.getElementById('boo');
@@ -29,7 +29,7 @@
         setTimeout(() => {element.style.display = 'none'}, duration);
     };
 
-    skateboard().on('data', (data) => {
+    skateboard({port: 3000}).on('data', (data) => {
         const n = parseInt(data);
         counter.textContent = n;
 

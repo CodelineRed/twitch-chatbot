@@ -152,8 +152,8 @@ function browserSyncInit(done) {
             port: 3101
         },
         // ui: false, // enable in production
-         server: false, // enable if you use Docker
-         proxy: config.localServer // enable if you use Docker
+//         server: false, // enable if you use Docker
+//         proxy: config.localServer // enable if you use Docker
     });
     done();
 }
