@@ -133,6 +133,7 @@ function cleanUp() {
     return del([
             config.publicPath + 'css/**/*',
             config.publicPath + 'js/**/*',
+            '!' + config.publicPath + 'js/skateboard.min.js',
             config.publicPath + 'img/**/*',
             config.publicPath + 'font/**/*',
             config.publicPath + 'svg/**/*'
