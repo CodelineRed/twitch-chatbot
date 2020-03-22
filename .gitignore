@@ -4,8 +4,13 @@
 /public/css/styles.css.map
 /public/js/scripts.js
 /public/js/scripts.js.map
+/public/js/require/
+/public/js/vue/
 /public/font/
+/public/json/
+gulpfile.json
 gulpfile-config.json
+chatbot.json
 
 # Created by https://www.gitignore.io/api/node,linux,macos,windows,netbeans,phpstorm
 # Edit at https://www.gitignore.io/?templates=node,linux,macos,windows,netbeans,phpstorm

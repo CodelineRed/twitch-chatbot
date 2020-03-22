@@ -1,27 +1,69 @@
 # Twitch Chatbot - InsanityMeetsHH
 
-This application based on [Gulp Skeleton 5](https://github.com/InsanityMeetsHH/gulp-templating/tree/5.x).
+This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/twitch-chatbot).
 
 ## Required
-* [Node.js](http://nodejs.org/en/download/) 8
+* [Node.js](http://nodejs.org/en/download/)
 * [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 * [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
-* PHP => 5.3
-* [Docker](https://www.docker.com/)
+* PHP >= 5.3
+* [Docker](https://www.docker.com/) ([for installation with Docker](https://github.com/InsanityMeetsHH/twitch-chatbot#installation-with-docker))
 
-## Quick start
+## Installation (Recommended)
 ```bash
-$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git
+$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git [app-name]
 $ cd [app-name]
+$ rm -rf .git (unix) / rmdir .git /s (windows)
 $ npm i
-Open .env and fill out everything
-$ docker-compose up 
-$ node chatbot.js 
+$ gulp build
+$ node chatbot.js
+$ gulp (in development)
 ```
-Open [localhost:8080](http://localhost:8080) for Web-GUI.
-Get `TWITCH_TOKEN` from [Twitch Chat OAuth Password Generator](https://twitchapps.com/tmi/).
+Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/gulpfile.js), if you want to use Docker as server.
 
-## Sources
+## Project Commands
+|                     | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| gulp                | watch files and start [BrowserSync](https://www.npmjs.com/package/browser-sync)                                                  |
+| gulp build          | executes following tasks: cleanUp, scss, scssLint, js, jsLint, jsRequire, json, img, font, svg, vue, vueJs, vueLint              |
+| gulp cleanUp        | clean up public folder                                                                                                           |
+| gulp font           | copy font files                                                                                                                  |
+| gulp img            | copy and compress images                                                                                                         |
+| gulp js             | uglify, minify and concat js files                                                                                               |
+| gulp jsLint         | checks js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/js-lint.json)               | 
+| gulp jsRequire      | copy, uglify and rename files for requirejs                                                                                      |
+| gulp json           | copy and minify json files                                                                                                       |
+| gulp scss           | compile, minify and concat scss files                                                                                            |
+| gulp scssLint       | checks scss follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/scss-lint.json)           |
+| gulp svg            | copy and compress svg files                                                                                                      |
+| gulp vue            | transpile vue files                                                                                                              |
+| gulp vueJs          | transpile vue js files                                                                                                           |
+| gulp vueJsLint      | checks vue js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/import-lint.json)       |
+| gulp vueLint        | checks vue follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/vue-lint.json)             |
+| gulp chatbotLint    | checks chatbot js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/import-lint.json)   |
+| gulp watch          | watch scss, js, json, vue, chatbot, img, font and svg files                                                                      |
+
+## Localization
+- [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/app/i18n-locales.js)
+- [`langswitch.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/partial/langswitch.vue)
+
+## Installation with [Docker](https://www.docker.com/)
+* Get project via `$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git` or [zip download](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/master.zip)
+* Open a command prompt on your OS (if not already open) and navigate to the project folder
+* `$ npm i`
+* `$ gulp build`
+* `$ docker-compose up -d`
+* Open [localhost:3050](http://localhost:3050) for website
+* If you want to remove the container `$ docker rm twitch-chatbot -f`
+* If you want to remove the volume `$ docker volume rm DIRNAME_logs` (first remove matching container)
+
+## Links
 * [Twitch Messaging Interface](https://github.com/tmijs/docs/tree/gh-pages/_posts)
-* [noopkat/twitch-count-chatbot](https://github.com/noopkat/twitch-count-chatbot)
-* [Glitch Twitch Chatbot](https://glitch.com/edit/#!/twitch-chatbot)
+* [Twitch OAuth Token (TMI)](https://twitchapps.com/tmi/)
+* [Twitch API Token](https://dev.twitch.tv/)
+* [ESLint Js Rules](https://eslint.org/docs/rules/)
+* [ESLint Vue Rules](https://vuejs.github.io/eslint-plugin-vue/rules/)
+* [ESLint Import Rules](https://github.com/benmosher/eslint-plugin-import/tree/master/docs/rules)
+* [Sass Lint Rules](https://github.com/sasstools/sass-lint/tree/develop/docs/rules)
+* [Vue SFC](https://github.com/nfplee/gulp-vue-single-file-component)
+* [Path to RegExp](https://github.com/pillarjs/path-to-regexp/tree/v1.7.0#parameters)

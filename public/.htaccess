@@ -6,7 +6,7 @@ RewriteEngine on
 # Redirect HTTP to HTTPS if host is insanitymeetshh.net
 RewriteCond %{HTTPS} off
 RewriteCond %{HTTP_HOST} insanitymeetshh\.net
-RewriteRule ^(.*)$ https://gulp.insanitymeetshh.net/$1 [L,R=301]
+RewriteRule ^(.*)$ https://chatbot.insanitymeetshh.net/$1 [L,R=301]
 
 # Forwards all requests to index.php, except files and folders
 RewriteCond %{REQUEST_FILENAME} !-f

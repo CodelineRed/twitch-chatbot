@@ -1,48 +1,51 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <style>
-     h1 {
-       font-size: 100px;
-       color: rebeccapurple;
-       font-family: 'Comic Sans MS';
-     }
-     img {
-       display: none;
-     }
-    </style>
-  </head>
-  <body>
-    <h1 id="counter"></h1>
-        <img id="boo" src="https://via.placeholder.com/266x140/2E97BF/0f0f0f?text=LazyLoad%20Image" alt="image" />
-        <img id="confetti" src="https://via.placeholder.com/266x140/0c0c0c/212121?text=LazyLoad%20Image" alt="image" />
-
-   <script src="js/skateboard.min.js?v=2.0.1"></script>
-   <script>
-    const counter = document.getElementById('counter');
-    const boo = document.getElementById('boo');
-    const confetti = document.getElementById('confetti');
-    let firstLoad = false;
-
-    function flashGif(element, duration) {
-        element.style.display = 'inline';
-        setTimeout(() => {element.style.display = 'none'}, duration);
-    };
-
-    skateboard({port: 3000}).on('data', (data) => {
-        const n = parseInt(data);
-        counter.textContent = n;
-
-        if (n && n % 10 === 0) {
-            flashGif(confetti, 10 *1000);
-        }
-
-       if (!n && !firstLoad) {
-            flashGif(boo, 1000);
-       }
-
-       firstLoad = false;
-    });
-   </script>
-  </body>
+<html lang="en" class="no-js">
+    <head>
+        <script>
+            function setCookie(e,t,n){let o=new Date;o.setTime(o.getTime()+24*n*60*60*1e3);let i="expires="+o.toUTCString();document.cookie=e+"="+t+";"+i+";path=/"}function getCookie(e){for(var t=e+"=",n=decodeURIComponent(document.cookie).split(";"),o=0;o<n.length;o++){for(var i=n[o];" "==i.charAt(0);)i=i.substring(1);if(0==i.indexOf(t))return i.substring(t.length,i.length)}return""}
+            let cookiesAllowed = getCookie('cookieconsent_status') !== 'deny';
+            let cookieLayer = {};
+            
+            // if cookies allowed - load tracking code
+            if (cookiesAllowed) {
+                // Google Analaytics, Google Tag Manager, ...
+//                let s = document.createElement('script');
+//                s.type = 'text/javascript';
+//                s.async = true;
+//                s.src = 'https://www.googletagmanager.com/gtag/js?id=UA-NUMBER-X';
+//                let h = document.getElementsByTagName('head')[0];
+//                h.appendChild(s, h);
+//            
+//                window.dataLayer = window.dataLayer || [];
+//                function gtag(){dataLayer.push(arguments);}
+//                gtag('js', new Date());
+//                gtag('config', 'UA-NUMBER-X', {'anonymize_ip': true});
+            }
+        </script>
+        
+        <title>Vue Skeleton</title>
+        <base href="/">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <!--<link rel="alternate" hreflang="x-default" href="http://127.0.0.1:3000/"/>-->
+        <!--<link rel="alternate" type="application/rss+xml" title="" href=""/>-->
+        <link rel="apple-touch-icon" href="img/favicons/favicon-180x180.png" sizes="180x180">
+        <link rel="icon" type="image/png" href="img/favicons/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="img/favicons/favicon-192x192.png" sizes="192x192">
+        <link rel="icon" type="image/png" href="img/favicons/favicon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="img/favicons/manifest.json">
+        <link rel="mask-icon" href="img/favicons/favicon.svg">
+        <meta name="msapplication-TileColor" content="#212121">
+        <meta name="msapplication-TileImage" content="img/favicons/favicon-144x144.png">
+        <meta name="msapplication-config" content="img/favicons/browserconfig.xml">
+        <meta name="theme-color" content="#212121">
+        <link rel="shortcut icon" href="img/favicons/favicon.ico">
+        
+        <link rel="stylesheet" href="css/styles.css?v=1.0.0-dev">
+    </head>
+    <body>
+        <div id="app"></div>
+        <script src="js/scripts.js?v=1.0.0-dev"></script>
+        <script data-main="js/vue/app" src="js/require/require.js?v=2.3.6"></script>
+    </body>
 </html>

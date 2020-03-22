@@ -1,0 +1,7 @@
+{
+    "localServer": "http://127.0.0.1:3050/",
+    "sourcePath": "src/",
+    "publicPath": "public/",
+    "systemPath": "path/to/system/",
+    "env": "prod"
+}
