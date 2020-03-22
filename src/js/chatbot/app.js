@@ -5,18 +5,39 @@ const chatbot = {
     socket: null,
     config: null,
     client: null,
-    count: 0,
+    counter: {},
     getChannels: function() {
-        const result = {
-            args: {
-                channels: chatbot.config.channels.join(';').replace(/#/g, '')
-            },
-            method: 'setChannels',
-            ref: 'channels',
-            env: 'web'
-        };
+        if (chatbot.socket !== null) {
+            const call = {
+                args: {
+                    channels: chatbot.config.channels.join(';').replace(/#/g, '')
+                },
+                method: 'setChannels',
+                ref: 'channels',
+                env: 'web'
+            };
+
+            chatbot.socket.write(JSON.stringify(call));
+        }
+    },
+    getCounter: function(args) {
+        if (typeof chatbot.counter[args.channel] === 'undefined') {
+            chatbot.counter[args.channel] = 0;
+        }
         
-        chatbot.socket.write(JSON.stringify(result));
+        if (chatbot.socket !== null) {
+            const call = {
+                args: {
+                    channel: args.channel,
+                    counter: chatbot.counter[args.channel].toString()
+                },
+                method: 'setCounter',
+                ref: 'counter',
+                env: 'web'
+            };
+
+            chatbot.socket.write(JSON.stringify(call));
+        }
     },
     logCommand: function(args) {
         console.log(`* Executed ${args.msg} command by ${args.context['display-name']} at ${args.channel}.`);
@@ -24,15 +45,19 @@ const chatbot = {
     commands: {
         counter: function(args) {
             if (/^\d\d?$/.test(args.msg)) {
+                if (typeof chatbot.counter[args.channel] === 'undefined') {
+                    chatbot.counter[args.channel] = 0;
+                }
+                
                 const n = parseInt(args.msg);
-                chatbot.count = (n - chatbot.count === 1) ? n : 0;
+                chatbot.counter[args.channel] = (n - chatbot.counter[args.channel] === 1) ? n : 0;
 
                 if (chatbot.socket !== null) {
                     const call = {
                         channel: args.cahnnel,
                         args: {
                             channel: args.channel,
-                            counter: chatbot.count.toString()
+                            counter: chatbot.counter[args.channel].toString()
                         },
                         method: 'setCounter',
                         ref: 'counter',
@@ -58,7 +83,7 @@ const chatbot = {
                     results.push(eyes);
                 }
                 
-                chatbot.client.say(args.target, `Rolled d${sides}` + (dices > 1 ? `w${dices}`: ``) + `: ${results.join(' + ')} = ${result}.`); // eslint-disable-line quotes
+                chatbot.client.say(args.target, `@${args.context['display-name']} rolled d${sides}` + (dices > 1 ? `w${dices}`: '') + `: ${results.join(' + ')} = ${result}.`);
                 chatbot.logCommand(args);
             }
         }

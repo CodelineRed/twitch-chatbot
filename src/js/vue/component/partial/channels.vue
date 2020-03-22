@@ -13,7 +13,14 @@
                 this.channels = args.channels.split(';');
             },
             getChannels: function() {
-                streamWrite({method: 'getChannels', env: 'node'});
+                if (typeof streamWrite === 'function') {
+                    const call = {
+                        method: 'getChannels',
+                        env: 'node'
+                    };
+                    
+                    streamWrite(call);
+                }
             }
         }
     };

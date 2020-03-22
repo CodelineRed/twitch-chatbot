@@ -42,7 +42,7 @@ const client = new tmi.client(opts); // eslint-disable-line new-cap
 //}
 
 // Called every time a message comes in
-function onMessageHandler(target, context, msg, self) {
+function onMessage(target, context, msg, self) {
     // Ignore messages from the bot
     if (self) {
         return;
@@ -62,7 +62,7 @@ function onMessageHandler(target, context, msg, self) {
 }
 
 // Called every time the bot connects to Twitch chat
-function onConnectedHandler(addr, port) {
+function onConnected(addr, port) {
     console.log(`* Connected to ${addr}:${port}`);
     
     skateboard({port: 3100}, (stream) => {
@@ -73,8 +73,8 @@ function onConnectedHandler(addr, port) {
             
             if (typeof dataJson.method === 'string' && typeof chatbot[dataJson.method] === 'function' 
                     && typeof dataJson.env === 'string' && dataJson.env === 'node') {
-                if (typeof dataJson.arg === 'string') {
-                    chatbot[dataJson.method](dataJson.arg);
+                if (typeof dataJson.args === 'object' && dataJson.args !== null) {
+                    chatbot[dataJson.method](dataJson.args);
                 } else {
                     chatbot[dataJson.method]();
                 }
@@ -84,8 +84,8 @@ function onConnectedHandler(addr, port) {
 }
 
 // Register event handlers (defined below)
-client.on('message', onMessageHandler);
-client.on('connected', onConnectedHandler);
+client.on('message', onMessage);
+client.on('connected', onConnected);
 
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
