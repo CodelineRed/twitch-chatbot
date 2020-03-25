@@ -30,8 +30,8 @@
         "url": "git://github.com/InsanityMeetsHH/twitch-chatbot.git"
     },
     "devDependencies": {
-        "@babel/core": "^7.8.7",
-        "@babel/plugin-transform-modules-amd": "^7.8.3",
+        "@babel/core": "^7.9.0",
+        "@babel/plugin-transform-modules-amd": "^7.9.0",
         "babel-eslint": "^10.1.0",
         "browser-sync": "^2.26.7",
         "del": "^5.1.0",
@@ -40,7 +40,7 @@
         "gulp": "^4.0.2",
         "gulp-autoprefixer": "^7.0.1",
         "gulp-babel": "^8.0.0",
-        "gulp-clean-css": "^4.2.0",
+        "gulp-clean-css": "^4.3.0",
         "gulp-concat": "^2.6.1",
         "gulp-eslint": "^6.0.0",
         "gulp-if": "^3.0.0",
@@ -63,6 +63,8 @@
         "bootstrap": "^4.4.1",
         "cssuseragent": "^2.1.31",
         "jquery": "^3.4.1",
+        "linkifyjs": "^2.1.9",
+        "moment": "^2.24.0",
         "requirejs": "^2.3.6",
         "skateboard": "^2.0.1",
         "slick-carousel": "^1.8.1",

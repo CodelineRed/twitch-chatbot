@@ -16,10 +16,17 @@ $ cd [app-name]
 $ rm -rf .git (unix) / rmdir .git /s (windows)
 $ npm i
 $ gulp build
+$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
 $ node chatbot.js
 $ gulp (in development)
 ```
 Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/gulpfile.js), if you want to use Docker as server.
+
+## Chatbot Commands
+|                     | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| counter             | counter increased if user count from 1 to 99 without interruption                                                                |
+| rollDice            | e.g. !d6 or !d56w6 - first digit can be from 0 - 99 and second from 0 - 9                                                        |
 
 ## Project Commands
 |                     | Description                                                                                                                      |
@@ -67,3 +74,4 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * [Sass Lint Rules](https://github.com/sasstools/sass-lint/tree/develop/docs/rules)
 * [Vue SFC](https://github.com/nfplee/gulp-vue-single-file-component)
 * [Path to RegExp](https://github.com/pillarjs/path-to-regexp/tree/v1.7.0#parameters)
+* [Moment Parsing (Date Format)](https://momentjs.com/docs/#/parsing/)

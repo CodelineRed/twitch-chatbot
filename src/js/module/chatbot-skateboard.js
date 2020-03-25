@@ -12,15 +12,28 @@ function initChatbotSkateboard() {
         };
 
         stream.on('data', function(data) {
+            let viewRefsMethod = null;
             let dataJson = JSON.parse(data);
-            let viewRefs = window.app.$children[0].$refs.layout.$refs.view.$refs;
-
-            if (typeof dataJson.method === 'string' && typeof viewRefs[dataJson.ref][dataJson.method] === 'function'
+            
+            if ((typeof window.app.$children === 'undefined' 
+                || typeof window.app.$children[0].$refs.layout.$refs.view[dataJson.method] !== 'function') 
+                && (typeof window.app.$children === 'undefined' 
+                || typeof window.app.$children[0].$refs.layout.$refs.view.$refs[dataJson.ref] === 'undefined')) {
+                return false;
+            }
+            
+            if (typeof window.app.$children[0].$refs.layout.$refs.view[dataJson.method] === 'function') {
+                viewRefsMethod = window.app.$children[0].$refs.layout.$refs.view[dataJson.method];
+            } else {
+                viewRefsMethod = window.app.$children[0].$refs.layout.$refs.view.$refs[dataJson.ref][dataJson.method];
+            }
+            
+            if (typeof dataJson.method === 'string' && typeof viewRefsMethod === 'function'
                     && typeof dataJson.env === 'string' && dataJson.env === 'web') {
                 if (typeof dataJson.args === 'object' && dataJson.args !== null) {
-                    viewRefs[dataJson.ref][dataJson.method](dataJson.args);
+                    viewRefsMethod(dataJson.args);
                 } else {
-                    viewRefs[dataJson.ref][dataJson.method]();
+                    viewRefsMethod();
                 }
             }
         });

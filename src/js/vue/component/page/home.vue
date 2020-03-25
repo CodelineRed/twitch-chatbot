@@ -21,7 +21,7 @@
     <div class="row mb-5">
         <div class="col-12">
             <h3 class="text-center mb-4">
-                Channels
+                Channels - {{ $t('app') }}
             </h3>
             <c-channels ref="channels" />
         </div>

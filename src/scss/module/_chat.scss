@@ -1,0 +1,200 @@
+.chat {
+    background-color: $theme-color-4;
+    border-radius: 5px;
+    position: relative;
+    
+    &.popout {
+        .messages {
+            height: 10px;
+        }
+    }
+    
+    .emote {
+        cursor: pointer;
+        margin-top: -5px;
+        max-height: 25px;
+        max-width: 25px;
+    }
+    
+    .messages {
+        height: 350px;
+        overflow-y: auto;
+        
+        .message {
+            border-radius: 5px;
+            color: $white;
+            padding: 5px 10px;
+            
+            &:nth-child(odd) {
+                background-color: $theme-color-2;
+            }
+            
+            &.action {
+                .user,
+                .text {
+                    font-style: italic;
+                }
+            }
+            
+            &.purge {
+                .user,
+                .text {
+                    text-decoration: line-through;
+                }
+            }
+            
+            &.notification {
+                .user,
+                .text {
+                    color: #fa0; // sass-lint:disable-line no-color-literals
+                }
+            }
+            
+            .action {
+                color: #8df; // sass-lint:disable-line no-color-literals
+            }
+            
+            .linkified {
+                word-break: break-all;
+            }
+            
+            .purge {
+                color: #fa0; // sass-lint:disable-line no-color-literals
+            }
+            
+            .timestamp {
+                cursor: pointer;
+            }
+        }
+    }
+    
+    .scroll-bottom {
+        background-color: rgba(0, 0, 0, .75); // sass-lint:disable-line no-color-literals
+        border-radius: 5px;
+        bottom: 10px;
+        color: $white;
+        cursor: pointer;
+        left: 50%;
+        padding: 0 10px;
+        position: absolute;
+        transform: translateX(-50%);
+    }
+    
+    .twitch-badge {
+        cursor: pointer;
+        display: inline-block;
+        
+        svg {
+            border-radius: 3px;
+            margin-right: 5px;
+            padding: 2px;
+            
+            &.broadcaster {
+                background-color: #f00; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.admin {
+                background-color: #64a; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.staff {
+                background-color: #000; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.global-mod {
+                background-color: #036305; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.vip {
+                background-color: #e005b9; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.mod {
+                background-color: #00ad03; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.founder {
+                background: linear-gradient(to bottom, #9445fe 0%, #f71fd3 100%); // sass-lint:disable-line no-color-literals
+            }
+            
+            &.subscriber {
+                background-color: #00f; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.bot {
+                background-color: #000; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.hype-train {
+                background-color: #660; // sass-lint:disable-line no-color-literals
+                color: #ff0; // sass-lint:disable-line no-color-literals
+                
+                &.former {
+                    background-color: #666; // sass-lint:disable-line no-color-literals
+                    color: #ccc; // sass-lint:disable-line no-color-literals
+                }
+            }
+            
+            &.bits {
+                background-color: #80f; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.sub-gifter {
+                background-color: #7b5207; // sass-lint:disable-line no-color-literals
+            }
+                
+            &.sub-gift-leader {
+                background-color: #c78e26; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.bits-charity {
+                background-color: #c1e9ea; // sass-lint:disable-line no-color-literals
+                color: $theme-color-1;
+            }
+            
+            &.glhf-pledge {
+                background-color: #6d6802; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.prime,
+            &.premium {
+                background-color: #00a0d6; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.turbo {
+                background-color: #64a; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.tc-eu-2019 {
+                background-color: #64a; // sass-lint:disable-line no-color-literals
+            }
+
+            &.tc-eu-2020 {
+                /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#6644aa+0,e82cb5+50,f4d684+100 */ // sass-lint:disable-line no-css-comments
+                background: linear-gradient(to bottom, #64a 0%, #e82cb5 50%, #f4d684 100%); // sass-lint:disable-line no-color-literals
+            }
+
+            &.tc-usa-2017 {
+                /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#6644aa+0,2ba6de+100 */ // sass-lint:disable-line no-css-comments
+                background: linear-gradient(135deg, #64a 0%, #2ba6de 100%); // sass-lint:disable-line no-color-literals
+            }
+
+            &.tc-usa-2018 {
+                background-color: #fd5b5b; // sass-lint:disable-line no-color-literals
+            }
+
+            &.tc-usa-2019 {
+                background-color: #64a; // sass-lint:disable-line no-color-literals
+            }
+            
+            &.partner {
+                background-color: #64a; // sass-lint:disable-line no-color-literals
+            }
+        }
+    }
+    
+    .user {
+        color: #8df; // sass-lint:disable-line no-color-literals
+        font-weight: bold;
+    }
+}

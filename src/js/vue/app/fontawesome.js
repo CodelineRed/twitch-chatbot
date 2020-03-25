@@ -1,36 +1,47 @@
 import Vue from 'vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
-    faCss3 as fabCss3,
+    faEthereum as fabEthereum,
     faFontAwesomeFlag as fabFontAwesomeFlag,
-    faGithub as fabGithub,
-    faHtml5 as fabHtml5,
-    faVuejs as fabVuejs
+    faTwitch as fabTwitch
 } from '@fortawesome/free-brands-svg-icons';
 
 import {
-    faSadCry as farSadCry,
-    faSquare as farSquare
+    faSadCry as farSadCry
 } from '@fortawesome/free-regular-svg-icons';
 
 import {
-    faBold as fasBold,
-    faChevronLeft as fasChevronLeft,
-    faChevronRight as fasChevronRight,
-    faCircle as fasCircle,
+    faAward as fasAward,
+    faBolt as fasBolt,
+    faCheckCircle as fasCheckCircle,
+    faCrown as fasCrown,
+    faExternalLinkAlt as fasExternalLinkAlt,
+    faGavel as fasGavel,
+    faGem as fasGem,
+    faGift as fasGift,
     faGlobe as fasGlobe,
+    faHammer as fasHammer,
     faHome as fasHome,
-    faImage as fasImage,
-    faSquare as fasSquare,
+    faMoneyBill as fasMoneyBill,
+    faRobot as fasRobot,
+    faSnowflake as fasSnowflake,
+    faStar as fasStar,
     faSync as fasSync,
-    faUserSecret as fasUserSecret
+    faTicketAlt as fasTicketAlt,
+    faTrain as fasTrain,
+    faVideo as fasVideo,
+    faWrench as fasWrench
 } from '@fortawesome/free-solid-svg-icons';
 
 import { FontAwesomeIcon, FontAwesomeLayers } from '@fortawesome/vue-fontawesome';
 
-library.add(fabCss3, fabFontAwesomeFlag, fabGithub, fabHtml5, fabVuejs);
-library.add(farSadCry, farSquare);
-library.add(fasBold, fasChevronLeft, fasChevronRight, fasCircle, fasGlobe, fasHome, fasImage, fasSquare, fasSync, fasUserSecret);
+library.add(fabEthereum, fabFontAwesomeFlag, fabTwitch);
+library.add(farSadCry);
+library.add(
+    fasAward, fasBolt, fasCheckCircle, fasCrown, fasExternalLinkAlt, fasGavel, 
+    fasGem, fasGift, fasGlobe, fasHammer, fasHome, fasMoneyBill, fasRobot, fasSnowflake, 
+    fasStar, fasSync, fasTicketAlt, fasTrain, fasVideo, fasWrench
+);
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.component('font-awesome-layers', FontAwesomeLayers);

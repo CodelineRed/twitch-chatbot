@@ -15,7 +15,7 @@
                 <div class="d-inline-block pr-2">
                     <c-langswitch ref="langswitch" />
                 </div>
-                <router-link class="btn btn-sm btn-info" :to="{ name: 'index' }"><font-awesome-icon :icon="['fas', 'home']" /></router-link>
+                <router-link class="btn btn-sm btn-info" :to="{name: 'index'}"><font-awesome-icon :icon="['fas', 'home']" class="fa-fw" /></router-link>
             </div>
         </div>
     </div>

@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import filters from './app/filters';
 import fontawesome from './app/fontawesome';
 import i18n from './app/i18n';
 import router from './app/router';
@@ -8,6 +9,8 @@ import App from './component/partial/app';
 
 Vue.component('l-default', DefaultLayout);
 Vue.component('l-empty', EmptyLayout);
+
+Vue.filter('formatDateTime', filters.formatDateTime);
 
 Vue.config.productionTip = false;
 

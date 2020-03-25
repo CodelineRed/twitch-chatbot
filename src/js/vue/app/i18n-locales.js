@@ -49,9 +49,9 @@ const en = {
 
     'dp': '.',
     'ts': ',',
-    'date': 'Y-m-d',
-    'time': 'g:ia',
-    'datetime': 'Y-m-d g:ia',
+    'date': 'YYYY-MM-DD',
+    'time': 'hh:mm a',
+    'datetime': 'YYYY-MM-DD hh:mm:ss a',
     'timezone': 'America/New_York',
     
     'month': '{0} month',
@@ -96,9 +96,9 @@ const de = {
     
     'dp': ',',
     'ts': '.',
-    'date': 'd.m.Y',
-    'time': 'Hi Uhr',
-    'datetime': 'd.m.Y H:i Uhr',
+    'date': 'DD.MM.YYYY',
+    'time': 'HH:mm',
+    'datetime': 'DD.MM.YYYY HH:mm:ss',
     'timezone': 'Europe/Berlin',
     
     'month': '{0} Monat',

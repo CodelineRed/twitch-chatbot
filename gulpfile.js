@@ -46,6 +46,7 @@ function js() {
             'node_modules/jquery/dist/jquery.js',
             'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
             'node_modules/skateboard/skateboard.min.js',
+            'node_modules/moment/moment.js',
             config.sourcePath + 'js/lib/**/*.js',
             'node_modules/slick-carousel/slick/slick.js',
             'node_modules/cssuseragent/cssua.js',

@@ -48,7 +48,7 @@
         "use-isnan": "error",
         "valid-typeof": "error",
         
-        "array-bracket-newline": ["warn", "always"],
+        "array-bracket-newline": ["warn", {"multiline": true}],
         "block-spacing": ["warn", "always"],
         "brace-style": 1,
         "camelcase": 1,
