@@ -268,8 +268,8 @@ const chatbot = {
             }
         },
         rollDice: function(args) {
-            if (/^!d(\d+)(w(\d))?$/.test(args.message)) {
-                const matches = args.message.match(/^!d(\d+)(w(\d))?$/);
+            if (/^!d([1-9]+)(w([1-9]))?$/.test(args.message)) {
+                const matches = args.message.match(/^!d([1-9]+)(w([1-9]))?$/);
                 const sides = parseInt(matches[1].slice(0, 2));
                 const dices = typeof matches[3] === 'undefined' ? 1 : parseInt(matches[3]) > 0 ? parseInt(matches[3]) : 1;
                 let results = [];

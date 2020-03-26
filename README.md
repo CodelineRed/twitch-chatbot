@@ -26,7 +26,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 ## Chatbot Commands
 |                     | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| counter             | counter increased if user count from 1 - 99 without interruption                                                                 |
+| counter             | counter increased if user counts from 1 - 99 without interruption                                                                |
 | rollDice            | e.g. !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                        |
 
 Chatbot Commands can be actived for each channel at [`src/js/chatbot/app.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/chatbot/app.js#L239) (chatbot.commands.active).

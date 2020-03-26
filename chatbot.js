@@ -11,7 +11,8 @@ chatbot.config = config;
 const opts = {
     connection: {
         maxReconnectAttempts: 300,
-        reconnect: true
+        reconnect: true,
+        reconnectInterval: 5000
     },
     identity: {
         username: config.username,
@@ -121,7 +122,7 @@ function onGiftpaidupgrade(channel, username, sender, userstate) {
 function onHosted(channel, username, viewers, autohost) {
     const commandArgs = {
         channel: channel.replace(/#/g, ''),
-        notification: 'You are hosted by ' + username + ' with ' + viewers + ' viewers' + (autohost ? ' via autohost' : '') + '.',
+        notification: 'You are hosted by ' + username + ' with ' + viewers + ' viewers' + (autohost ? ' via autohost.' : '.'),
         message: null,
         userstate: {'message-type': 'info'}
     };
@@ -136,7 +137,7 @@ function onHosted(channel, username, viewers, autohost) {
 function onHosting(channel, target, viewers) {
     const commandArgs = {
         channel: channel.replace(/#/g, ''),
-        notification: 'Now hosting ' + target + ' with ' + viewers + ' viewers.',
+        notification: 'Now hosting ' + target + '.',
         message: null,
         userstate: {'message-type': 'info'}
     };
