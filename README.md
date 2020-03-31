@@ -38,6 +38,7 @@ Chatbot Commands can be actived for each channel at [`src/js/chatbot/app.js`](ht
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | gulp                | watch files and start [BrowserSync](https://www.npmjs.com/package/browser-sync)                                                  |
 | gulp build          | executes following tasks: cleanUp, scss, scssLint, js, jsLint, jsRequire, json, img, font, svg, vue, vueLint, vueJs, vueJsLint   |
+| gulp lintAll        | executes following tasks: scssLint, jsLint, vueLint, vueJsLint                                                                   |
 | gulp cleanUp        | clean up public folder                                                                                                           |
 | gulp font           | copy font files                                                                                                                  |
 | gulp img            | copy and compress images                                                                                                         |
@@ -65,9 +66,34 @@ Chatbot Commands can be actived for each channel at [`src/js/chatbot/app.js`](ht
 | 3110                | Chat Window (Skateboard Socket for Web UI)                                                                                       |
 | 3120                | Video Window (Skateboard Socket for Web UI)                                                                                      |
 
+## Component Features
+### Chat
+* Timestamp
+* Badges
+* Custom User Color
+* "/me" Messages
+* Cheers
+* Subs, Resubs, Sub Gifts (random and specific), Gift Upgrades
+* Bans, Timeouts, Deletes
+* Now Hosting, Hosted By, Raided By, Unhost
+* Clickable Links
+* Twitch Emotes
+
+### Playlist
+* Play local files which saved in `public/video/`
+* Play YouTube Videos
+* Skip Videos
+* Move Videos
+* Remove Videos
+* Clear Playlist
+* Remove Played Videos
+* Reset Playlist
+* Add Video
+* playlistInfo Command
+
 ## Localization
-- [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/app/i18n-locales.js)
-- [`langswitch.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/component/partial/langswitch.vue)
+* [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/app/i18n-locales.js)
+* [`langswitch.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/component/partial/langswitch.vue)
 
 ## Installation with [Docker](https://www.docker.com/)
 * Get project via `$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git` or [zip download](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/develop.zip)

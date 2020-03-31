@@ -25,10 +25,14 @@ const opts = {
 const client = new tmi.client(opts); // eslint-disable-line new-cap
 
 function onAnongiftpaidupgrade(channel, username, userstate) {
-    console.log('onAnongiftpaidupgrade');
-    console.log(channel);
-    console.log(username);
-    console.log(userstate);
+    const commandArgs = {
+        channel: channel.replace(/#/g, ''),
+        notification: userstate['system-msg'],
+        message: null,
+        userstate: userstate
+    };
+
+    chatbot.getChatNotification(commandArgs);
 }
 
 //onBan
