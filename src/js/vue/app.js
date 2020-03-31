@@ -11,6 +11,7 @@ Vue.component('l-default', DefaultLayout);
 Vue.component('l-empty', EmptyLayout);
 
 Vue.filter('formatDateTime', filters.formatDateTime);
+Vue.filter('formatDuration', filters.formatDuration);
 
 Vue.config.productionTip = false;
 

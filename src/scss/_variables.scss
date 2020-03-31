@@ -24,6 +24,7 @@ $close-text-shadow: none;
 
 $headings-color: $theme-color-1;
 
+$blue: $theme-color-1;
 $info: $theme-color-1;
 
 $link-color: $theme-color-1;
@@ -34,3 +35,15 @@ $card-border-color: $theme-color-1;
 $modal-content-bg: $theme-color-4;
 $modal-header-border-color: $theme-color-3;
 $modal-md: 800px;
+
+$pagination-bg: $theme-color-2;
+$pagination-color: #fff;
+$pagination-border-color: $theme-color-1;
+
+$pagination-hover-color: #fff;
+$pagination-hover-bg: $theme-color-1;
+$pagination-hover-border-color: $theme-color-1;
+
+$pagination-disabled-color: #fff;
+$pagination-disabled-bg: $theme-color-4;
+$pagination-disabled-border-color: $theme-color-1;

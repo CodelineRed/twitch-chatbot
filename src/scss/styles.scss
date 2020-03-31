@@ -4,11 +4,15 @@
 //@import 'lib/fontawesome';
 
 @import 'plugin/slick';
+@import 'plugin/datatables.bootstrap';
 
 @import 'module/general';
+@import 'module/datatables';
 @import 'module/channels';
 @import 'module/chat';
 @import 'module/page';
+@import 'module/playlist';
 @import 'module/slick';
 @import 'module/slider';
+@import 'module/video';
 @import 'module/modal';

@@ -87,25 +87,48 @@ function onCheer(channel, userstate, message) {
 // called every time the bot connects to Twitch chat
 function onConnected(url, port) {
     console.log(`* Connected to ${url}:${port}`);
+    let ports = [3100, 3110, 3120];
     
     if (chatbot.socket === null) {
-        skateboard({port: 3100}, (stream) => {
-            chatbot.socket = stream;
-
-            stream.on('data', function(data) {
-                let dataJson = JSON.parse(data);
-
-                if (typeof dataJson.method === 'string' && typeof chatbot[dataJson.method] === 'function' 
-                        && typeof dataJson.env === 'string' && dataJson.env === 'node') {
-                    if (typeof dataJson.args === 'object' && dataJson.args !== null) {
-                        chatbot[dataJson.method](dataJson.args);
-                    } else {
-                        chatbot[dataJson.method]();
-                    }
+        for (let i = 0; i < ports.length; i++) {
+            skateboard({port: ports[i]}, (stream) => {
+                switch (i) {
+                case 0:
+                    chatbot.socket = stream;
+                    break;
+                    
+                case 1:
+                    chatbot.socketChat = stream;
+                    break;
+                    
+                case 2:
+                    chatbot.socketVideo = stream;
+                    break;
+                    
+                default:
+                    break;
                 }
+
+                stream.on('data', function(data) {
+                    let dataJson = JSON.parse(data);
+
+                    if (typeof dataJson.method === 'string' && typeof chatbot[dataJson.method] === 'function' 
+                            && typeof dataJson.env === 'string' && dataJson.env === 'node') {
+                        if (typeof dataJson.args === 'object' && dataJson.args !== null) {
+                            chatbot[dataJson.method](dataJson.args);
+                        } else {
+                            chatbot[dataJson.method]();
+                        }
+                    }
+                });
             });
-        });
+        }
     }
+    
+    chatbot.readJson('playlist', chatbot.config.channels[0].toLowerCase());
+    chatbot.readJson('command', chatbot.config.channels[0].toLowerCase());
+    chatbot.readJson('raffle', chatbot.config.channels[0].toLowerCase());
+    chatbot.readJson('poll', chatbot.config.channels[0].toLowerCase());
 }
 
 function onGiftpaidupgrade(channel, username, sender, userstate) {

@@ -26,10 +26,12 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 ## Chatbot Commands
 |                     | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| about               | !about, !chatbot, !bug, !help                                                                                                    |
 | counter             | counter increased if user counts from 1 - 99 without interruption                                                                |
+| playlistInfo        | !info, !plan, !programm, !sendeplan                                                                                              |
 | rollDice            | e.g. !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                        |
 
-Chatbot Commands can be actived for each channel at [`src/js/chatbot/app.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/chatbot/app.js#L239) (chatbot.commands.active).
+Chatbot Commands can be actived for each channel at [`src/js/chatbot/app.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/chatbot/app.js#L417) (chatbot.commands.active).
 
 ## Project Commands
 |                     | Description                                                                                                                      |
@@ -52,6 +54,16 @@ Chatbot Commands can be actived for each channel at [`src/js/chatbot/app.js`](ht
 | gulp vueJsLint      | checks vue js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/import-lint.json)       |
 | gulp chatbotLint    | checks chatbot js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/import-lint.json)   |
 | gulp watch          | watch scss, js, json, vue, chatbot, img, font and svg files                                                                      |
+
+## Ports
+|                     | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| 3000                | [BrowserSync](https://www.npmjs.com/package/browser-sync)                                                                        |
+| 3001                | [BrowserSync UI](https://www.npmjs.com/package/browser-sync)                                                                     |
+| 3050                | Docker Container (twitch-chatbot)                                                                                                |
+| 3100                | Main Window (Skateboard Socket for Web UI)                                                                                       |
+| 3110                | Chat Window (Skateboard Socket for Web UI)                                                                                       |
+| 3120                | Video Window (Skateboard Socket for Web UI)                                                                                      |
 
 ## Localization
 - [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/app/i18n-locales.js)

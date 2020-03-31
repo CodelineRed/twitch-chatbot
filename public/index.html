@@ -5,6 +5,7 @@
             function setCookie(e,t,n){let o=new Date;o.setTime(o.getTime()+24*n*60*60*1e3);let i="expires="+o.toUTCString();document.cookie=e+"="+t+";"+i+";path=/"}function getCookie(e){for(var t=e+"=",n=decodeURIComponent(document.cookie).split(";"),o=0;o<n.length;o++){for(var i=n[o];" "==i.charAt(0);)i=i.substring(1);if(0==i.indexOf(t))return i.substring(t.length,i.length)}return""}
             let cookiesAllowed = getCookie('cookieconsent_status') !== 'deny';
             let cookieLayer = {};
+            let dataTables = {};
             
             // if cookies allowed - load tracking code
             if (cookiesAllowed) {

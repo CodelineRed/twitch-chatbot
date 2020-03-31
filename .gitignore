@@ -1,3 +1,4 @@
+/data/*.*
 /public/svg/
 /public/img/
 /public/css/styles.css
@@ -8,6 +9,7 @@
 /public/js/vue/
 /public/font/
 /public/json/
+/public/video/*.*
 gulpfile.json
 gulpfile-config.json
 chatbot.json

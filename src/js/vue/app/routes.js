@@ -1,6 +1,7 @@
 import Home from '../component/page/home';
 import Channel from '../component/page/channel';
 import Chat from '../component/partial/chat';
+import Video from '../component/partial/video';
 import About from '../component/page/about';
 import ErrorPage from '../component/page/error-page';
 
@@ -25,10 +26,19 @@ const routes = [
     },
     {
         component: Chat,
-        name: 'popout-chat',
+        name: 'chat',
         path: '/channel/:channel/chat',
         meta: {
             title: 'router.param-channel - i18n.chat',
+            layout: 'empty'
+        }
+    },
+    {
+        component: Video,
+        name: 'video',
+        path: '/channel/:channel/video',
+        meta: {
+            title: 'Video',
             layout: 'empty'
         }
     },

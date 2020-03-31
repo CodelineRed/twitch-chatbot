@@ -50,6 +50,8 @@ function js() {
             config.sourcePath + 'js/lib/**/*.js',
             'node_modules/slick-carousel/slick/slick.js',
             'node_modules/cssuseragent/cssua.js',
+            'node_modules/datatables.net/js/jquery.dataTables.js',
+            'node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js',
             'node_modules/vanilla-lazyload/dist/lazyload.js',
             config.sourcePath + 'js/plugin/**/*.js',
             config.sourcePath + 'js/module/**/*.js',
@@ -285,6 +287,9 @@ exports.watch = watch;
 exports.watchAndReload = watchAndReload;
 exports.browserSyncInit = browserSyncInit;
 exports.browserSyncReload = browserSyncReload;
+
+// lintAll task
+gulp.task('lintAll', gulp.series(scssLint, jsLint, vueJsLint, vueLint, chatbotLint));
 
 // build task
 gulp.task('build', gulp.series(cleanUp, scss, scssLint, js, jsLint, jsRequire, json, img, font, svg, vue, vueJs, vueJsLint, vueLint, chatbotLint));

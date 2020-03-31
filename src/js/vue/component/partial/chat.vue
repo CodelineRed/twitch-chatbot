@@ -78,7 +78,7 @@
         },
         methods: {
             popoutChat: function() {
-                const url = this.$router.resolve({name: 'popout-chat', params: {channel: this.$root._route.params.channel}}).href;
+                const url = this.$router.resolve({name: 'chat', params: {channel: this.$root._route.params.channel}}).href;
                 const params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=750,height=750';
                 window.open(url, 'Chat Popout', params);
             },
@@ -157,22 +157,18 @@
                 <div class="controls pb-2">
                     <div class="custom-control custom-switch float-left mr-3">
                         <input id="message-time" v-model="showTime" type="checkbox" class="custom-control-input">
-                        <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                         <label class="custom-control-label" for="message-time">Time</label>
                     </div>
                     <div class="custom-control custom-switch float-left mr-3">
                         <input id="message-badges" v-model="showBadges" type="checkbox" class="custom-control-input">
-                        <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                         <label class="custom-control-label" for="message-badges">Badges</label>
                     </div>
                     <div class="custom-control custom-switch float-left mr-3">
                         <input id="message-user-color" v-model="showUserColor" type="checkbox" class="custom-control-input">
-                        <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                         <label class="custom-control-label" for="message-user-color">Color</label>
                     </div>
                     <div class="custom-control custom-switch float-left mr-3">
                         <input id="message-pause" v-model="isPause" type="checkbox" class="custom-control-input">
-                        <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                         <label class="custom-control-label" for="message-pause">Pause</label>
                     </div>
                     <div class="float-left">

@@ -1,0 +1,41 @@
+.playlist {
+    background-color: $theme-color-4;
+    border-radius: 5px;
+    position: relative;
+
+    table {
+        &.data-table {
+            margin-bottom: 49px;
+            margin-top: 45px;
+
+            &.dataTable { // sass-lint:disable-line class-name-format
+                margin-bottom: 0;
+                margin-top: 0;
+            }
+            
+            .index {
+                padding-left: 35px;
+                position: relative;
+                
+                .move {
+                    background-color: $theme-color-1;
+                    border-radius: 5px;
+                    color: $white;
+                    cursor: pointer;
+                    font-size: 10px;
+                    left: 5px;
+                    padding: 0 3px;
+                    position: absolute;
+                    
+                    &.move-down {
+                        top: 30px;
+                    }
+                    
+                    &.move-up {
+                        top: 8px;
+                    }
+                }
+            }
+        }
+    }
+}

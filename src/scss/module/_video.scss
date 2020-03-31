@@ -1,0 +1,15 @@
+.container-fluid {
+    .video {
+        margin-left: -($grid-gutter-width / 2);
+        margin-right: -($grid-gutter-width / 2);
+    }
+}
+
+.video {
+    .empty {
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+}

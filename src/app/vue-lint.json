@@ -82,7 +82,10 @@
         "vue/singleline-html-element-content-newline": ["warn", {
             "ignoreWhenNoAttributes": true,
             "ignoreWhenEmpty": true,
-            "ignores": ["a", "pre", "router-link", "span", "textarea", "th"]
+            "ignores": [
+                "a", "button", "label", "option", "pre", "router-link", 
+                "span", "textarea", "th"
+            ]
         }],
         "vue/v-bind-style": "warn",
         "vue/v-on-style": "warn",
