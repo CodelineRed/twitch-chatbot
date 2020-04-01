@@ -1,14 +1,48 @@
-// sass-lint:disable-all
-table.dataTable thead .sorting:after, 
-table.dataTable thead .sorting:before, 
-table.dataTable thead .sorting_asc:after, 
-table.dataTable thead .sorting_asc:before, 
-table.dataTable thead .sorting_asc_disabled:after, 
-table.dataTable thead .sorting_asc_disabled:before, 
-table.dataTable thead .sorting_desc:after, 
-table.dataTable thead .sorting_desc:before, 
-table.dataTable thead .sorting_desc_disabled:after, 
-table.dataTable thead .sorting_desc_disabled:before {
-    font-family: Arial;
+table {
+    &.data-table {
+        margin-bottom: 49px;
+        margin-top: 45px;
+
+        &.dataTable { // sass-lint:disable-line class-name-format
+            margin-bottom: 0;
+            margin-top: 0;
+        }
+        
+        thead {
+            .sorting,
+            .sorting_asc, // sass-lint:disable-line class-name-format
+            .sorting_asc_disabled, // sass-lint:disable-line class-name-format
+            .sorting_desc, // sass-lint:disable-line class-name-format
+            .sorting_desc_disabled { // sass-lint:disable-line class-name-format
+                &::after,
+                &::before {
+                    font-family: Arial;
+                }
+            }
+        }
+
+        .index {
+            padding-left: 35px;
+            position: relative;
+
+            .move {
+                background-color: $theme-color-1;
+                border-radius: 5px;
+                color: $white;
+                cursor: pointer;
+                font-size: 10px;
+                left: 5px;
+                padding: 0 3px;
+                position: absolute;
+
+                &.move-down {
+                    top: 30px;
+                }
+
+                &.move-up {
+                    top: 8px;
+                }
+            }
+        }
+    }
 }
-// sass-lint:enable-all

@@ -69,6 +69,12 @@
         }
     }
     
+    .overlay {
+        display: none;
+        position: absolute;
+        z-index: 10;
+    }
+    
     .scroll-bottom {
         background-color: rgba(0, 0, 0, .75); // sass-lint:disable-line no-color-literals
         border-radius: 5px;

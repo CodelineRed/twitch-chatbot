@@ -52,7 +52,13 @@ function initChatbotPort(port) {
 }
 
 function initChatbotSkateboard() {
-    if (/^#\/channel\/(.*)\/video\/?/.test(window.location.hash)) {
+    if (/^#\/channel\/(.*)\/counter\/?/.test(window.location.hash)) {
+        initChatbotPort(3150);
+    } else if (/^#\/channel\/(.*)\/poll\/?/.test(window.location.hash)) {
+        initChatbotPort(3140);
+    } else if (/^#\/channel\/(.*)\/raffle\/?/.test(window.location.hash)) {
+        initChatbotPort(3130);
+    } else if (/^#\/channel\/(.*)\/video\/?/.test(window.location.hash)) {
         initChatbotPort(3120);
     } else if (/^#\/channel\/(.*)\/chat\/?/.test(window.location.hash)) {
         initChatbotPort(3110);

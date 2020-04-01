@@ -85,6 +85,17 @@
             scrollBottom: function() {
                 jQuery('.messages').scrollTop(jQuery('.messages')[0].scrollHeight);
             },
+            getChatClass: function() {
+                let cssClass = [];
+                
+                if (this.isPopout) {
+                    cssClass.push('popout');
+                }
+                
+                cssClass.push(this.$route.params.channel.toLowerCase());
+                
+                return cssClass.join(' ');
+            },
             setChatMessage: function(args) {
                 if (!this.isPause && this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.messages.push({
@@ -153,7 +164,7 @@
 <template>
     <div class="row">
         <div class="col-12">
-            <div class="chat p-2" :class="{popout: isPopout}">
+            <div class="chat p-2" :class="getChatClass()">
                 <div class="controls pb-2">
                     <div class="custom-control custom-switch float-left mr-3">
                         <input id="message-time" v-model="showTime" type="checkbox" class="custom-control-input">

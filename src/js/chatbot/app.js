@@ -16,11 +16,17 @@ const chatbot = {
     config: null,
     counter: {},
     currentVideoStart: {}, // unix timestamp (seconds)
+    commands: {},
     messages: {},
     playlist: {},
+    polls: {},
+    raffles: {},
     socket: null, // skateboard socket
     socketChat: null, // skateboard socket
     socketVideo: null, // skateboard socket
+    socketRaffle: null, // skateboard socket
+    socketPoll: null, // skateboard socket
+    socketCounter: null, // skateboard socket
     addVideo: function(args) {
         if (chatbot.socket !== null) {
             chatbot.preparePlaylist(args, false);
@@ -336,6 +342,23 @@ const chatbot = {
             }
         }
     },
+    getCommands: function(args) {
+        if (chatbot.socket !== null) {
+            chatbot.prepareCommands(args);
+            
+            const call = {
+                args: {
+                    channel: args.channel,
+                    commands: chatbot.commands[args.channel]
+                },
+                method: 'setCommands',
+                ref: 'commands',
+                env: 'web'
+            };
+
+            chatbot.socket.write(JSON.stringify(call));
+        }
+    },
     getCounter: function(args) {
         if (chatbot.socket !== null) {
             if (typeof chatbot.counter[args.channel] === 'undefined') {
@@ -361,7 +384,7 @@ const chatbot = {
             let currentTime = chatbot.currentVideoStart[args.channel];
             
             for (let i = 0; i < chatbot.playlist[args.channel].length; i++) {
-                if (chatbot.playlist[args.channel][i].skip) {
+                if (chatbot.playlist[args.channel][i].skipped) {
                     chatbot.playlist[args.channel][i].start = 0;
                     chatbot.playlist[args.channel][i].end = 0;
                     continue;
@@ -410,27 +433,6 @@ const chatbot = {
             chatbot.socket.write(JSON.stringify(call));
         }
     },
-    getPlaylistClean: function(args) {
-        if (chatbot.socket !== null) {
-            let playlistLength = 0;
-            chatbot.preparePlaylist(args, false);
-            
-            let playlist = chatbot.playlist[args.channel];
-            chatbot.playlist[args.channel] = [];
-            
-            for (let i = 0; i < playlist.length; i++) {
-                // if not played
-                if (!playlist[i].played) {
-                    chatbot.playlist[args.channel].push(playlist[i]);
-                } else {
-                    playlistLength++;
-                }
-            }
-            
-            chatbot.getPlaylist(args);
-            chatbot.writeJson('playlist', args.channel, {name: playlistLength + ' videos'}, chatbot.playlist, 'remove');
-        }
-    },
     getPlaylistClear: function(args) {
         if (chatbot.socket !== null) {
             const playlistLength = chatbot.playlist[args.channel].length;
@@ -449,7 +451,7 @@ const chatbot = {
             
             for (let i = 0; i < playlistLength; i++) {
                 chatbot.playlist[args.channel][i].played = false;
-                chatbot.playlist[args.channel][i].skip = false;
+                chatbot.playlist[args.channel][i].skipped = false;
                 chatbot.playlist[args.channel][i].start = 0;
                 chatbot.playlist[args.channel][i].end = 0;
             }
@@ -472,10 +474,10 @@ const chatbot = {
             };
             
             for (let i = 0; i < chatbot.playlist[args.channel].length; i++) {
-                if (chatbot.playlist[args.channel][i].skip || match) {
+                if (chatbot.playlist[args.channel][i].skipped || match) {
                     chatbot.playlist[args.channel][i].played = false;
                     
-                    if (chatbot.playlist[args.channel][i].skip) {
+                    if (chatbot.playlist[args.channel][i].skipped) {
                         continue;
                     }
                 }
@@ -514,10 +516,10 @@ const chatbot = {
             chatbot.getPlaylist(args);
         }
     },
-    getVideoSkip: function(args) {
+    getVideoSkipped: function(args) {
         if (chatbot.socket !== null) {
             chatbot.preparePlaylist(args, false);
-            chatbot.playlist[args.channel][args.videoId].skip = !chatbot.playlist[args.channel][args.videoId].skip;
+            chatbot.playlist[args.channel][args.videoId].skipped = !chatbot.playlist[args.channel][args.videoId].skipped;
             chatbot.getPlaylist(args);
             chatbot.writeJson('playlist', args.channel, chatbot.playlist[args.channel][args.videoId], chatbot.playlist, 'update');
         }
@@ -551,11 +553,60 @@ const chatbot = {
             chatbot.writeJson('playlist', args.channel, removedVideo, chatbot.playlist, 'remove');
         }
     },
+    removeVideosByFlag: function(args) {
+        if (chatbot.socket !== null) {
+            let removedVideos = 0;
+            chatbot.preparePlaylist(args, false);
+            
+            let playlist = chatbot.playlist[args.channel];
+            chatbot.playlist[args.channel] = [];
+            
+            for (let i = 0; i < playlist.length; i++) {
+                if (playlist[i][args.flag] === args.value) {
+                    removedVideos++;
+                } else {
+                    chatbot.playlist[args.channel].push(playlist[i]);
+                }
+            }
+            
+            chatbot.getPlaylist(args);
+            chatbot.writeJson('playlist', args.channel, {name: removedVideos + ' videos'}, chatbot.playlist, 'remove');
+        }
+    },
     prepareChatMessages: function(args, shift) {
         if (typeof chatbot.messages[args.channel] === 'undefined') {
             chatbot.messages[args.channel] = [];
         } else if (chatbot.messages[args.channel].length >= 100 && shift) {
             chatbot.messages[args.channel].shift();
+        }
+    },
+    prepareCommands: function(args) {
+        if (typeof chatbot.commands[args.channel] === 'undefined' 
+                || chatbot.commands[args.channel].length === 0) {
+            chatbot.commands[args.channel] = [];
+            
+            const commands = Object.keys(chatbot.commandList);
+            for (let i = 0; i < commands.length; i++) {
+                let match = false;
+                
+                for (let j = 0; j < chatbot.commands[args.channel].length; j++) {
+                    if (typeof chatbot.commands[args.channel][j].name !== 'undefined' 
+                            && chatbot.commands[args.channel][j].name === commands[i]) {
+                        match = true;
+                        break;
+                    }
+                }
+                
+                // if command is function and not pushed
+                if (typeof chatbot.commandList[commands[i]] === 'function' && !match) {
+                    chatbot.commands[args.channel].push({
+                        name: commands[i],
+                        cooldown: 0,
+                        active: false,
+                        lastExec: 0 // unix timestamp (seconds)
+                    });
+                }
+            }
         }
     },
     preparePlaylist: function(args, shift) {
@@ -569,20 +620,35 @@ const chatbot = {
             chatbot.currentVideoStart[args.channel] = 0;
         }
     },
-    commands: {
-        active: {
-            insanitymeetshh: ['about', 'counter', 'playlistInfo', 'rollDice'],
-            electrinchen: [],
-            biberbros: [],
-            gronkh: []
-        },
+    updateCommand: function(args) {
+        chatbot.prepareCommands(args);
+        args.command.cooldown = parseInt(args.command.cooldown);
+        chatbot.commands[args.channel][args.commandId] = args.command;
+        chatbot.getCommands(args);
+        chatbot.writeJson('commands', args.channel, args.command, chatbot.commands, 'update');
+    },
+    updateCommandLastExec: function(commandName, args) {
+        chatbot.prepareCommands(args);
+        
+        for (let i = 0; i < chatbot.commands[args.channel].length; i++) {
+            if (typeof chatbot.commands[args.channel][i].name !== 'undefined' 
+                    && chatbot.commands[args.channel][i].name === commandName) {
+                chatbot.commands[args.channel][i].lastExec = moment().unix();
+                break;
+            }
+        }
+        
+        //chatbot.getCommands(args);
+    },
+    commandList: {
         about: function(args) {
-            if (/^!(about|chatbot|bugs?|help)/.test(args.message)) {
+            if (/^!(about|chatbot|bugs?|help)/i.test(args.message)) {
                 const version = require('../../../package.json')['version'];
                 const bugs = require('../../../package.json')['bugs']['url'];
                 
                 chatbot.client.say('#' + args.channel, `Software made by InsanityMeetsHH. Version: ${version} - Bug report: ${bugs}`);
                 chatbot.logCommand(args);
+                chatbot.updateCommandLastExec('about', args);
             }
         },
         counter: function(args) {
@@ -606,12 +672,13 @@ const chatbot = {
                     };
 
                     chatbot.socket.write(JSON.stringify(call));
-                    chatbot.logCommand(args);
+                    //chatbot.logCommand(args);
+                    chatbot.updateCommandLastExec('counter', args);
                 }
             }
         },
         playlistInfo: function(args) {
-            if (/^!(info|(sende)?plan|programm)/.test(args.message)) {
+            if (/^!(info|(sende)?plan|programm)/i.test(args.message)) {
                 chatbot.preparePlaylist(args, false);
                 let currentVideo = '';
                 let currentVideoDuration = 0;
@@ -619,7 +686,7 @@ const chatbot = {
                 let nextVideo = '';
                 
                 for (let i = 0; i < chatbot.playlist[args.channel].length; i++) {
-                    if (chatbot.playlist[args.channel][i].skip) {
+                    if (chatbot.playlist[args.channel][i].skipped) {
                         continue;
                     }
                     
@@ -631,7 +698,7 @@ const chatbot = {
                         
                         let nextCount = 1;
                         while (typeof chatbot.playlist[args.channel][i + nextCount] !== 'undefined') {
-                            if (!chatbot.playlist[args.channel][i + nextCount].skip 
+                            if (!chatbot.playlist[args.channel][i + nextCount].skipped 
                                     && currentVideo !== chatbot.playlist[args.channel][i + nextCount].name) {
                                 nextVideo = chatbot.playlist[args.channel][i + nextCount].name;
                                 break;
@@ -648,7 +715,7 @@ const chatbot = {
                 } else {
                     chatbot.client.say('#' + args.channel, `@${args.userstate['display-name']} - No further videos in playlist.`);
                 }
-                
+                chatbot.updateCommandLastExec('playlistInfo', args);
             }
         },
         rollDice: function(args) {
@@ -667,6 +734,7 @@ const chatbot = {
                 
                 chatbot.client.say('#' + args.channel, `@${args.userstate['display-name']} rolled d${sides}` + (dices > 1 ? `w${dices}`: '') + `: ${results.join(' + ')} = ${result}.`);
                 chatbot.logCommand(args);
+                chatbot.updateCommandLastExec('rollDice', args);
             }
         }
     }

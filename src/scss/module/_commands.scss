@@ -1,0 +1,12 @@
+.commands {
+    background-color: $theme-color-4;
+    border-radius: 5px;
+    
+    .fa-sync {
+        cursor: pointer;
+    }
+    
+    .form-control {
+        max-width: 75px;
+    }
+}

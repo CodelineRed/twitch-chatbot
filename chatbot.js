@@ -1,9 +1,10 @@
-const skateboard = require('skateboard');
-const format     = require('string-format-js');
-const tmi        = require('tmi.js');
+const moment      = require('moment');
+const skateboard  = require('skateboard');
+const format      = require('string-format-js');
+const tmi         = require('tmi.js');
 
-const config     = require('./src/app/chatbot.json');
-const chatbot    = require('./src/js/chatbot/app');
+const config      = require('./src/app/chatbot.json');
+const chatbot     = require('./src/js/chatbot/app');
 
 chatbot.config = config;
 
@@ -91,26 +92,23 @@ function onCheer(channel, userstate, message) {
 // called every time the bot connects to Twitch chat
 function onConnected(url, port) {
     console.log(`* Connected to ${url}:${port}`);
-    let ports = [3100, 3110, 3120];
+    let ports = [3100, 3110, 3120, 3130, 3140, 3150];
     
     if (chatbot.socket === null) {
         for (let i = 0; i < ports.length; i++) {
             skateboard({port: ports[i]}, (stream) => {
-                switch (i) {
-                case 0:
+                if (ports[i] === 3100) {
                     chatbot.socket = stream;
-                    break;
-                    
-                case 1:
+                } else if (ports[i] === 3110) {
                     chatbot.socketChat = stream;
-                    break;
-                    
-                case 2:
+                } else if (ports[i] === 3120) {
                     chatbot.socketVideo = stream;
-                    break;
-                    
-                default:
-                    break;
+                } else if (ports[i] === 3130) {
+                    chatbot.socketRaffle = stream;
+                } else if (ports[i] === 3140) {
+                    chatbot.socketPoll = stream;
+                } else if (ports[i] === 3150) {
+                    chatbot.socketCounter = stream;
                 }
 
                 stream.on('data', function(data) {
@@ -129,10 +127,11 @@ function onConnected(url, port) {
         }
     }
     
+    chatbot.readJson('commands', chatbot.config.channels[0].toLowerCase());
+    chatbot.readJson('messages', chatbot.config.channels[0].toLowerCase());
     chatbot.readJson('playlist', chatbot.config.channels[0].toLowerCase());
-    chatbot.readJson('command', chatbot.config.channels[0].toLowerCase());
-    chatbot.readJson('raffle', chatbot.config.channels[0].toLowerCase());
-    chatbot.readJson('poll', chatbot.config.channels[0].toLowerCase());
+    chatbot.readJson('polls', chatbot.config.channels[0].toLowerCase());
+    chatbot.readJson('raffles', chatbot.config.channels[0].toLowerCase());
 }
 
 function onGiftpaidupgrade(channel, username, sender, userstate) {
@@ -195,29 +194,37 @@ function onHosting(channel, target, viewers) {
 //  'message-type': 'chat'
 //}
 function onMessage(channel, userstate, message, self) {
-    const commandArgs = {
+    const args = {
         channel: channel.replace(/#/g, ''),
         userstate: userstate,
         message: message.trim()
     };
 
-    chatbot.getChatMessage(commandArgs);
-    //console.log(context);
-    //console.log(msg);
-    //console.log(commandArgs.channel);
+    chatbot.getChatMessage(args);
 
     // ignore messages from the bot
     if (self) {
         return;
     }
 
-    const commands = Object.keys(chatbot.commands);
+    const commands = Object.keys(chatbot.commandList);
     for (let i = 0; i < commands.length; i++) {
         // if command is active for channel
-        if (typeof chatbot.commands[commands[i]] === 'function' 
-                && typeof chatbot.commands.active[commandArgs.channel] === 'object'
-                && chatbot.commands.active[commandArgs.channel].indexOf(commands[i]) > -1) {
-            chatbot.commands[commands[i]](commandArgs);
+        if (typeof chatbot.commandList[commands[i]] === 'function') {
+            let channelCommands = typeof chatbot.commands[args.channel] === 'object' ? chatbot.commands[args.channel] : [];
+            let commandActive = false;
+            
+            for (let j = 0; j < channelCommands.length; j++) {
+                if (channelCommands[j].name === commands[i]
+                        && channelCommands[j].active === true
+                        && channelCommands[j].lastExec + channelCommands[j].cooldown < moment().unix()) {
+                    commandActive = true;
+                }
+            }
+            
+            if (commandActive) {
+                chatbot.commandList[commands[i]](args);
+            }
         }
     }
 }

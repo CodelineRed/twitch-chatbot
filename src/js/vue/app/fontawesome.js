@@ -26,6 +26,7 @@ import {
     faMoneyBill as fasMoneyBill,
     faPlay as fasPlay,
     faRobot as fasRobot,
+    faSave as fasSave,
     faSnowflake as fasSnowflake,
     faStar as fasStar,
     faStepForward as fasStepForward,
@@ -42,9 +43,10 @@ import { FontAwesomeIcon, FontAwesomeLayers } from '@fortawesome/vue-fontawesome
 library.add(fabEthereum, fabFontAwesomeFlag, fabTwitch);
 library.add(farSadCry);
 library.add(
-    fasAward, fasBolt, fasCheckCircle, fasChevronRight, fasCrown, fasExternalLinkAlt, fasGavel, 
-    fasGem, fasGift, fasGlobe, fasHammer, fasHome, fasMoneyBill, fasPlay, fasRobot, fasSnowflake, 
-    fasStar, fasStepForward, fasSync, fasTicketAlt, fasTrain, fasTrashAlt, fasVideo, fasWrench
+    fasAward, fasBolt, fasCheckCircle, fasChevronRight, fasCrown, fasExternalLinkAlt, 
+    fasGavel, fasGem, fasGift, fasGlobe, fasHammer, fasHome, fasMoneyBill, fasPlay, 
+    fasRobot, fasSave, fasSnowflake, fasStar, fasStepForward, fasSync, fasTicketAlt, 
+    fasTrain, fasTrashAlt, fasVideo, fasWrench
 );
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);

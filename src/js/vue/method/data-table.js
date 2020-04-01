@@ -43,7 +43,7 @@ const dataTable = {
                 });
 
                 setTimeout(function() {
-                    $('.data-table').each(function() {
+                    $('.data-table:not(.dataTable)').each(function() {
                         let id = $(this).attr('id');
                         dataTables[id] = {};
                         dataTables[id]['init'] = false;

@@ -17,12 +17,11 @@ $body-color: $theme-color-3;
 
 $font-size-base: 1rem;
 
+$headings-color: $theme-color-1;
 $h1-font-size: $font-size-base * 2;
 
 $close-color: #fff;
 $close-text-shadow: none;
-
-$headings-color: $theme-color-1;
 
 $blue: $theme-color-1;
 $info: $theme-color-1;
@@ -47,3 +46,20 @@ $pagination-hover-border-color: $theme-color-1;
 $pagination-disabled-color: #fff;
 $pagination-disabled-bg: $theme-color-4;
 $pagination-disabled-border-color: $theme-color-1;
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1600px
+);
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  xxl: 1540px
+);

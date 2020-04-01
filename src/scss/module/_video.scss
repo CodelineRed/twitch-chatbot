@@ -6,10 +6,20 @@
 }
 
 .video {
+    position: relative;
+    
     .empty {
-        left: 50%;
+        .h2 {
+            left: 50%;
+            position: relative;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+    
+    .overlay {
+        display: none;
         position: absolute;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        z-index: 10;
     }
 }

@@ -12,11 +12,11 @@
                     name: '',
                     file: '',
                     played: false,
-                    skip: false,
+                    skipped: false,
                     duration: 0, // seconds
                     durationHours: 0,
-                    durationMin: '',
-                    durationSec: '',
+                    durationMin: 0,
+                    durationSec: 0,
                     platform: 'youtube',
                     titleCmd: '',
                     gameCmd: ''
@@ -58,11 +58,11 @@
                         name: '',
                         file: '',
                         played: false,
-                        skip: false,
+                        skipped: false,
                         duration: 0, // seconds
                         durationHours: 0,
-                        durationMin: '',
-                        durationSec: '',
+                        durationMin: 0,
+                        durationSec: 0,
                         platform: 'youtube',
                         titleCmd: '',
                         gameCmd: ''
@@ -80,19 +80,6 @@
                 if (typeof streamWrite === 'function') {
                     const call = {
                         method: 'getPlaylist',
-                        args: {
-                            channel: this.$root._route.params.channel.toLowerCase()
-                        },
-                        env: 'node'
-                    };
-                    
-                    streamWrite(call);
-                }
-            },
-            getPlaylistClean: function() {
-                if (typeof streamWrite === 'function' && confirm('Are you sure to remove played videos?')) {
-                    const call = {
-                        method: 'getPlaylistClean',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase()
                         },
@@ -142,10 +129,10 @@
                     streamWrite(call);
                 }
             },
-            getVideoSkip: function(videoId) {
+            getVideoSkipped: function(videoId) {
                 if (typeof streamWrite === 'function') {
                     const call = {
-                        method: 'getVideoSkip',
+                        method: 'getVideoSkipped',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
                             videoId: videoId
@@ -155,6 +142,20 @@
                     
                     streamWrite(call);
                 }
+            },
+            isInvalidHours: function(){
+                const hours = parseInt(this.newVideo.durationHours);
+                return hours < 0 || hours > 99;
+            },
+            isInvalidMin: function(){
+                const min = parseInt(this.newVideo.durationMin);
+                return min < 0 || min > 59;
+            },
+            isInvalidSec: function(){
+                const hours = parseInt(this.newVideo.durationHours);
+                const min = parseInt(this.newVideo.durationMin);
+                const sec = parseInt(this.newVideo.durationSec);
+                return sec < 0 || sec > 59 || (hours + min + sec === 0);
             },
             moveVideo: function(videoId, direction) {
                 if (typeof streamWrite === 'function') {
@@ -190,11 +191,25 @@
                     streamWrite(call);
                 }
             },
+            removeVideosByFlag: function(flag, value) {
+                if (typeof streamWrite === 'function' && confirm('Are you sure to remove ' + flag + ' videos?')) {
+                    const call = {
+                        method: 'removeVideosByFlag',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            flag: flag,
+                            value: value
+                        },
+                        env: 'node'
+                    };
+                    
+                    streamWrite(call);
+                }
+            },
             setPlaylist: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    const $this = this;
                     this.playlist = args.playlist;
-                    $this.initDataTable();
+                    this.initDataTable();
                 }
             }
         }
@@ -216,7 +231,7 @@
                         <th scope="col">Start</th>
                         <th scope="col">End</th>
                         <th scope="col">Played</th>
-                        <th scope="col">Skip</th>
+                        <th scope="col">Skipped</th>
                         <th scope="col" data-orderable="false"></th>
                     </tr>
                 </thead>
@@ -234,21 +249,21 @@
                         </td>
                         <td>{{ video.name }}</td>
                         <td><span style="white-space: nowrap">{{ (video.duration * 1000)|formatDuration() }}</span></td>
-                        <td><span style="white-space: nowrap">{{ (video.start * 1000)|formatDateTime($t('time-long')) }}</span></td>
-                        <td><span style="white-space: nowrap">{{ (video.end * 1000)|formatDateTime($t('time-long')) }}</span></td>
+                        <td><span style="white-space: nowrap">{{ (video.start * 1000)|formatDateTime($t('time-long-suffix')) }}</span></td>
+                        <td><span style="white-space: nowrap">{{ (video.end * 1000)|formatDateTime($t('time-long-suffix')) }}</span></td>
                         <td :data-order="video.played ? '1' : '0'" :data-search="video.played ? 'played-yes' : 'played-no'">
                             <span v-if="video.played">Yes</span>
                             <span v-if="!video.played">No</span>
                         </td>
-                        <td :data-order="video.skip ? '1' : '0'" :data-search="video.skip ? 'skip-yes' : 'skip-no'">
-                            <span v-if="video.skip">Yes</span>
-                            <span v-if="!video.skip">No</span>
+                        <td :data-order="video.skipped ? '1' : '0'" :data-search="video.skipped ? 'skipped-yes' : 'skipped-no'">
+                            <span v-if="video.skipped">Yes</span>
+                            <span v-if="!video.skipped">No</span>
                         </td>
                         <td class="text-center">
                             <span style="white-space: nowrap">
-                                <button v-if="playlist.length > 0" type="button" class="btn btn-sm btn-info mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Played" @click="getVideoPlayed(index)"><font-awesome-icon :icon="['fas', 'play']" class="fa-fw" /></button>
-                                <button v-if="playlist.length > 0" type="button" class="btn btn-sm btn-info mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Skip" @click="getVideoSkip(index)"><font-awesome-icon :icon="['fas', 'step-forward']" class="fa-fw" /></button>
-                                <button v-if="playlist.length > 0" type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove" @click="removeVideo(index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-info mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Played" @click="getVideoPlayed(index)"><font-awesome-icon :icon="['fas', 'play']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-info mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Skipped" @click="getVideoSkipped(index)"><font-awesome-icon :icon="['fas', 'step-forward']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove" @click="removeVideo(index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                             </span>
                         </td>
                     </tr>
@@ -257,7 +272,8 @@
         </div>
         <div class="controls text-right" :class="{'pt-3': playlist.length > 0}">
             <button v-if="playlist.length > 0" type="button" class="btn btn-danger mr-2" @click="getPlaylistClear()">Clear Playlist</button>
-            <button v-if="playlist.length > 0" type="button" class="btn btn-warning mr-2" @click="getPlaylistClean()">Remove Played Videos</button>
+            <button v-if="playlist.length > 0" type="button" class="btn btn-warning mr-2" @click="removeVideosByFlag('played', true)">Remove Played Videos</button>
+            <button v-if="playlist.length > 0" type="button" class="btn btn-warning mr-2" @click="removeVideosByFlag('skipped', true)">Remove Skipped Videos</button>
             <button v-if="playlist.length > 0" type="button" class="btn btn-info mr-2" @click="getPlaylistReset()">Reset Playlist</button>
             <button v-if="playlist.length > 0" type="button" class="btn btn-info" data-toggle="modal" data-target="#add-video">Add Video</button>
 
@@ -297,19 +313,19 @@
                                     <label for="add-video-duration-hours" class="col-form-label">Duration:</label>
                                     <div class="form-row">
                                         <div class="col">
-                                            <input id="add-video-duration-hours" v-model="newVideo.durationHours" type="number" min="0" max="99" class="form-control" :class="{'is-invalid': newVideo.durationHours === ''}" placeholder="hours">
+                                            <input id="add-video-duration-hours" v-model="newVideo.durationHours" type="number" min="0" max="99" class="form-control" :class="{'is-invalid': isInvalidHours()}" placeholder="hours">
                                         </div>
                                         <div class="col">
-                                            <input id="add-video-duration-min" v-model="newVideo.durationMin" type="number" min="0" class="form-control" :class="{'is-invalid': newVideo.durationMin === ''}" placeholder="min.">
+                                            <input id="add-video-duration-min" v-model="newVideo.durationMin" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': isInvalidMin()}" placeholder="min.">
                                         </div>
                                         <div class="col">
-                                            <input id="add-video-duration-sec" v-model="newVideo.durationSec" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': newVideo.durationSec === ''}" placeholder="sec.">
+                                            <input id="add-video-duration-sec" v-model="newVideo.durationSec" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': isInvalidSec()}" placeholder="sec.">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label for="add-video-platform" class="col-form-label">Platform:</label>
-                                    <select id="add-video-platform" v-model="newVideo.platform" value="youtube" class="custom-select">
+                                    <select id="add-video-platform" v-model="newVideo.platform" class="custom-select">
                                         <option value="local">Local</option>
                                         <option value="youtube">Youtube</option>
                                     </select>
@@ -328,8 +344,8 @@
                                         <label class="custom-control-label" for="add-video-played">Played</label>
                                     </div>
                                     <div class="custom-control custom-switch pt-0 pt-md-4 float-left">
-                                        <input id="add-video-skip" v-model="newVideo.skip" type="checkbox" value="1" class="custom-control-input">
-                                        <label class="custom-control-label" for="add-video-skip">Skip</label>
+                                        <input id="add-video-skipped" v-model="newVideo.skipped" type="checkbox" value="1" class="custom-control-input">
+                                        <label class="custom-control-label" for="add-video-skipped">Skipped</label>
                                     </div>
                                     <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                                     <div class="clearfix"></div>

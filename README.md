@@ -23,16 +23,6 @@ $ gulp (in development)
 ```
 Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/gulpfile.js), if you want to use Docker as server.
 
-## Chatbot Commands
-|                     | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| about               | !about, !chatbot, !bug, !help                                                                                                    |
-| counter             | counter increased if user counts from 1 - 99 without interruption                                                                |
-| playlistInfo        | !info, !plan, !programm, !sendeplan                                                                                              |
-| rollDice            | e.g. !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                        |
-
-Chatbot Commands can be actived for each channel at [`src/js/chatbot/app.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/chatbot/app.js#L417) (chatbot.commands.active).
-
 ## Project Commands
 |                     | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
@@ -65,8 +55,19 @@ Chatbot Commands can be actived for each channel at [`src/js/chatbot/app.js`](ht
 | 3100                | Main Window (Skateboard Socket for Web UI)                                                                                       |
 | 3110                | Chat Window (Skateboard Socket for Web UI)                                                                                       |
 | 3120                | Video Window (Skateboard Socket for Web UI)                                                                                      |
+| 3130                | Raffle Window (Skateboard Socket for Web UI)                                                                                     |
+| 3140                | Poll Window (Skateboard Socket for Web UI)                                                                                       |
+| 3150                | Counter Window (Skateboard Socket for Web UI)                                                                                    |
 
-## Component Features
+## Chatbot Commands
+|                     | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| about               | !about, !chatbot, !bug, !help                                                                                                    |
+| counter             | counter increased if users counts from 1 - 99 without interruption                                                                |
+| playlistInfo        | !info, !plan, !programm, !sendeplan                                                                                              |
+| rollDice            | e.g. !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                        |
+
+## Web UI Features
 ### Chat
 * Timestamp
 * Badges
@@ -90,6 +91,12 @@ Chatbot Commands can be actived for each channel at [`src/js/chatbot/app.js`](ht
 * Reset Playlist
 * Add Video
 * playlistInfo Command
+* Video url `/channel/[channel]/video` to use browser source in OBS
+
+### Commands
+* Cooldown
+* Active State
+* Last Execution Time
 
 ## Localization
 * [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/app/i18n-locales.js)
