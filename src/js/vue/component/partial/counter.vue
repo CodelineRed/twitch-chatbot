@@ -35,7 +35,7 @@
     <div class="row">
         <div class="col-12">
             <div class="counter p-2">
-                <div class="h3 text-center">
+                <div class="h4 text-center">
                     Counter
                 </div>
                 

@@ -2,4 +2,14 @@
     background-color: $theme-color-4;
     border-radius: 5px;
     position: relative;
+    
+    .dropdown-menu {
+        .bg-danger {
+            color: $white;
+        }
+        
+        .bg-warning {
+            color: $black;
+        }
+    }
 }

@@ -115,34 +115,6 @@
                     streamWrite(call);
                 }
             },
-            getVideoPlayed: function(videoId) {
-                if (typeof streamWrite === 'function') {
-                    const call = {
-                        method: 'getVideoPlayed',
-                        args: {
-                            channel: this.$root._route.params.channel.toLowerCase(),
-                            videoId: videoId
-                        },
-                        env: 'node'
-                    };
-                    
-                    streamWrite(call);
-                }
-            },
-            getVideoSkipped: function(videoId) {
-                if (typeof streamWrite === 'function') {
-                    const call = {
-                        method: 'getVideoSkipped',
-                        args: {
-                            channel: this.$root._route.params.channel.toLowerCase(),
-                            videoId: videoId
-                        },
-                        env: 'node'
-                    };
-                    
-                    streamWrite(call);
-                }
-            },
             isInvalidHours: function(){
                 const hours = parseInt(this.newVideo.durationHours);
                 return hours < 0 || hours > 99;
@@ -211,6 +183,34 @@
                     this.playlist = args.playlist;
                     this.initDataTable();
                 }
+            },
+            toggleVideoPlayed: function(videoId) {
+                if (typeof streamWrite === 'function') {
+                    const call = {
+                        method: 'toggleVideoPlayed',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            videoId: videoId
+                        },
+                        env: 'node'
+                    };
+                    
+                    streamWrite(call);
+                }
+            },
+            toggleVideoSkipped: function(videoId) {
+                if (typeof streamWrite === 'function') {
+                    const call = {
+                        method: 'toggleVideoSkipped',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            videoId: videoId
+                        },
+                        env: 'node'
+                    };
+                    
+                    streamWrite(call);
+                }
             }
         }
     };
@@ -218,9 +218,9 @@
 
 <template>
     <div class="playlist p-2">
-        <h4 v-if="playlist.length > 0" class="text-center">
+        <div v-if="playlist.length > 0" class="h4 text-center">
             <a href="#" onclick="javascript:return false;" @click="popoutVideo()">Playlist start <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
-        </h4>
+        </div>
         <div v-if="playlist.length > 0" class="table-responsive">
             <table id="playlistTable" class="table table-striped table-hover table-dark data-table">
                 <thead>
@@ -261,8 +261,8 @@
                         </td>
                         <td class="text-center">
                             <span style="white-space: nowrap">
-                                <button type="button" class="btn btn-sm btn-info mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Played" @click="getVideoPlayed(index)"><font-awesome-icon :icon="['fas', 'play']" class="fa-fw" /></button>
-                                <button type="button" class="btn btn-sm btn-info mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Skipped" @click="getVideoSkipped(index)"><font-awesome-icon :icon="['fas', 'step-forward']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Played" @click="toggleVideoPlayed(index)"><font-awesome-icon :icon="['fas', 'play']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Skipped" @click="toggleVideoSkipped(index)"><font-awesome-icon :icon="['fas', 'step-forward']" class="fa-fw" /></button>
                                 <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove" @click="removeVideo(index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                             </span>
                         </td>
@@ -271,12 +271,27 @@
             </table>
         </div>
         <div class="controls text-right" :class="{'pt-3': playlist.length > 0}">
-            <button v-if="playlist.length > 0" type="button" class="btn btn-danger mr-2" @click="getPlaylistClear()">Clear Playlist</button>
-            <button v-if="playlist.length > 0" type="button" class="btn btn-warning mr-2" @click="removeVideosByFlag('played', true)">Remove Played Videos</button>
-            <button v-if="playlist.length > 0" type="button" class="btn btn-warning mr-2" @click="removeVideosByFlag('skipped', true)">Remove Skipped Videos</button>
-            <button v-if="playlist.length > 0" type="button" class="btn btn-info mr-2" @click="getPlaylistReset()">Reset Playlist</button>
-            <button v-if="playlist.length > 0" type="button" class="btn btn-info" data-toggle="modal" data-target="#add-video">Add Video</button>
+            <button v-if="playlist.length > 0" type="button" class="d-none d-lg-inline-block btn btn-sm btn-danger mr-2" @click="getPlaylistClear()">Clear Playlist</button>
+            <button v-if="playlist.length > 0" type="button" class="d-none d-lg-inline-block btn btn-sm btn-warning mr-2" @click="removeVideosByFlag('played', true)">Remove Played Videos</button>
+            <button v-if="playlist.length > 0" type="button" class="d-none d-lg-inline-block btn btn-sm btn-warning mr-2" @click="removeVideosByFlag('skipped', true)">Remove Skipped Videos</button>
+            <button v-if="playlist.length > 0" type="button" class="d-none d-lg-inline-block btn btn-sm btn-primary mr-2" @click="getPlaylistReset()">Reset Playlist</button>
+            <button v-if="playlist.length > 0" type="button" class="d-none d-lg-inline-block btn btn-sm btn-primary" data-toggle="modal" data-target="#add-video">Add Video</button>
 
+            <div v-if="playlist.length > 0" class="d-lg-none btn-group dropup">
+                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <font-awesome-icon :icon="['fas', 'cogs']" class="fa-fw" />
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a href="#" class="dropdown-item bg-danger" onclick="javascript:return false;" @click="getPlaylistClear()">Clear Playlist</a>
+                    <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item bg-warning" onclick="javascript:return false;" @click="removeVideosByFlag('played', true)">Remove Played Videos</a>
+                    <a href="#" class="dropdown-item bg-warning" onclick="javascript:return false;" @click="removeVideosByFlag('skipped', true)">Remove Skipped Videos</a>
+                    <a href="#" class="dropdown-item" onclick="javascript:return false;" @click="getPlaylistReset()">Reset Playlist</a>
+                    <a href="#" class="dropdown-item" data-toggle="modal" data-target="#add-video">Add Video</a>
+                </div>
+            </div>
+            
             <div v-if="playlist.length == 0" class="card">
                 <div class="card-body">
                     <h5 class="card-title text-center mb-0">

@@ -54,7 +54,7 @@
     <div class="row">
         <div class="col-12">
             <div class="commands p-2">
-                <div class="h3 text-center">
+                <div class="h4 text-center">
                     Commands
                 </div>
                 <div v-if="commands.length > 0" class="table-responsive">
@@ -67,7 +67,7 @@
                                 <th scope="col">Last Exec</th>
                                 <th scope="col">Active</th>
                                 <th scope="col" class="text-center" data-orderable="false">
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Refresh" @click="getCommands()">
+                                    <span class="d-none" data-toggle="tooltip" data-placement="top" title="Refresh" @click="getCommands()">
                                         <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" />
                                     </span>
                                 </th>
@@ -89,7 +89,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-info" data-toggle="tooltip" data-placement="top" title="Save" @click="updateCommand(index)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
+                                    <button type="button" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Save" @click="updateCommand(index)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
                                 </td>
                             </tr>
                         </tbody>

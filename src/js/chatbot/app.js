@@ -40,99 +40,6 @@ const chatbot = {
             chatbot.saveJson('playlist', args.channel, args.video);
         }
     },
-    saveJson: function(file, channel, data) {
-        const json = './data/' + file + '.json';
-        let content = {};
-        
-        async function saveJsonAsync() {
-            const exists = await fs.pathExists(json);
-            
-            if (exists) {
-                await fs.readJson(json)
-                    .then(fileContent => {
-                        if (typeof fileContent[channel] === 'undefined') {
-                            fileContent[channel] = [];
-                            console.log(`* Initialized ${channel} for file ${json}`);
-                        } else {
-                            console.log(`* Found ${channel} in file ${json}`);
-                        }
-                        
-                        content = fileContent;
-                    });
-            } else {
-                content[channel] = [];
-                
-                await fs.writeJson(json, content)
-                    .then(() => {
-                        console.log(`* Initialized file ${json} (saveJson - ${channel})`);
-                    });
-            }
-            
-            content[channel].push(data);
-            
-            await fs.writeJson(json, content)
-                .then(() => {
-                    console.log(`* Added "${data.name}" (${channel}) to ${json}`);
-                })
-                .catch(writeErr => {
-                    console.error(`* JSON write error! "${data.name}" (${channel}) for ${json}`);
-                    console.error(writeErr);
-                });
-        }
-        
-        saveJsonAsync();
-    },
-    readJson: function(file, channel) {
-        const json = './data/' + file + '.json';
-        let content = {};
-        
-        async function readJsonAsync() {
-            const exists = await fs.pathExists(json);
-            
-            if (exists) {
-                await fs.readJson(json)
-                    .then(fileContent => {
-                        if (typeof fileContent[channel] === 'undefined') {
-                            fileContent[channel] = [];
-                        }
-                        
-                        content = fileContent;
-                    });
-            } else {
-                content[channel] = [];
-                
-                await fs.writeJson(json, content)
-                    .then(() => {
-                        console.log(`* Initialized file ${json} (readJson - ${channel})`);
-                    });
-            }
-            
-            chatbot[file] = content;
-        }
-
-        readJsonAsync();
-    },
-    // chatbot.writeJson(file, channel, data, content, mode)
-    writeJson: function(file, channel, data, content, mode) {
-        const json = './data/' + file + '.json';
-        mode = typeof mode === 'string' ? mode : 'insert';
-        
-        fs.writeJson(json, content)
-            .then(() => {
-                if (mode === 'update') {
-                    console.log(`* Updated "${data.name}" (${channel}) from ${json}`);
-                } else if (mode === 'remove') {
-                    console.log(`* Removed "${data.name}" (${channel}) from ${json}`);
-                } else {
-                    console.log(`* Added "${data.name}" (${channel}) to ${json}`);
-                }
-                
-            })
-            .catch(writeErr => {
-                console.error(`* JSON write error (${channel} - ${data.name} - ${json})`);
-                console.error(writeErr);
-            });
-    },
     formatMessage: function(message, emotes) {
         let splitText = message.split('');
         
@@ -179,37 +86,6 @@ const chatbot = {
             };
 
             chatbot.socket.write(JSON.stringify(call));
-        }
-    },
-    getChatNotification: function(args) {
-        if (chatbot.socket !== null) {
-            chatbot.prepareChatMessages(args, true);
-            
-            const call = {
-                args: {
-                    badges: {},
-                    channel: args.channel,
-                    channelId: typeof args.userstate['room-id'] === 'undefined' ? 0 : args.userstate['room-id'],
-                    color: null,
-                    message: args.notification + (args.message ? ' (' + chatbot.formatMessage(args.message, args.userstate.emotes) + ')' : ''),
-                    messageId: typeof args.userstate['id'] === 'undefined' ? 0 : args.userstate['id'],
-                    messageType: 'notification',
-                    purge: {showMessage: false, hasPurge: false},
-                    timestamp: typeof args.userstate['tmi-sent-ts'] === 'undefined' ? new Date().getTime() : args.userstate['tmi-sent-ts'],
-                    userId: typeof args.userstate['user-id'] === 'undefined' ? 0 : args.userstate['user-id'],
-                    user: '[' + args.userstate['message-type'].charAt(0).toUpperCase() + args.userstate['message-type'].slice(1) + ']'
-                },
-                method: 'setChatMessage',
-                ref: 'chat',
-                env: 'web'
-            };
-
-            chatbot.messages[args.channel].push(call.args);
-            chatbot.socket.write(JSON.stringify(call));
-            
-            if (chatbot.socketChat !== null) {
-                chatbot.socketChat.write(JSON.stringify(call));
-            }
         }
     },
     getChatMessage: function(args) {
@@ -291,6 +167,37 @@ const chatbot = {
                 env: 'web'
             };
             
+            chatbot.socket.write(JSON.stringify(call));
+            
+            if (chatbot.socketChat !== null) {
+                chatbot.socketChat.write(JSON.stringify(call));
+            }
+        }
+    },
+    getChatNotification: function(args) {
+        if (chatbot.socket !== null) {
+            chatbot.prepareChatMessages(args, true);
+            
+            const call = {
+                args: {
+                    badges: {},
+                    channel: args.channel,
+                    channelId: typeof args.userstate['room-id'] === 'undefined' ? 0 : args.userstate['room-id'],
+                    color: null,
+                    message: args.notification + (args.message ? ' (' + chatbot.formatMessage(args.message, args.userstate.emotes) + ')' : ''),
+                    messageId: typeof args.userstate['id'] === 'undefined' ? 0 : args.userstate['id'],
+                    messageType: 'notification',
+                    purge: {showMessage: false, hasPurge: false},
+                    timestamp: typeof args.userstate['tmi-sent-ts'] === 'undefined' ? new Date().getTime() : args.userstate['tmi-sent-ts'],
+                    userId: typeof args.userstate['user-id'] === 'undefined' ? 0 : args.userstate['user-id'],
+                    user: '[' + args.userstate['message-type'].charAt(0).toUpperCase() + args.userstate['message-type'].slice(1) + ']'
+                },
+                method: 'setChatMessage',
+                ref: 'chat',
+                env: 'web'
+            };
+
+            chatbot.messages[args.channel].push(call.args);
             chatbot.socket.write(JSON.stringify(call));
             
             if (chatbot.socketChat !== null) {
@@ -516,22 +423,6 @@ const chatbot = {
             chatbot.getPlaylist(args);
         }
     },
-    getVideoSkipped: function(args) {
-        if (chatbot.socket !== null) {
-            chatbot.preparePlaylist(args, false);
-            chatbot.playlist[args.channel][args.videoId].skipped = !chatbot.playlist[args.channel][args.videoId].skipped;
-            chatbot.getPlaylist(args);
-            chatbot.writeJson('playlist', args.channel, chatbot.playlist[args.channel][args.videoId], chatbot.playlist, 'update');
-        }
-    },
-    getVideoPlayed: function(args) {
-        if (chatbot.socket !== null) {
-            chatbot.preparePlaylist(args, false);
-            chatbot.playlist[args.channel][args.videoId].played = !chatbot.playlist[args.channel][args.videoId].played;
-            chatbot.getPlaylist(args);
-            chatbot.writeJson('playlist', args.channel, chatbot.playlist[args.channel][args.videoId], chatbot.playlist, 'update');
-        }
-    },
     logCommand: function(args) {
         args.message = args.message.replace(/^(![a-z0-9]+)(.*)/, '$1');
         console.log(`* Executed ${args.message} command by ${args.userstate['display-name']} at ${args.channel}.`);
@@ -572,6 +463,78 @@ const chatbot = {
             chatbot.getPlaylist(args);
             chatbot.writeJson('playlist', args.channel, {name: removedVideos + ' videos'}, chatbot.playlist, 'remove');
         }
+    },
+    readJson: function(file, channel) {
+        const json = './data/' + file + '.json';
+        let content = {};
+        
+        async function readJsonAsync() {
+            const exists = await fs.pathExists(json);
+            
+            if (exists) {
+                await fs.readJson(json)
+                    .then(fileContent => {
+                        if (typeof fileContent[channel] === 'undefined') {
+                            fileContent[channel] = [];
+                        }
+                        
+                        content = fileContent;
+                    });
+            } else {
+                content[channel] = [];
+                
+                await fs.writeJson(json, content)
+                    .then(() => {
+                        console.log(`* Initialized file ${json} (readJson - ${channel})`);
+                    });
+            }
+            
+            chatbot[file] = content;
+        }
+
+        readJsonAsync();
+    },
+    saveJson: function(file, channel, data) {
+        const json = './data/' + file + '.json';
+        let content = {};
+        
+        async function saveJsonAsync() {
+            const exists = await fs.pathExists(json);
+            
+            if (exists) {
+                await fs.readJson(json)
+                    .then(fileContent => {
+                        if (typeof fileContent[channel] === 'undefined') {
+                            fileContent[channel] = [];
+                            console.log(`* Initialized ${channel} for file ${json}`);
+                        } else {
+                            console.log(`* Found ${channel} in file ${json}`);
+                        }
+                        
+                        content = fileContent;
+                    });
+            } else {
+                content[channel] = [];
+                
+                await fs.writeJson(json, content)
+                    .then(() => {
+                        console.log(`* Initialized file ${json} (saveJson - ${channel})`);
+                    });
+            }
+            
+            content[channel].push(data);
+            
+            await fs.writeJson(json, content)
+                .then(() => {
+                    console.log(`* Added "${data.name}" (${channel}) to ${json}`);
+                })
+                .catch(writeErr => {
+                    console.error(`* JSON write error! "${data.name}" (${channel}) for ${json}`);
+                    console.error(writeErr);
+                });
+        }
+        
+        saveJsonAsync();
     },
     prepareChatMessages: function(args, shift) {
         if (typeof chatbot.messages[args.channel] === 'undefined') {
@@ -620,25 +583,63 @@ const chatbot = {
             chatbot.currentVideoStart[args.channel] = 0;
         }
     },
+    toggleVideoPlayed: function(args) {
+        if (chatbot.socket !== null) {
+            chatbot.preparePlaylist(args, false);
+            chatbot.playlist[args.channel][args.videoId].played = !chatbot.playlist[args.channel][args.videoId].played;
+            chatbot.getPlaylist(args);
+            chatbot.writeJson('playlist', args.channel, chatbot.playlist[args.channel][args.videoId], chatbot.playlist, 'update');
+        }
+    },
+    toggleVideoSkipped: function(args) {
+        if (chatbot.socket !== null) {
+            chatbot.preparePlaylist(args, false);
+            chatbot.playlist[args.channel][args.videoId].skipped = !chatbot.playlist[args.channel][args.videoId].skipped;
+            chatbot.getPlaylist(args);
+            chatbot.writeJson('playlist', args.channel, chatbot.playlist[args.channel][args.videoId], chatbot.playlist, 'update');
+        }
+    },
     updateCommand: function(args) {
-        chatbot.prepareCommands(args);
-        args.command.cooldown = parseInt(args.command.cooldown);
-        chatbot.commands[args.channel][args.commandId] = args.command;
-        chatbot.getCommands(args);
-        chatbot.writeJson('commands', args.channel, args.command, chatbot.commands, 'update');
+        if (chatbot.socket !== null) {
+            chatbot.prepareCommands(args);
+            args.command.cooldown = parseInt(args.command.cooldown);
+            chatbot.commands[args.channel][args.commandId] = args.command;
+            chatbot.getCommands(args);
+            chatbot.writeJson('commands', args.channel, args.command, chatbot.commands, 'update');
+        }
     },
     updateCommandLastExec: function(commandName, args) {
-        chatbot.prepareCommands(args);
-        
-        for (let i = 0; i < chatbot.commands[args.channel].length; i++) {
-            if (typeof chatbot.commands[args.channel][i].name !== 'undefined' 
-                    && chatbot.commands[args.channel][i].name === commandName) {
-                chatbot.commands[args.channel][i].lastExec = moment().unix();
-                break;
+        if (chatbot.socket !== null) {
+            chatbot.prepareCommands(args);
+
+            for (let i = 0; i < chatbot.commands[args.channel].length; i++) {
+                if (typeof chatbot.commands[args.channel][i].name !== 'undefined' 
+                        && chatbot.commands[args.channel][i].name === commandName) {
+                    chatbot.commands[args.channel][i].lastExec = moment().unix();
+                    break;
+                }
             }
         }
+    },
+    writeJson: function(file, channel, data, content, mode) {
+        const json = './data/' + file + '.json';
+        mode = typeof mode === 'string' ? mode : 'insert';
         
-        //chatbot.getCommands(args);
+        fs.writeJson(json, content)
+            .then(() => {
+                if (mode === 'update') {
+                    console.log(`* Updated "${data.name}" (${channel}) from ${json}`);
+                } else if (mode === 'remove') {
+                    console.log(`* Removed "${data.name}" (${channel}) from ${json}`);
+                } else {
+                    console.log(`* Added "${data.name}" (${channel}) to ${json}`);
+                }
+                
+            })
+            .catch(writeErr => {
+                console.error(`* JSON write error (${channel} - ${data.name} - ${json})`);
+                console.error(writeErr);
+            });
     },
     commandList: {
         about: function(args) {
