@@ -1,8 +1,9 @@
 <script>
+    import btnAnimation from '../../method/btn-animation';
     import dataTable from '../../method/data-table';
     
     export default {
-        mixins: [dataTable],
+        mixins: [btnAnimation, dataTable],
         data: function() {
             return {
                 commands: []
@@ -44,6 +45,14 @@
                     };
                     
                     streamWrite(call);
+                    this.btnAnimation(event.target);
+                    this.updateDataTableRow(index, 'commandsTable');
+                }
+            },
+            updateCommandLastExec: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.commands[args.commandId].lastExec = args.lastExec;
+                    this.updateDataTableRow(args.commandId, 'commandsTable');
                 }
             }
         }
@@ -78,10 +87,12 @@
                             <tr v-for="(command, index) in commands" class="video">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ command.name }}</td>
-                                <td>
+                                <td :data-order="command.cooldown">
                                     <input v-model="commands[index].cooldown" type="number" min="0" class="form-control form-control-sm" placeholder="sec.">
                                 </td>
-                                <td>{{ (command.lastExec * 1000)|formatDateTime($t('time-long-suffix')) }}</td>
+                                <td :data-order="command.lastExec">
+                                    {{ (command.lastExec * 1000)|formatDateTime($t('time-long-suffix')) }}
+                                </td>
                                 <td :data-order="command.active ? '1' : '0'" :data-search="command.active ? 'active-yes' : 'active-no'">
                                     <div class="custom-control custom-switch">
                                         <input :id="'command-active-' + index" v-model="commands[index].active" type="checkbox" value="1" class="custom-control-input">
@@ -89,7 +100,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Save" @click="updateCommand(index)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
+                                    <button type="button" class="btn btn-sm btn-primary btn-animation" data-animation-color="success" data-toggle="tooltip" data-placement="top" title="Save" @click="updateCommand(index)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
                                 </td>
                             </tr>
                         </tbody>

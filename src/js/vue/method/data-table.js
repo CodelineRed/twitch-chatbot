@@ -2,33 +2,6 @@
 
 const dataTable = {
     methods: {
-        /**
-         * Sets table state to localStorage
-         * 
-         * @param {string} id
-         * @returns {undefined}
-         */
-        setTableState: function(id) {
-            let tableState = JSON.parse(localStorage.getItem(id));
-
-            if (typeof tableState === 'object' 
-                    && dataTables[id]['init'] === true) {
-                let order = dataTables[id]['ref'].order();
-                let pageInfo = dataTables[id]['ref'].page.info();
-                let search = dataTables[id]['ref'].search();
-
-                tableState = {
-                    'init': false,
-                    'length': pageInfo.length,
-                    'orderColumn': order[0][0],
-                    'orderBy': order[0][1],
-                    'page': pageInfo.page,
-                    'search': search
-                };
-
-                localStorage.setItem(id, JSON.stringify(tableState));
-            }
-        },
 
         /**
          * Init data table
@@ -93,8 +66,50 @@ const dataTable = {
                     });
                 }, 100);
             })(jQuery, this);
-        }
+        },
+        
+        /**
+         * Updates one table row and reorder table
+         * 
+         * @param {integer} index
+         * @param {string} table
+         * @returns {undefined}
+         */
+        updateDataTableRow: function(index, table) {
+            // update row in data tables
+            setTimeout(function() {
+                dataTables[table].ref.row(index).invalidate();
+                dataTables[table].ref.order(dataTables[table].ref.order()[0]).draw();
+            }, 100);
+        },
+        
+        /**
+         * Sets table state to localStorage
+         * 
+         * @param {string} id
+         * @returns {undefined}
+         */
+        setTableState: function(id) {
+            let tableState = JSON.parse(localStorage.getItem(id));
 
+            if (typeof tableState === 'object' 
+                    && dataTables[id]['init'] === true) {
+                let order = dataTables[id]['ref'].order();
+                let pageInfo = dataTables[id]['ref'].page.info();
+                let search = dataTables[id]['ref'].search();
+
+                tableState = {
+                    'init': false,
+                    'length': pageInfo.length,
+                    'orderColumn': order[0][0],
+                    'orderBy': order[0][1],
+                    'page': pageInfo.page,
+                    'search': search
+                };
+
+                localStorage.setItem(id, JSON.stringify(tableState));
+            }
+        }
     }
 };
 

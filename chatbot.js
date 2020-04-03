@@ -219,6 +219,8 @@ function onMessage(channel, userstate, message, self) {
                         && channelCommands[j].active === true
                         && channelCommands[j].lastExec + channelCommands[j].cooldown < moment().unix()) {
                     commandActive = true;
+                    args.commandId = j;
+                    break;
                 }
             }
             

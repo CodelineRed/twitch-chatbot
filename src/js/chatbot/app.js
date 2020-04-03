@@ -604,21 +604,28 @@ const chatbot = {
             chatbot.prepareCommands(args);
             args.command.cooldown = parseInt(args.command.cooldown);
             chatbot.commands[args.channel][args.commandId] = args.command;
-            chatbot.getCommands(args);
+            //chatbot.getCommands(args);
             chatbot.writeJson('commands', args.channel, args.command, chatbot.commands, 'update');
         }
     },
-    updateCommandLastExec: function(commandName, args) {
+    updateCommandLastExec: function(args) {
         if (chatbot.socket !== null) {
             chatbot.prepareCommands(args);
-
-            for (let i = 0; i < chatbot.commands[args.channel].length; i++) {
-                if (typeof chatbot.commands[args.channel][i].name !== 'undefined' 
-                        && chatbot.commands[args.channel][i].name === commandName) {
-                    chatbot.commands[args.channel][i].lastExec = moment().unix();
-                    break;
-                }
-            }
+            
+            chatbot.commands[args.channel][args.commandId].lastExec = moment().unix();
+            
+            const call = {
+                args: {
+                    channel: args.channel,
+                    lastExec: chatbot.commands[args.channel][args.commandId].lastExec,
+                    commandId: args.commandId
+                },
+                method: 'updateCommandLastExec',
+                ref: 'commands',
+                env: 'web'
+            };
+            
+            chatbot.socket.write(JSON.stringify(call));
         }
     },
     writeJson: function(file, channel, data, content, mode) {
@@ -649,7 +656,7 @@ const chatbot = {
                 
                 chatbot.client.say('#' + args.channel, `Software made by InsanityMeetsHH. Version: ${version} - Bug report: ${bugs}`);
                 chatbot.logCommand(args);
-                chatbot.updateCommandLastExec('about', args);
+                chatbot.updateCommandLastExec(args);
             }
         },
         counter: function(args) {
@@ -674,7 +681,7 @@ const chatbot = {
 
                     chatbot.socket.write(JSON.stringify(call));
                     //chatbot.logCommand(args);
-                    chatbot.updateCommandLastExec('counter', args);
+                    chatbot.updateCommandLastExec(args);
                 }
             }
         },
@@ -716,7 +723,9 @@ const chatbot = {
                 } else {
                     chatbot.client.say('#' + args.channel, `@${args.userstate['display-name']} - No further videos in playlist.`);
                 }
-                chatbot.updateCommandLastExec('playlistInfo', args);
+                
+                chatbot.logCommand(args);
+                chatbot.updateCommandLastExec(args);
             }
         },
         rollDice: function(args) {
@@ -735,7 +744,7 @@ const chatbot = {
                 
                 chatbot.client.say('#' + args.channel, `@${args.userstate['display-name']} rolled d${sides}` + (dices > 1 ? `w${dices}`: '') + `: ${results.join(' + ')} = ${result}.`);
                 chatbot.logCommand(args);
-                chatbot.updateCommandLastExec('rollDice', args);
+                chatbot.updateCommandLastExec(args);
             }
         }
     }

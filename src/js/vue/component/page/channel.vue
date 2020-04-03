@@ -33,7 +33,7 @@
         <div class="col-12 col-lg-6 pb-3">
             Poll
         </div>
-        <div class="col-12 col-sm-6 col-md-8 col-lg-9 col-xl-10 col-xxl-7">
+        <div class="col-12 col-lg-9 col-xl-10 col-xxl-7 pb-3">
             <c-commands ref="commands" />
         </div> 
         <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
