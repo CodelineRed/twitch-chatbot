@@ -35,6 +35,7 @@ import {
     faTicketAlt as fasTicketAlt,
     faTrain as fasTrain,
     faTrashAlt as fasTrashAlt,
+    faTrophy as fasTrophy,
     faVideo as fasVideo,
     faWrench as fasWrench
 } from '@fortawesome/free-solid-svg-icons';
@@ -47,7 +48,7 @@ library.add(
     fasAward, fasBolt, fasCheckCircle, fasChevronRight, fasCogs, fasCrown, fasExternalLinkAlt, 
     fasGavel, fasGem, fasGift, fasGlobe, fasHammer, fasHome, fasMoneyBill, fasPlay, 
     fasRobot, fasSave, fasSnowflake, fasStar, fasStepForward, fasSync, fasTicketAlt, 
-    fasTrain, fasTrashAlt, fasVideo, fasWrench
+    fasTrain, fasTrashAlt, fasTrophy, fasVideo, fasWrench
 );
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);

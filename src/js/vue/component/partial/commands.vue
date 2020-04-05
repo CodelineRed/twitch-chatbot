@@ -32,21 +32,21 @@
                     this.initDataTable();
                 }
             },
-            updateCommand: function(index) {
+            updateCommand: function(commandId) {
                 if (typeof streamWrite === 'function') {
                     const call = {
                         method: 'updateCommand',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            command: this.commands[index],
-                            commandId: index
+                            command: this.commands[commandId],
+                            commandId: commandId
                         },
                         env: 'node'
                     };
                     
                     streamWrite(call);
                     this.btnAnimation(event.target);
-                    this.updateDataTableRow(index, 'commandsTable');
+                    this.updateDataTableRow(commandId, 'commandsTable');
                 }
             },
             updateCommandLastExec: function(args) {
@@ -72,7 +72,7 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
-                                <th scope="col">Cooldown (sec.)</th>
+                                <th scope="col">Cooldown</th>
                                 <th scope="col">Last Exec</th>
                                 <th scope="col">Active</th>
                                 <th scope="col" class="text-center" data-orderable="false">
@@ -88,10 +88,18 @@
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ command.name }}</td>
                                 <td :data-order="command.cooldown">
-                                    <input v-model="commands[index].cooldown" type="number" min="0" class="form-control form-control-sm" placeholder="sec.">
+                                    <div class="input-group input-group-sm">
+                                        <input v-model="commands[index].cooldown" type="number" min="0" class="form-control">
+                                        <div class="input-group-append">
+                                            <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
+                                            <div class="input-group-text">sec.</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td :data-order="command.lastExec">
-                                    {{ (command.lastExec * 1000)|formatDateTime($t('time-long-suffix')) }}
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="(command.lastExec * 1000)|formatDateTime($t('datetime'))">
+                                        {{ (command.lastExec * 1000)|formatDateTime($t('time-long-suffix')) }}
+                                    </span>
                                 </td>
                                 <td :data-order="command.active ? '1' : '0'" :data-search="command.active ? 'active-yes' : 'active-no'">
                                     <div class="custom-control custom-switch">

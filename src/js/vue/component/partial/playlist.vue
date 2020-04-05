@@ -211,6 +211,22 @@
                     
                     streamWrite(call);
                 }
+            },
+            updateVideo: function(videoId) {
+                if (typeof streamWrite === 'function') {
+                    const call = {
+                        method: 'updateVideo',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            video: this.playlist[videoId],
+                            videoId: videoId
+                        },
+                        env: 'node'
+                    };
+                    
+                    streamWrite(call);
+                    this.updateDataTableRow(videoId, 'playlistTable');
+                }
             }
         }
     };
@@ -252,17 +268,22 @@
                         <td><span style="white-space: nowrap">{{ (video.start * 1000)|formatDateTime($t('time-long-suffix')) }}</span></td>
                         <td><span style="white-space: nowrap">{{ (video.end * 1000)|formatDateTime($t('time-long-suffix')) }}</span></td>
                         <td :data-order="video.played ? '1' : '0'" :data-search="video.played ? 'played-yes' : 'played-no'">
-                            <span v-if="video.played">Yes</span>
-                            <span v-if="!video.played">No</span>
+                            <div class="custom-control custom-switch">
+                                <input :id="'video-played-' + index" v-model="playlist[index].played" type="checkbox" class="custom-control-input">
+                                <label class="custom-control-label" :for="'video-played-' + index" @click="updateVideo(index)">&nbsp;</label>
+                            </div>
                         </td>
                         <td :data-order="video.skipped ? '1' : '0'" :data-search="video.skipped ? 'skipped-yes' : 'skipped-no'">
-                            <span v-if="video.skipped">Yes</span>
-                            <span v-if="!video.skipped">No</span>
+                            <div class="custom-control custom-switch">
+                                <input :id="'video-skipped-' + index" v-model="playlist[index].skipped" type="checkbox" class="custom-control-input">
+                                <label class="custom-control-label" :for="'video-skipped-' + index" @click="updateVideo(index)">&nbsp;</label>
+                            </div>
                         </td>
                         <td class="text-center">
                             <span style="white-space: nowrap">
-                                <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Played" @click="toggleVideoPlayed(index)"><font-awesome-icon :icon="['fas', 'play']" class="fa-fw" /></button>
-                                <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Skipped" @click="toggleVideoSkipped(index)"><font-awesome-icon :icon="['fas', 'step-forward']" class="fa-fw" /></button>
+                                <button type="button" class="d-none btn btn-sm btn-primary btn-animation mr-2" data-animation-color="success" data-toggle="tooltip" data-placement="top" title="Save" @click="updateVideo(index)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
+                                <button type="button" class="d-none btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Played" @click="toggleVideoPlayed(index)"><font-awesome-icon :icon="['fas', 'play']" class="fa-fw" /></button>
+                                <button type="button" class="d-none btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Toggle Skipped" @click="toggleVideoSkipped(index)"><font-awesome-icon :icon="['fas', 'step-forward']" class="fa-fw" /></button>
                                 <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove" @click="removeVideo(index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                             </span>
                         </td>

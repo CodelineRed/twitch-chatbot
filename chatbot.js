@@ -128,6 +128,7 @@ function onConnected(url, port) {
     }
     
     chatbot.readJson('commands', chatbot.config.channels[0].toLowerCase());
+    chatbot.readJson('counters', chatbot.config.channels[0].toLowerCase());
     chatbot.readJson('messages', chatbot.config.channels[0].toLowerCase());
     chatbot.readJson('playlist', chatbot.config.channels[0].toLowerCase());
     chatbot.readJson('polls', chatbot.config.channels[0].toLowerCase());

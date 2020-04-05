@@ -50,11 +50,11 @@
         },
         mounted: function() {
             let $this = this;
+            this.getChatMessages();
             
-            if (/chat/gi.test(this.$root._route.path)) {
+            if (/^#\/channel\/(.*)\/chat\/?/.test(window.location.hash)) {
                 this.isPopout = true;
             }
-            this.getChatMessages();
             
             jQuery('.messages').scroll(function() {
                 const scrollTop = jQuery('.messages').scrollTop();

@@ -1,5 +1,7 @@
 const en = {
     'app': 'Twitch Chatbot',
+    'chat': 'Chat',
+    'counter': 'Counter',
     
     'lang-de': 'Deutsch',
     'lang-en': 'English',

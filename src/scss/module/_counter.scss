@@ -1,4 +1,36 @@
 .counter {
     background-color: $theme-color-4;
     border-radius: 5px;
+    position: relative;
+    
+    &.popout {
+        background-color: $theme-color-2;
+        margin-left: -($grid-gutter-width / 2);
+        margin-right: -($grid-gutter-width / 2);
+        
+        .text {
+            font-size: 16em;
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+    
+    &.victory {
+        canvas {
+            display: block;
+        }
+    }
+    
+    canvas {
+        display: none;
+        height: 100%;
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 1;
+    }
 }

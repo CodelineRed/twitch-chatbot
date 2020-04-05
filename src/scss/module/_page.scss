@@ -12,3 +12,12 @@ a {
         text-decoration: none;
     }
 }
+
+.custom-switch {
+    .custom-control-label {
+        &::before,
+        &::after {
+            cursor: pointer;
+        }
+    }
+}

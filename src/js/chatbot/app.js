@@ -14,9 +14,9 @@ const fs          = require('fs-extra');
 const chatbot = {
     client: null, // tmi client
     config: null,
-    counter: {},
-    currentVideoStart: {}, // unix timestamp (seconds)
+    counters: {},
     commands: {},
+    currentVideoStart: {}, // unix timestamp (seconds)
     messages: {},
     playlist: {},
     polls: {},
@@ -91,6 +91,11 @@ const chatbot = {
     getChatMessage: function(args) {
         if (chatbot.socket !== null) {
             chatbot.prepareChatMessages(args, true);
+            const bots = [
+                'imhhbot', 'nightbot', 'moobot', 'pixelbreeders',
+                'streamelements', 'streamlabs', 'thisebot', 
+                chatbot.config.username.toLowerCase()
+            ];
             
             if (args.userstate.badges === null) {
                 args.userstate.badges = {};
@@ -106,7 +111,6 @@ const chatbot = {
                 mod: args.userstate.mod === true ? {style: 'fas', icon: 'gavel', transform: null, title: 'Mod', cssClass: null} : false,
                 founder: typeof args.userstate.badges.founder === 'string' ? {style: 'fas', icon: 'award', transform: null, title: 'Founder', cssClass: null} : false,
                 subscriber: args.userstate.subscriber === true ? {style: 'fas', icon: 'star', transform: null, title: 'Sub (' + args.userstate['badge-info'].subscriber + ')', cssClass: null} : false,
-                bot: args.userstate['display-name'].toLowerCase() === chatbot.config.username.toLowerCase() ? {style: 'fas', icon: 'robot', transform: null, title: 'Bot', cssClass: null} : false,
                 hypeTrain: typeof args.userstate.badges['hype-train'] === 'string' ? {style: 'fas', icon: 'train', transform: null, title: (args.userstate.badges['hype-train'] === '2' ? 'Former ' : '') + 'Hype Train Conductor', cssClass: args.userstate.badges['hype-train'] === '2' ? 'hype-train former' : 'hype-train'} : false,
                 bits: typeof args.userstate.badges.bits === 'string' ? {style: 'fab', icon: 'ethereum', transform: null, title: 'Bits (' + args.userstate.badges.bits + ')', cssClass: null} : false,
                 bitsLeader: typeof args.userstate.badges['bits-leader'] === 'string' ? {style: 'fab', icon: 'ethereum', transform: null, title: 'Bits Leader', cssClass: 'bits-leader'} : false,
@@ -122,7 +126,8 @@ const chatbot = {
                 twitchconUSA2018: typeof args.userstate.badges.twitchcon2018 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: {rotate: -15}, title: 'TwitchCon USA 2018', cssClass: 'tc-usa-2018'} : false,
                 twitchconUSA2019: typeof args.userstate.badges.twitchconNA2019 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: {rotate: -15}, title: 'TwitchCon USA 2019', cssClass: 'tc-usa-2019'} : false,
                 twitchconUSA2020: typeof args.userstate.badges.twitchconNA2020 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: {rotate: -15}, title: 'TwitchCon USA 2019', cssClass: 'tc-usa-2019'} : false,
-                partner: typeof args.userstate.badges.partner === 'string' ? {style: 'fas', icon: 'check-circle', transform: {rotate: -15}, title: 'Partner', cssClass: null} : false
+                partner: typeof args.userstate.badges.partner === 'string' ? {style: 'fas', icon: 'check-circle', transform: {rotate: -15}, title: 'Partner', cssClass: null} : false,
+                bot: bots.indexOf(args.userstate['display-name'].toLowerCase()) > -1 ? {style: 'fas', icon: 'robot', transform: null, title: 'Bot', cssClass: null} : false
             };
             
             const call = {
@@ -268,21 +273,23 @@ const chatbot = {
     },
     getCounter: function(args) {
         if (chatbot.socket !== null) {
-            if (typeof chatbot.counter[args.channel] === 'undefined') {
-                chatbot.counter[args.channel] = 0;
-            }
+            chatbot.prepareCounters(args);
             
             const call = {
                 args: {
                     channel: args.channel,
-                    counter: chatbot.counter[args.channel].toString()
+                    counter: chatbot.counters[args.channel][0]
                 },
                 method: 'setCounter',
                 ref: 'counter',
                 env: 'web'
             };
-
+            
             chatbot.socket.write(JSON.stringify(call));
+            
+            if (chatbot.socketCounter !== null) {
+                chatbot.socketCounter.write(JSON.stringify(call));
+            }
         }
     },
     getPlaylist: function(args) {
@@ -436,6 +443,64 @@ const chatbot = {
             chatbot.writeJson('playlist', args.channel, movedVideo, chatbot.playlist, 'update');
         }
     },
+    prepareChatMessages: function(args, shift) {
+        if (typeof chatbot.messages[args.channel] === 'undefined') {
+            chatbot.messages[args.channel] = [];
+        } else if (chatbot.messages[args.channel].length >= 100 && shift) {
+            chatbot.messages[args.channel].shift();
+        }
+    },
+    prepareCommands: function(args) {
+        if (typeof chatbot.commands[args.channel] === 'undefined' 
+                || chatbot.commands[args.channel].length === 0) {
+            chatbot.commands[args.channel] = [];
+            
+            const commands = Object.keys(chatbot.commandList);
+            for (let i = 0; i < commands.length; i++) {
+                let match = false;
+                
+                for (let j = 0; j < chatbot.commands[args.channel].length; j++) {
+                    if (typeof chatbot.commands[args.channel][j].name !== 'undefined' 
+                            && chatbot.commands[args.channel][j].name === commands[i]) {
+                        match = true;
+                        break;
+                    }
+                }
+                
+                // if command is function and not pushed
+                if (typeof chatbot.commandList[commands[i]] === 'function' && !match) {
+                    chatbot.commands[args.channel].push({
+                        name: commands[i],
+                        cooldown: 0,
+                        active: false,
+                        lastExec: 0 // unix timestamp (seconds)
+                    });
+                }
+            }
+        }
+    },
+    prepareCounters: function(args) {
+        if (typeof chatbot.counters[args.channel] === 'undefined' 
+                || chatbot.counters[args.channel].length === 0) {
+            chatbot.counters[args.channel] = [];
+            chatbot.counters[args.channel][0] = {
+                name: 'counter',
+                streak: 0,
+                victory: 10
+            };
+        }
+    },
+    preparePlaylist: function(args, shift) {
+        if (typeof chatbot.playlist[args.channel] === 'undefined') {
+            chatbot.playlist[args.channel] = [];
+        } else if (chatbot.playlist[args.channel].length >= 100 && shift) {
+            chatbot.playlist[args.channel].shift();
+        }
+        
+        if (typeof chatbot.currentVideoStart[args.channel] === 'undefined') {
+            chatbot.currentVideoStart[args.channel] = 0;
+        }
+    },
     removeVideo: function(args) {
         if (chatbot.socket !== null) {
             chatbot.preparePlaylist(args, false);
@@ -536,53 +601,6 @@ const chatbot = {
         
         saveJsonAsync();
     },
-    prepareChatMessages: function(args, shift) {
-        if (typeof chatbot.messages[args.channel] === 'undefined') {
-            chatbot.messages[args.channel] = [];
-        } else if (chatbot.messages[args.channel].length >= 100 && shift) {
-            chatbot.messages[args.channel].shift();
-        }
-    },
-    prepareCommands: function(args) {
-        if (typeof chatbot.commands[args.channel] === 'undefined' 
-                || chatbot.commands[args.channel].length === 0) {
-            chatbot.commands[args.channel] = [];
-            
-            const commands = Object.keys(chatbot.commandList);
-            for (let i = 0; i < commands.length; i++) {
-                let match = false;
-                
-                for (let j = 0; j < chatbot.commands[args.channel].length; j++) {
-                    if (typeof chatbot.commands[args.channel][j].name !== 'undefined' 
-                            && chatbot.commands[args.channel][j].name === commands[i]) {
-                        match = true;
-                        break;
-                    }
-                }
-                
-                // if command is function and not pushed
-                if (typeof chatbot.commandList[commands[i]] === 'function' && !match) {
-                    chatbot.commands[args.channel].push({
-                        name: commands[i],
-                        cooldown: 0,
-                        active: false,
-                        lastExec: 0 // unix timestamp (seconds)
-                    });
-                }
-            }
-        }
-    },
-    preparePlaylist: function(args, shift) {
-        if (typeof chatbot.playlist[args.channel] === 'undefined') {
-            chatbot.playlist[args.channel] = [];
-        } else if (chatbot.playlist[args.channel].length >= 100 && shift) {
-            chatbot.playlist[args.channel].shift();
-        }
-        
-        if (typeof chatbot.currentVideoStart[args.channel] === 'undefined') {
-            chatbot.currentVideoStart[args.channel] = 0;
-        }
-    },
     toggleVideoPlayed: function(args) {
         if (chatbot.socket !== null) {
             chatbot.preparePlaylist(args, false);
@@ -628,6 +646,21 @@ const chatbot = {
             chatbot.socket.write(JSON.stringify(call));
         }
     },
+    updateCounter: function(args) {
+        if (chatbot.socket !== null) {
+            chatbot.prepareCounters(args);
+            args.counter.streak = 0;
+            chatbot.counters[args.channel][0] = args.counter;
+            chatbot.writeJson('counters', args.channel, args.counter, chatbot.counters, 'update');
+        }
+    },
+    updateVideo: function(args) {
+        if (chatbot.socket !== null) {
+            chatbot.preparePlaylist(args);
+            chatbot.playlist[args.channel][args.videoId] = args.video;
+            chatbot.writeJson('playlist', args.channel, args.video, chatbot.playlist, 'update');
+        }
+    },
     writeJson: function(file, channel, data, content, mode) {
         const json = './data/' + file + '.json';
         mode = typeof mode === 'string' ? mode : 'insert';
@@ -661,18 +694,16 @@ const chatbot = {
         },
         counter: function(args) {
             if (/^\d\d?$/.test(args.message)) {
-                if (typeof chatbot.counter[args.channel] === 'undefined') {
-                    chatbot.counter[args.channel] = 0;
-                }
+                chatbot.prepareCounters(args);
                 
-                const n = parseInt(args.message);
-                chatbot.counter[args.channel] = (n - chatbot.counter[args.channel] === 1) ? n : 0;
+                const number = parseInt(args.message);
+                chatbot.counters[args.channel][0].streak = (number - chatbot.counters[args.channel][0].streak === 1) ? number : 0;
 
                 if (chatbot.socket !== null) {
                     const call = {
                         args: {
                             channel: args.channel,
-                            counter: chatbot.counter[args.channel].toString()
+                            counter: chatbot.counters[args.channel][0]
                         },
                         method: 'setCounter',
                         ref: 'counter',
@@ -682,6 +713,10 @@ const chatbot = {
                     chatbot.socket.write(JSON.stringify(call));
                     //chatbot.logCommand(args);
                     chatbot.updateCommandLastExec(args);
+            
+                    if (chatbot.socketCounter !== null) {
+                        chatbot.socketCounter.write(JSON.stringify(call));
+                    }
                 }
             }
         },
