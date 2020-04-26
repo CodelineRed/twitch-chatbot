@@ -2,18 +2,18 @@
     .slider-item {
         display: none;
         position: relative;
-        
+
         &:first-child {
             display: block;
         }
     }
-    
+
     &.slick-initialized {
         .slider-item {
             display: block;
         }
     }
-    
+
     &.slider-brands {
         a {
             &.label {

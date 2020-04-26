@@ -18,7 +18,7 @@
                         method: 'getChannels',
                         env: 'node'
                     };
-                    
+
                     streamWrite(call);
                 }
             }

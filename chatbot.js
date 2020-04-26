@@ -5,6 +5,7 @@ const tmi         = require('tmi.js');
 
 const config      = require('./src/app/chatbot.json');
 const chatbot     = require('./src/js/chatbot/app');
+const chat        = require('./src/js/chatbot/chat');
 
 chatbot.config = config;
 
@@ -25,15 +26,15 @@ const opts = {
 // create a client with options
 const client = new tmi.client(opts); // eslint-disable-line new-cap
 
-function onAnongiftpaidupgrade(channel, username, userstate) {
-    const commandArgs = {
+function onAnonGiftPaidUpgrade(channel, username, userstate) {
+    const args = {
         channel: channel.replace(/#/g, ''),
         notification: userstate['system-msg'],
         message: null,
         userstate: userstate
     };
 
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 //onBan
@@ -44,14 +45,14 @@ function onAnongiftpaidupgrade(channel, username, userstate) {
 //  'target-user-id': '82566098',
 //  'tmi-sent-ts': '1585062499494' }
 function onBan(channel, username, reason, userstate) {
-    const commandArgs = {
+    const args = {
         channel: channel.replace(/#/g, ''),
         purge: {message: 'banned', showMessage: false, hasPurge: true, reason: reason},
         user: username,
         userstate: userstate
     };
 
-    chatbot.getChatPurge(commandArgs);
+    chat.getPurge(chatbot, args);
 }
 
 //onCheer
@@ -79,14 +80,14 @@ function onBan(channel, username, reason, userstate) {
 function onCheer(channel, userstate, message) {
     userstate['message-type'] = 'cheer';
     
-    const commandArgs = {
+    const args = {
         channel: channel.replace(/#/g, ''),
         notification: userstate['display-name'] + ' cheered with ' + userstate.bits + ' bits!',
         message: message ? message.trim() : null,
         userstate: userstate
     };
 
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 // called every time the bot connects to Twitch chat
@@ -117,44 +118,37 @@ function onConnected(url, port) {
                     if (typeof dataJson.method === 'string' && typeof chatbot[dataJson.method] === 'function' 
                             && typeof dataJson.env === 'string' && dataJson.env === 'node') {
                         if (typeof dataJson.args === 'object' && dataJson.args !== null) {
-                            chatbot[dataJson.method](dataJson.args);
+                            chatbot[dataJson.method](chatbot, dataJson.args);
                         } else {
-                            chatbot[dataJson.method]();
+                            chatbot[dataJson.method](chatbot);
                         }
                     }
                 });
             });
         }
     }
-    
-    chatbot.readJson('commands', chatbot.config.channels[0].toLowerCase());
-    chatbot.readJson('counters', chatbot.config.channels[0].toLowerCase());
-    chatbot.readJson('messages', chatbot.config.channels[0].toLowerCase());
-    chatbot.readJson('playlist', chatbot.config.channels[0].toLowerCase());
-    chatbot.readJson('polls', chatbot.config.channels[0].toLowerCase());
-    chatbot.readJson('raffles', chatbot.config.channels[0].toLowerCase());
 }
 
-function onGiftpaidupgrade(channel, username, sender, userstate) {
-    const commandArgs = {
+function onGiftPaidUpgrade(channel, username, sender, userstate) {
+    const args = {
         channel: channel.replace(/#/g, ''),
         notification: userstate['system-msg'],
         message: null,
         userstate: userstate
     };
 
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 function onHosted(channel, username, viewers, autohost) {
-    const commandArgs = {
+    const args = {
         channel: channel.replace(/#/g, ''),
         notification: 'You are hosted by ' + username + ' with ' + viewers + ' viewers' + (autohost ? ' via autohost.' : '.'),
         message: null,
         userstate: {'message-type': 'info'}
     };
 
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 //onHosting
@@ -162,14 +156,14 @@ function onHosted(channel, username, viewers, autohost) {
 //biberbros
 //0
 function onHosting(channel, target, viewers) {
-    const commandArgs = {
+    const args = {
         channel: channel.replace(/#/g, ''),
         notification: 'Now hosting ' + target + '.',
         message: null,
         userstate: {'message-type': 'info'}
     };
 
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 // onMessage
@@ -201,7 +195,7 @@ function onMessage(channel, userstate, message, self) {
         message: message.trim()
     };
 
-    chatbot.getChatMessage(args);
+    chat.getMessage(chatbot, args);
 
     // ignore messages from the bot
     if (self) {
@@ -214,19 +208,19 @@ function onMessage(channel, userstate, message, self) {
         if (typeof chatbot.commandList[commands[i]] === 'function') {
             let channelCommands = typeof chatbot.commands[args.channel] === 'object' ? chatbot.commands[args.channel] : [];
             let commandActive = false;
-            
+
             for (let j = 0; j < channelCommands.length; j++) {
                 if (channelCommands[j].name === commands[i]
                         && channelCommands[j].active === true
                         && channelCommands[j].lastExec + channelCommands[j].cooldown < moment().unix()) {
                     commandActive = true;
-                    args.commandId = j;
+                    args.commandIndex = j;
                     break;
                 }
             }
             
             if (commandActive) {
-                chatbot.commandList[commands[i]](args);
+                chatbot.commandList[commands[i]](chatbot, args);
             }
         }
     }
@@ -241,8 +235,8 @@ function onMessage(channel, userstate, message, self) {
 //  'target-msg-id': '497fb542-7d0e-4861-9b31-f53c6fbc3b0d',
 //  'tmi-sent-ts': '1585062324944',
 //  'message-type': 'messagedeleted' }
-function onMessagedeleted(channel, username, deletedMessage, userstate) {
-    const commandArgs = {
+function onMessageDeleted(channel, username, deletedMessage, userstate) {
+    const args = {
         channel: channel.replace(/#/g, ''),
         deletedMessage: deletedMessage,
         purge: {message: 'deleted', showMessage: true, hasPurge: true, reason: null},
@@ -250,7 +244,7 @@ function onMessagedeleted(channel, username, deletedMessage, userstate) {
         userstate: userstate
     };
 
-    chatbot.getChatPurge(commandArgs);
+    chat.getPurge(chatbot, args);
 }
 
 //onRaided
@@ -258,14 +252,14 @@ function onMessagedeleted(channel, username, deletedMessage, userstate) {
 //p1onetv
 //8
 function onRaided(channel, username, viewers){
-    const commandArgs = {
+    const args = {
         channel: channel.replace(/#/g, ''),
         notification: 'You are raided by ' + username + ' with ' + viewers + ' viewers!',
         message: null,
         userstate: {'message-type': 'info'}
     };
 
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 //onResub
@@ -301,15 +295,15 @@ function onRaided(channel, username, viewers){
 //  'message-type': 'resub' }
 //{ prime: true, plan: 'Prime', planName: 'JimPanseTier1' }
 //{ prime: false, plan: '1000', planName: 'Stufe-1-Sub von Basti (dakieksde)' }
-function onResub(channel, username, months, message, userstate, methods) {
-    const commandArgs = {
+function onReSub(channel, username, months, message, userstate, methods) {
+    const args = {
         channel: channel.replace(/#/g, ''),
         notification: userstate['system-msg'],
         message: message ? message.trim() : null,
         userstate: userstate
     };
 
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 //onRoomstate
@@ -321,9 +315,12 @@ function onResub(channel, username, months, message, userstate, methods) {
 //  slow: false,
 //  'subs-only': false,
 //  channel: '#insanitymeetshh' }
-function onRoomstate(channel, state) {
+function onRoomState(channel, state) {
     //console.log(channel);
     //console.log(state);
+    chat.prepareBttvEmotes(channel.replace(/#/g, ''));
+    chat.prepareFfzEmotes(channel.replace(/#/g, ''));
+    chatbot.warmUpDatabase(state);
 }
 
 //onSubgift
@@ -364,15 +361,15 @@ function onRoomstate(channel, state) {
 //  'badge-info-raw': 'subscriber/32',
 //  'badges-raw': 'moderator/1,subscriber/24,sub-gifter/50',
 //  'message-type': 'subgift' }
-function onSubgift(channel, username, streakMonths, recipient, methods, userstate) {
-    const commandArgs = {
+function onSubGift(channel, username, streakMonths, recipient, methods, userstate) {
+    const args = {
         channel: channel.replace(/#/g, ''),
         notification: userstate['system-msg'],
         message: null,
         userstate: userstate
     };
 
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 //onSubmysterygift
@@ -406,8 +403,8 @@ function onSubgift(channel, username, streakMonths, recipient, methods, userstat
 //  'badge-info-raw': 'subscriber/1',
 //  'badges-raw': 'subscriber/0,sub-gifter/5',
 //  'message-type': 'submysterygift' }
-function onSubmysterygift(channel, username, numbOfSubs, methods, userstate) {
-    const commandArgs = {
+function onSubMysteryGift(channel, username, numbOfSubs, methods, userstate) {
+    const args = {
         channel: channel.replace(/#/g, ''),
         notification: userstate['system-msg'],
         message: null,
@@ -415,7 +412,7 @@ function onSubmysterygift(channel, username, numbOfSubs, methods, userstate) {
         userstate: userstate
     };
     
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 //onSubscription
@@ -451,14 +448,14 @@ function onSubmysterygift(channel, username, numbOfSubs, methods, userstate) {
 //  'badges-raw': 'subscriber/0,premium/1',
 //  'message-type': 'sub' }
 function onSubscription(channel, username, method, message, userstate) {
-    const commandArgs = {
+    const args = {
         channel: channel.replace(/#/g, ''),
         notification: userstate['system-msg'],
         message: message ? message.trim() : null,
         userstate: userstate
     };
 
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 //onTimeout
@@ -475,61 +472,61 @@ function onTimeout(channel, username, reason, duration, userstate) {
     
     if (duration >= 60 && duration < 60 * 60) {
         // minutes
-        duration = (duration / 60 * 60).toFixed(1);
+        duration = (duration / 60).toFixed(0);
         unit = 'm';
     } else if (duration >= 60 * 60 && duration < 60 * 60 * 24) {
         // hours
-        duration = (duration / 60 * 60 * 24).toFixed(1);
+        duration = (duration / 60 * 60).toFixed(0);
         unit = 'h';
     } else if (duration >= 60 * 60 * 24 && duration < 60 * 60 * 24 * 365) {
         // days
-        duration = (duration / 60 * 60 * 24).toFixed(1);
+        duration = (duration / 60 * 60 * 24).toFixed(0);
         unit = 'd';
     } else if (duration >= 60 * 60 * 24 * 365) {
         // years
-        duration = (duration / 60 * 60 * 24 * 365).toFixed(1);
+        duration = (duration / 60 * 60 * 24 * 365).toFixed(0);
         unit = 'a';
     }
     
-    const commandArgs = {
+    const args = {
         channel: channel.replace(/#/g, ''),
         purge: {message: duration + unit, showMessage: false, hasPurge: true, reason: reason},
         user: username,
         userstate: userstate
     };
 
-    chatbot.getChatPurge(commandArgs);
+    chat.getPurge(chatbot, args);
 }
 
 //onUnhost
 //#insanitymeetshh
 //0
 function onUnhost(channel, viewers) {
-    const commandArgs = {
+    const args = {
         channel: channel.replace(/#/g, ''),
-        notification: 'Exited host mode.',
+        notification: 'Exiting host mode.',
         message: null,
         userstate: {'message-type': 'info'}
     };
 
-    chatbot.getChatNotification(commandArgs);
+    chat.getNotification(chatbot, args);
 }
 
 // register event handlers (defined below)
-client.on('anongiftpaidupgrade', onAnongiftpaidupgrade);
+client.on('anongiftpaidupgrade', onAnonGiftPaidUpgrade);
 client.on('ban', onBan);
 client.on('cheer', onCheer);
 client.on('connected', onConnected);
-client.on('giftpaidupgrade', onGiftpaidupgrade);
+client.on('giftpaidupgrade', onGiftPaidUpgrade);
 client.on('hosted', onHosted);
 client.on('hosting', onHosting);
 client.on('message', onMessage);
-client.on('messagedeleted', onMessagedeleted);
+client.on('messagedeleted', onMessageDeleted);
 client.on('raided', onRaided);
-client.on('resub', onResub);
-client.on('roomstate', onRoomstate);
-client.on('subgift', onSubgift);
-client.on('submysterygift', onSubmysterygift);
+client.on('resub', onReSub);
+client.on('roomstate', onRoomState);
+client.on('subgift', onSubGift);
+client.on('submysterygift', onSubMysteryGift);
 client.on('subscription', onSubscription);
 client.on('timeout', onTimeout);
 client.on('unhost', onUnhost);

@@ -1,9 +1,10 @@
 <script>
+    import bsComponent from '../../method/bs-component';
     import dataTable from '../../method/data-table';
     import slider from '../../method/slider';
-    
+
     export default {
-        mixins: [dataTable, slider],
+        mixins: [bsComponent, dataTable, slider],
         data: function() {
             return {
                 currentLocale: window.localStorage.getItem('currentLocale') ? window.localStorage.getItem('currentLocale') : 'en',
@@ -34,8 +35,8 @@
                         $this.initDataTable();
                         $this.initSlider();
                     }
-                    jQuery('[data-toggle="tooltip"]').tooltip('dispose');
-                    jQuery('[data-toggle="tooltip"]').tooltip();
+                    $this.initTooltip();
+                    $this.initPopover();
                     $this.init = true;
                 }, 250);
             }

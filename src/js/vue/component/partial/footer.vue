@@ -1,6 +1,6 @@
 <script>
     import LangSwitch from './langswitch';
-    
+
     export default {
         components: {
             'c-langswitch': LangSwitch

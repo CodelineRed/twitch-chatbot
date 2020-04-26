@@ -6,7 +6,6 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
 * [Node.js](http://nodejs.org/en/download/)
 * [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 * [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
-* PHP >= 5.3
 * [Docker](https://www.docker.com/) ([for installation with Docker](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/develop#installation-with-docker))
 
 ## Installation (Recommended)
@@ -28,7 +27,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | gulp                | watch files and start [BrowserSync](https://www.npmjs.com/package/browser-sync)                                                  |
 | gulp build          | executes following tasks: cleanUp, scss, scssLint, js, jsLint, jsRequire, json, img, font, svg, vue, vueLint, vueJs, vueJsLint   |
-| gulp lintAll        | executes following tasks: scssLint, jsLint, vueLint, vueJsLint                                                                   |
+| gulp lintAll        | executes following tasks: scssLint, jsLint, vueJsLint, vueLint, chatbotLint                                                      |
 | gulp cleanUp        | clean up public folder                                                                                                           |
 | gulp font           | copy font files                                                                                                                  |
 | gulp img            | copy and compress images                                                                                                         |
@@ -52,6 +51,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 | 3000                | [BrowserSync](https://www.npmjs.com/package/browser-sync)                                                                        |
 | 3001                | [BrowserSync UI](https://www.npmjs.com/package/browser-sync)                                                                     |
 | 3050                | Docker Container (twitch-chatbot)                                                                                                |
+| 3060                | Docker Container (twitch-chatbot-local-videos)                                                                                   |
 | 3100                | Main Window (Skateboard Socket for Web UI)                                                                                       |
 | 3110                | Chat Window (Skateboard Socket for Web UI)                                                                                       |
 | 3120                | Video Window (Skateboard Socket for Web UI)                                                                                      |
@@ -59,11 +59,22 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 | 3140                | Poll Window (Skateboard Socket for Web UI)                                                                                       |
 | 3150                | Counter Window (Skateboard Socket for Web UI)                                                                                    |
 
+## [`chatbot.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/chatbot.dist.json)
+|                     | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| username            | Required - Twitch User Name                                                                                                      |
+| tmiToken            | Required - [Twitch TMI Token](https://twitchapps.com/tmi/)                                                                       |
+| apiToken            | Optional - [Twitch API Token](https://dev.twitch.tv/) (currently unused)                                                         |
+| youtubeToken        | Optional - [YouTube API Token](https://console.developers.google.com)                                                            |
+| videosFolder        | Optional - Absolute path to videos folder                                                                                        |
+| channels            | Required - List of Channels to connect                                                                                           |
+
 ## Chatbot Commands
 |                     | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| about               | !about, !chatbot, !bug, !help                                                                                                    |
-| counter             | counter increased if users counts from 1 - 99 without interruption                                                                |
+| about               | !about, !chatbot, !cb, !bug, !bugs, !help                                                                                        |
+| commands            | !commands, !cc                                                                                                                   |
+| counter             | counter increased if users counts from 1 - 99 without interruption                                                               |
 | playlistInfo        | !info, !plan, !programm, !sendeplan                                                                                              |
 | rollDice            | e.g. !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                        |
 
@@ -79,24 +90,39 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Now Hosting, Hosted By, Raided By, Unhost
 * Clickable Links
 * Twitch Emotes
+* BetterTTV Emotes
+* FrankerFaceZ Emotes
 
 ### Playlist
-* Play local files which saved in `public/video/`
+* Play local MP4 files with `localhost:3060` domain. (See [`docker-compose.local-videos.yml`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/docker-compose.local-videos.yml))
 * Play YouTube Videos
+* Add Video
+* Edit Video
 * Skip Videos
 * Move Videos
-* Remove Videos
-* Clear Playlist
+* Remove Video
 * Remove Played Videos
+* Remove Skipped Videos
+* Add Playlist
+* Edit Playlist
+* Switch Playlist
+* Merge Playlists
+* Remove Playlist
 * Reset Playlist
-* Add Video
+* Clear Playlist
 * playlistInfo Command
 * Video url `/channel/[channel]/video` to use browser source in OBS
+* Auto detect video duration (local and YouTube)
 
 ### Commands
 * Cooldown
 * Active State
 * Last Execution Time
+
+### Bots
+* Own [badge](https://fontawesome.com/icons/robot?style=solid) in Chat
+* Preset of 5 Bots (Mod4YouBot, Moobot, Nightbot, StreamElements, Streamlabs)
+* Bot autofilling with BetterTTV API
 
 ## Localization
 * [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/app/i18n-locales.js)
@@ -117,6 +143,10 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * [Twitch Messaging Interface](https://github.com/tmijs/docs/tree/gh-pages/_posts)
 * [Twitch TMI Token](https://twitchapps.com/tmi/)
 * [Twitch API Token](https://dev.twitch.tv/)
+* [YouTube API Token](https://console.developers.google.com)
+* [BetterTTV API](https://community.nightdev.com/t/is-there-a-bettertwitchtv-api/5223/3)
+* [FrankerFaceZ API](https://www.frankerfacez.com/developers)
+* [Spotify with Snip](https://github.com/dlrudie/Snip/releases)
 * [ESLint Js Rules](https://eslint.org/docs/rules/)
 * [ESLint Vue Rules](https://vuejs.github.io/eslint-plugin-vue/rules/)
 * [ESLint Import Rules](https://github.com/benmosher/eslint-plugin-import/tree/master/docs/rules)

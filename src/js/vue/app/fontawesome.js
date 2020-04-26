@@ -7,7 +7,8 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 
 import {
-    faSadCry as farSadCry
+    faSadCry as farSadCry,
+    faQuestionCircle as farQuestionCircle
 } from '@fortawesome/free-regular-svg-icons';
 
 import {
@@ -17,6 +18,7 @@ import {
     faChevronRight as fasChevronRight,
     faCogs as fasCogs,
     faCrown as fasCrown,
+    faEdit as fasEdit,
     faExternalLinkAlt as fasExternalLinkAlt,
     faGavel as fasGavel,
     faGem as fasGem,
@@ -32,6 +34,7 @@ import {
     faStar as fasStar,
     faStepForward as fasStepForward,
     faSync as fasSync,
+    faTerminal as fasTerminal,
     faTicketAlt as fasTicketAlt,
     faTrain as fasTrain,
     faTrashAlt as fasTrashAlt,
@@ -43,12 +46,12 @@ import {
 import { FontAwesomeIcon, FontAwesomeLayers } from '@fortawesome/vue-fontawesome';
 
 library.add(fabEthereum, fabFontAwesomeFlag, fabTwitch);
-library.add(farSadCry);
+library.add(farSadCry, farQuestionCircle);
 library.add(
-    fasAward, fasBolt, fasCheckCircle, fasChevronRight, fasCogs, fasCrown, fasExternalLinkAlt, 
-    fasGavel, fasGem, fasGift, fasGlobe, fasHammer, fasHome, fasMoneyBill, fasPlay, 
-    fasRobot, fasSave, fasSnowflake, fasStar, fasStepForward, fasSync, fasTicketAlt, 
-    fasTrain, fasTrashAlt, fasTrophy, fasVideo, fasWrench
+    fasAward, fasBolt, fasCheckCircle, fasChevronRight, fasCogs, fasCrown, fasEdit, 
+    fasExternalLinkAlt, fasGavel, fasGem, fasGift, fasGlobe, fasHammer, fasHome, 
+    fasMoneyBill, fasPlay, fasRobot, fasSave, fasSnowflake, fasStar, fasStepForward, 
+    fasSync, fasTerminal, fasTicketAlt, fasTrain, fasTrashAlt, fasTrophy, fasVideo, fasWrench
 );
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);

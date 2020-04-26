@@ -1,0 +1,86 @@
+.confetti-wrapper {
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+
+    .confetti {
+        animation-delay: 0s;
+        animation-direction: normal;
+        animation-duration: 5s;
+        animation-fill-mode: none;
+        animation-iteration-count: infinite;
+        animation-name: fallsway;
+        animation-play-state: running;
+        animation-timing-function: ease-in-out;
+        background-color: #f00; // sass-lint:disable-line no-color-literals
+        border-radius: 100%;
+        height: 12px;
+        opacity: 0;
+        position: absolute;
+        width: 12px;
+
+        @for $i from 1 through 160 {
+            &:nth-child(#{$i}) {
+                animation-delay: (4 / 20) * $i + s;
+                animation-name: fallsway#{$i};
+                background-color: rgb(random(255), random(175), random(255)); // sass-lint:disable-line no-color-literals
+                z-index: $i;
+            }
+        }
+    }
+}
+
+
+@for $i from 1 through 160 {
+    @keyframes fallsway#{$i} {
+        0% {
+            left: 0% + random(95);
+            opacity: 1;
+            top: -5%;
+            transform: skew(-30deg);
+        }
+        25% {
+            left: 100% - random(105);
+            transform: skew(30deg);
+        }
+        50% {
+            left: 0% + random(95);
+            transform: skew(-30deg);
+        }
+        75% {
+            left: 100% - random(105);
+            transform: skew(30deg);
+        }
+        100% {
+            left: 0% + random(95);
+            opacity: 1;
+            top: 100%;
+            transform: skew(-30deg);
+        }
+    }
+}
+
+@keyframes fallsway {
+    0% {
+        left: 0% + random(95);
+        opacity: 1;
+        top: -10%;
+    }
+    25% {
+        left: 0% + random(95);
+    }
+    50% {
+        left: 0% + random(95);
+    }
+    75% {
+        left: 0% + random(95);  
+    }
+    100% {
+        left: 0% + random(95);
+        opacity: 1;
+        top: 110%;
+    }
+}

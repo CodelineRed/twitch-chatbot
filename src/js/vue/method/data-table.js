@@ -1,6 +1,8 @@
 /*global dataTables*/
+import bsComponent from './bs-component';
 
 const dataTable = {
+    mixins: [bsComponent],
     methods: {
 
         /**
@@ -42,6 +44,8 @@ const dataTable = {
 
                             dataTables[id]['init'] = true;
                             localStorage.setItem(id, JSON.stringify(tableState));
+                            $this.initTooltip();
+                            $this.initPopover();
                         }
                     });
 
@@ -64,10 +68,10 @@ const dataTable = {
                     $('.data-table').on('search.dt', function(e, settings) {
                         $this.setDataTableState($(e.target).attr('id'));
                     });
-                }, 100);
+                }, 300);
             })(jQuery, this);
         },
-        
+
         removeDataTableRow: function(index, table) {
             // update row in data tables
             if (typeof dataTables[table] !== 'undefined') {
@@ -75,7 +79,7 @@ const dataTable = {
                 dataTables[table].ref.order(dataTables[table].ref.order()[0]).draw();
             }
         },
-        
+
         /**
          * Sets table state to localStorage
          * 
@@ -103,7 +107,7 @@ const dataTable = {
                 localStorage.setItem(table, JSON.stringify(tableState));
             }
         },
-        
+
         /**
          * Updates one table row and reorder table
          * 
@@ -120,7 +124,7 @@ const dataTable = {
                 }
             }, 100);
         },
-        
+
         /**
          * Updates all table rows and reorder table
          * 

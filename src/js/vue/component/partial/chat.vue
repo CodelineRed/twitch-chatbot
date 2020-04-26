@@ -1,8 +1,9 @@
 <script>
+    import bsComponent from '../../method/bs-component';
     import imageLazyLoad from '../../method/image-lazyload';
-    
+
     export default {
-        mixins: [imageLazyLoad],
+        mixins: [bsComponent, imageLazyLoad],
         data: function() {
             return {
                 firstInit: true,
@@ -22,27 +23,30 @@
             },
             messages: function() {
                 let $this = this;
-                
+
                 setTimeout(function() {
                     if ($this.firstInit) {
-                        jQuery('.messages').scrollTop(jQuery('.messages')[0].scrollHeight);
+                        jQuery('.messages').scrollTop(typeof jQuery('.messages')[0] === 'undefined' ? 0 : jQuery('.messages')[0].scrollHeight);
                         $this.firstInit = false;
                     }
-                    
+
                     if (!$this.isPopout && !$this.isMessagesHover) {
-                        jQuery('[data-toggle="tooltip"]').tooltip('dispose');
-                        jQuery('[data-toggle="tooltip"]').tooltip();
+                        $this.initTooltip();
                     }
-                    
+
                     $this.initImageLazyLoad();
-                    jQuery('.messages:not(.stop)').scrollTop(jQuery('.messages')[0].scrollHeight);
+                    jQuery('.messages:not(.stop)').scrollTop(typeof jQuery('.messages')[0] === 'undefined' ? 0 : jQuery('.messages')[0].scrollHeight);
                 }, 100);
             },
             showBadges: function() {
                 window.localStorage.setItem('showMessageBadges', this.showBadges);
             },
             showTime: function() {
+                let $this = this;
                 window.localStorage.setItem('showMessageTime', this.showTime);
+                setTimeout(function() {
+                    $this.initTooltip();
+                }, 100);
             },
             showUserColor: function() {
                 window.localStorage.setItem('showMessageUserColor', this.showUserColor);
@@ -50,24 +54,24 @@
         },
         mounted: function() {
             let $this = this;
-            this.getChatMessages();
-            
+            this.getMessages();
+
             if (/^#\/channel\/(.*)\/chat\/?/.test(window.location.hash)) {
                 this.isPopout = true;
             }
-            
+
             jQuery('.messages').scroll(function() {
                 const scrollTop = jQuery('.messages').scrollTop();
-                const scrollHeight = jQuery('.messages')[0].scrollHeight;
+                const scrollHeight = typeof jQuery('.messages')[0] === 'undefined' ? 0 : jQuery('.messages')[0].scrollHeight;
                 const scrollPos = (scrollTop + (scrollHeight - scrollTop)) - scrollTop;
-                
+
                 if (scrollPos - 250 > jQuery('.messages').height()) {
                     $this.showScrollBottom = true;
                 } else {
                     $this.showScrollBottom = false;
                 }
             });
-            
+
             if (this.isPopout) {
                 jQuery(window).resize(function() {
                     jQuery('.chat .messages').css('height', '');
@@ -77,85 +81,70 @@
             }
         },
         methods: {
+            getChatClass: function() {
+                let cssClass = [];
+
+                if (this.isPopout) {
+                    cssClass.push('popout');
+                }
+
+                cssClass.push(this.$route.params.channel.toLowerCase());
+
+                return cssClass.join(' ');
+            },
+            getMessages: function() {
+                if (typeof streamWrite === 'function') {
+                    const call = {
+                        method: 'getMessages',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase()
+                        },
+                        env: 'node'
+                    };
+
+                    streamWrite(call);
+                }
+            },
+            getMessageClass: function(index, message) {
+                let cssClass = [];
+
+                if (index === 0) {
+                    cssClass.push('first');
+                }
+
+                if (message.purge.hasPurge) {
+                    cssClass.push('purge');
+                }
+
+                cssClass.push(message.type);
+                cssClass.push('channel-' + message.channelId);
+                cssClass.push('message-' + message.uuid);
+                cssClass.push('user-' + message.userId);
+
+                return cssClass.join(' ');
+            },
             popoutChat: function() {
                 const url = this.$router.resolve({name: 'chat', params: {channel: this.$root._route.params.channel}}).href;
                 const params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=750,height=750';
                 window.open(url, 'Chat Popout', params);
             },
             scrollBottom: function() {
-                jQuery('.messages').scrollTop(jQuery('.messages')[0].scrollHeight);
+                jQuery('.messages').scrollTop(typeof jQuery('.messages')[0] === 'undefined' ? 0 : jQuery('.messages')[0].scrollHeight);
             },
-            getChatClass: function() {
-                let cssClass = [];
-                
-                if (this.isPopout) {
-                    cssClass.push('popout');
-                }
-                
-                cssClass.push(this.$route.params.channel.toLowerCase());
-                
-                return cssClass.join(' ');
-            },
-            setChatMessage: function(args) {
+            setMessage: function(args) {
                 if (!this.isPause && this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.messages.push({
-                        badges: args.badges,
-                        channelId: args.channelId,
-                        color: args.color,
-                        message: args.message,
-                        messageId: args.messageId,
-                        messageType: args.messageType,
-                        mod: args.mod,
-                        nativeBadges: args.nativeBadges,
-                        purge: args.purge,
-                        subscriber: args.subscriber,
-                        timestamp: args.timestamp,
-                        turbo: args.turbo,
-                        user: args.user,
-                        userId: args.userId
-                    });
-                    
+                    this.messages.push(args.message);
+
                     // limit of messages
                     if (this.messages.length >= 100 && !this.isMessagesHover) {
                         this.messages.shift();
                     }
                 }
             },
-            setChatMessages: function(args) {
+            setMessages: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.messages = args.messages;
                 }
-            },
-            getChatMessages: function() {
-                if (typeof streamWrite === 'function') {
-                    const call = {
-                        method: 'getChatMessages',
-                        args: {
-                            channel: this.$root._route.params.channel.toLowerCase()
-                        },
-                        env: 'node'
-                    };
-                    
-                    streamWrite(call);
-                }
-            },
-            getChatMessageClass: function(index, message) {
-                let cssClass = [];
-                
-                if (index === 0) {
-                    cssClass.push('first');
-                }
-                
-                if (message.purge.hasPurge) {
-                    cssClass.push('purge');
-                }
-                
-                cssClass.push(message.messageType);
-                cssClass.push('channel-' + message.channelId);
-                cssClass.push('message-' + message.messageId);
-                cssClass.push('user-' + message.userId);
-                
-                return cssClass.join(' ');
             }
         }
     };
@@ -190,9 +179,9 @@
                 </div>
                 <div class="messages" :class="{stop: isMessagesHover}" @mouseover="isMessagesHover = true" @mouseout="isMessagesHover = false">
                     <!-- eslint-disable-next-line vue/require-v-for-key -->
-                    <div v-for="(message, index) in messages" :class="getChatMessageClass(index, message)" class="message">
-                        <span v-if="showTime" class="timestamp mr-2" data-toggle="tooltip" data-placement="top" :title="message.timestamp|formatDateTime($t('datetime'))">
-                            [{{ message.timestamp|formatDateTime($t("time")) }}]
+                    <div v-for="(message, index) in messages" :class="getMessageClass(index, message)" class="message">
+                        <span v-if="showTime" class="timestamp mr-2" data-toggle="tooltip" data-placement="top" :title="(message.createdAt * 1000)|formatDateTime($t('datetime'))">
+                            [{{ (message.createdAt * 1000)|formatDateTime($t("time")) }}]
                         </span>
                         <span v-if="showBadges">
                             <!-- eslint-disable-next-line vue/require-v-for-key -->
@@ -202,10 +191,10 @@
                         </span>
                         <span class="user mr-1" :style="{color: showUserColor ? message.color : null}">
                             {{ message.user }}
-                            <span v-if="message.messageType == 'chat'">:</span>
+                            <span v-if="message.type == 'chat'">:</span>
                         </span>
                         <!-- eslint-disable-next-line vue/no-v-html -->
-                        <span class="text mr-1" :class="{action: message.messageType == 'action'}" :style="{color: message.messageType == 'action' && showUserColor ? message.color : null}" v-html="message.message"></span>
+                        <span class="text mr-1" :class="{action: message.type == 'action'}" :style="{color: message.type == 'action' && showUserColor ? message.color : null}" v-html="message.message"></span>
                         <span v-if="message.purge.showMessage" class="purge">
                             ({{ message.purge.message }}<span v-if="message.purge.reason">: {{ message.purge.reason }}</span>)
                         </span>

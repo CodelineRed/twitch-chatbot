@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+    # copy this file to your local video folder
+    # rename file to docker-compose.yml
+    # open a command prompt on your OS
+    # navigate to local video folder
+    # execute: docker-compose up -d
+    # http://localhost:3060
+    webserver:
+        image: php:7-alpine
+        container_name: twitch-chatbot-local-videos
+        working_dir: /var/www
+        command: php -S 0.0.0.0:8080 -t ./
+        environment:
+            docker: "true"
+        ports:
+            - 3060:8080
+        volumes:
+            - .:/var/www

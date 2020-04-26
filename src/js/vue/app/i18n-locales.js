@@ -2,7 +2,7 @@ const en = {
     'app': 'Twitch Chatbot',
     'chat': 'Chat',
     'counter': 'Counter',
-    
+
     'lang-de': 'Deutsch',
     'lang-en': 'English',
 
@@ -23,7 +23,7 @@ const en = {
     'datetime': 'YYYY-MM-DD hh:mm:ss',
     'datetime-suffix': 'YYYY-MM-DD hh:mm:ss a',
     'timezone': 'America/New_York',
-    
+
     'month': '{0} month',
     'months': '{0} months',
     'year': '{0} year',
@@ -37,7 +37,7 @@ const de = {
     'nav-about': 'Über uns',
     'nav-error': 'Fehlerseite',
     'nav-home': 'Alle Channels',
-    
+
     'dp': ',',
     'ts': '.',
     'date': 'DD.MM.YYYY',
@@ -48,7 +48,7 @@ const de = {
     'datetime': 'DD.MM.YYYY HH:mm:ss',
     'datetime-suffix': 'DD.MM.YYYY HH:mm:ss \\U\\h\\r',
     'timezone': 'Europe/Berlin',
-    
+
     'month': '{0} Monat',
     'months': '{0} Monate',
     'year': '{0} Jahr',

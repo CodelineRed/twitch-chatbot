@@ -33,6 +33,7 @@ $card-border-color: $theme-color-1;
 
 $modal-content-bg: $theme-color-4;
 $modal-header-border-color: $theme-color-3;
+$modal-xl: 1075px;
 $modal-md: 800px;
 
 $pagination-bg: $theme-color-2;
@@ -52,6 +53,21 @@ $dropdown-link-color: $body-color;
 $dropdown-link-hover-color: $body-color;
 $dropdown-link-hover-bg: $theme-color-4;
 $dropdown-divider-bg: $theme-color-4;
+
+$popover-bg: $theme-color-4;
+$popover-body-color: #fff;
+$popover-header-bg: $theme-color-2;
+$popover-border-color: $theme-color-1;
+
+$list-group-color: #fff;
+$list-group-bg: $theme-color-2;
+$list-group-border-color: rgba($theme-color-1, .25);
+$list-group-hover-bg: $theme-color-4;
+$list-group-action-hover-color: $list-group-color;
+$list-group-action-active-color: $list-group-color;
+$list-group-action-active-bg: $theme-color-4;
+
+$hr-border-color: $theme-color-1;
 
 $grid-breakpoints: (
   xs: 0,

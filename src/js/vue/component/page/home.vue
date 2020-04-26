@@ -2,7 +2,7 @@
     import imageLazyLoad from '../../method/image-lazyload';
     import slider from '../../method/slider';
     import Channels from '../partial/channels';
-    
+
     export default {
         components: {
             'c-channels': Channels

@@ -10,7 +10,7 @@
         },
         methods: {
             generateUrl: function(file) {
-                return 'video/' + file;
+                return 'http://localhost:3060/' + file;
             },
             getParentVideo: function() {
                 const $this = this;
@@ -22,7 +22,7 @@
 
 <template>
     <div class="embed-responsive embed-responsive-16by9">
-        <video class="embed-responsive-item" controls autoplay>
+        <video class="embed-responsive-item" autoplay>
             <source :src="generateUrl(video.file)" type="video/mp4">
             No video support
         </video> 

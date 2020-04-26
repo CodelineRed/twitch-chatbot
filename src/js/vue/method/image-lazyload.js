@@ -15,7 +15,7 @@ const imageLazyLoad = {
                 });
             })(jQuery);
         },
-        
+
         /**
          * Init image lazy load
          * 

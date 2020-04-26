@@ -99,6 +99,6 @@
             "ignores": []
         }]
     },
-    "globals": ["$", "jQuery"],
+    "globals": ["$", "jQuery", "moment"],
     "envs": ["node", "browser", "es6"]
 }

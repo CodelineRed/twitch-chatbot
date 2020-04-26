@@ -1,7 +1,7 @@
 .btn-animation {
     overflow: hidden;
     position: relative;
-    
+
     &::before {
         border-radius: 100%;
         content: ' ';
@@ -13,19 +13,25 @@
         transform: translate(-50%, -50%);
         width: 0;
     }
-    
+
     &.btn-animation-start {
         &::before {
             animation: btn-animation .5s linear;
         }
     }
-    
+
     &.btn-animation-success {
         &::before {
             background-color: $success;
         }
     }
-    
+
+    &.btn-animation-error {
+        &::before {
+            background-color: $danger;
+        }
+    }
+
     > * {
         position: relative;
         z-index: 5;

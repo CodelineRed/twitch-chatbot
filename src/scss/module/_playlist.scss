@@ -2,14 +2,37 @@
     background-color: $theme-color-4;
     border-radius: 5px;
     position: relative;
-    
+
     .dropdown-menu {
         .bg-danger {
             color: $white;
         }
-        
+
+        .bg-primary {
+            color: $white;
+        }
+
         .bg-warning {
             color: $black;
+        }
+    }
+
+    .form-search {
+        .fa-icon {
+            bottom: 7px;
+            color: $theme-color-4;
+            position: absolute;
+            right: 25px;
+        }
+
+        .list-group {
+            border-radius: 5px;
+            margin-top: 5px;
+            max-height: 375px;
+            overflow-y: auto;
+            position: absolute;
+            width: 100%;
+            z-index: 1;
         }
     }
 }

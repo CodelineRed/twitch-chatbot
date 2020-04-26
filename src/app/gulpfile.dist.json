@@ -3,5 +3,5 @@
     "sourcePath": "src/",
     "publicPath": "public/",
     "systemPath": "path/to/system/",
-    "env": "prod"
+    "env": "dev"
 }

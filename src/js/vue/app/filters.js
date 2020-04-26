@@ -1,5 +1,3 @@
-/*global moment*/
-
 const filters = {
     /**
      * @param {string|integer} timestamp in milliseconds
@@ -24,7 +22,7 @@ const filters = {
             const hours = ('0' + durationObject.hours()).substr(-2);
             const minutes = ('0' + durationObject.minutes()).substr(-2);
             const seconds = ('0' + durationObject.seconds()).substr(-2);
-            
+
             return hours + ':' + minutes + ':' + seconds + ' h';
         } else {
             return '-';

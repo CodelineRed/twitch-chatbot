@@ -29,7 +29,7 @@ function initChatbotPort(port) {
             }
 
             if (typeof dataJson.method === 'string' && typeof viewRefsMethod === 'function'
-                    && typeof dataJson.env === 'string' && dataJson.env === 'web') {
+                    && typeof dataJson.env === 'string' && dataJson.env === 'browser') {
                 if (typeof dataJson.args === 'object' && dataJson.args !== null) {
                     viewRefsMethod(dataJson.args);
                 } else {

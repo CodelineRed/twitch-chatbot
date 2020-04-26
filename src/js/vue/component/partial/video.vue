@@ -2,7 +2,7 @@
     import Empty from './platform/empty';
     import Local from './platform/local';
     import Youtube from './platform/youtube';
-    
+
     export default {
         components: {
             'empty': Empty,
@@ -28,7 +28,7 @@
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     const $this = this;
                     $this.video = args.video;
-                    
+
                     if (parseInt(this.video.duration) > 0) {
                         setTimeout(function() {
                             $this.video.platform = 'empty';
@@ -46,7 +46,7 @@
                         },
                         env: 'node'
                     };
-                    
+
                     streamWrite(call);
                 }
             }

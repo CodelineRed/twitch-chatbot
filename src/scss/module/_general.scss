@@ -15,10 +15,42 @@
 
     // Non standard for webkit
     //word-break: break-word;
-    
+
     hyphens: auto;
 }
 
 footer {
     margin-bottom: 25px;
+}
+
+option {
+    &[disabled] {
+        color: #e0e0e0; // sass-lint:disable-line no-color-literals
+    }
+}
+
+table {
+    .index {
+        padding-left: 35px;
+        position: relative;
+
+        .move {
+            background-color: $theme-color-1;
+            border-radius: 5px;
+            color: $white;
+            cursor: pointer;
+            font-size: 10px;
+            left: 5px;
+            padding: 0 3px;
+            position: absolute;
+
+            &.move-down {
+                top: 30px;
+            }
+
+            &.move-up {
+                top: 8px;
+            }
+        }
+    }
 }
