@@ -21,3 +21,8 @@ a {
         }
     }
 }
+
+[data-toggle='tooltip'],
+[data-toggle='popover'] {
+    cursor: pointer;
+}

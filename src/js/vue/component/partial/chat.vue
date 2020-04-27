@@ -180,8 +180,8 @@
                 <div class="messages" :class="{stop: isMessagesHover}" @mouseover="isMessagesHover = true" @mouseout="isMessagesHover = false">
                     <!-- eslint-disable-next-line vue/require-v-for-key -->
                     <div v-for="(message, index) in messages" :class="getMessageClass(index, message)" class="message">
-                        <span v-if="showTime" class="timestamp mr-2" data-toggle="tooltip" data-placement="top" :title="(message.createdAt * 1000)|formatDateTime($t('datetime'))">
-                            [{{ (message.createdAt * 1000)|formatDateTime($t("time")) }}]
+                        <span v-if="showTime" class="timestamp mr-2" data-toggle="tooltip" data-placement="top" :title="message.createdAt|formatDateTime($t('datetime'))">
+                            [{{ message.createdAt|formatDateTime($t("time")) }}]
                         </span>
                         <span v-if="showBadges">
                             <!-- eslint-disable-next-line vue/require-v-for-key -->

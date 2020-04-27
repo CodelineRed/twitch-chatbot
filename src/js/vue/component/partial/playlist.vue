@@ -43,6 +43,7 @@
                 videoItem: {
                     id: 0,
                     name: '',
+                    subName: '',
                     file: '',
                     played: false,
                     skipped: false,
@@ -50,11 +51,11 @@
                     durationHours: 0,
                     durationMin: 0,
                     durationSec: 0,
-                    durationAutoDetect: true,
                     platform: 'youtube',
                     playlistId: 0,
                     titleCmd: '',
-                    gameCmd: ''
+                    gameCmd: '',
+                    autofillMeta: true
                 },
                 videoIndex: 0,
                 videoSearch: '',
@@ -67,13 +68,19 @@
                 this.getPlaylist();
             },
             'videoItem.file': function() {
-                if (this.videoItem.durationAutoDetect === true) {
-                    if (this.videoItem.platform === 'local') {
-                        this.getLocalVideoDuration();
+                if (this.videoItem.autofillMeta === true) {
+                    if (this.videoItem.platform === 'local' 
+                        && this.videoItem.file === this.$options.filters.localFile(this.videoItem.file)) {
+                        this.getLocalVideoMeta();
+                    } else if (this.videoItem.platform === 'local') {
+                        this.videoItem.file = this.$options.filters.localFile(this.videoItem.file);
                     }
 
-                    if (this.videoItem.platform === 'youtube') {
-                        this.getYoutubeVideoDuration();
+                    if (this.videoItem.platform === 'youtube' 
+                        && this.videoItem.file === this.$options.filters.youtubeFile(this.videoItem.file)) {
+                        this.getYoutubeVideoMeta();
+                    } else if (this.videoItem.platform === 'youtube') {
+                        this.videoItem.file = this.$options.filters.youtubeFile(this.videoItem.file);
                     }
                 }
             },
@@ -87,23 +94,23 @@
                 this.calculatevideoItemDuration(this.videoItem.durationHours, this.videoItem.durationMin, this.videoItem.durationSec);
             },
             'videoItem.platform': function() {
-                this.videoItem.durationAutoDetect = true;
+                this.videoItem.autofillMeta = true;
 
                 if (this.videoItem.platform === 'local' && this.config.hasVideosFolder === false) {
-                    this.videoItem.durationAutoDetect = false;
+                    this.videoItem.autofillMeta = false;
                 }
 
                 if (this.videoItem.platform === 'youtube' && this.config.hasYoutubeToken === false) {
-                    this.videoItem.durationAutoDetect = false;
+                    this.videoItem.autofillMeta = false;
                 }
                 
-                if (this.videoItem.durationAutoDetect === true) {
+                if (this.videoItem.autofillMeta === true) {
                     if (this.videoItem.platform === 'local') {
-                        this.getLocalVideoDuration();
+                        this.getLocalVideoMeta();
                     }
 
                     if (this.videoItem.platform === 'youtube') {
-                        this.getYoutubeVideoDuration();
+                        this.getYoutubeVideoMeta();
                     }
                 }
             },
@@ -195,6 +202,7 @@
                 $this.videoItem = {
                     id: 0,
                     name: '',
+                    subName: '',
                     file: '',
                     played: false,
                     skipped: false,
@@ -202,7 +210,7 @@
                     durationHours: 0,
                     durationMin: 0,
                     durationSec: 0,
-                    durationAutoDetect: true,
+                    autofillMeta: true,
                     platform: 'youtube',
                     playlistId: $this.activePlaylist.id,
                     titleCmd: '',
@@ -277,10 +285,19 @@
                     streamWrite(call);
                 }
             },
-            getLocalVideoDuration: function() {
+            getFilePlaceholder: function() {
+                if (this.videoItem.platform === 'local') {
+                    return 'relative file path';
+                }
+
+                if (this.videoItem.platform === 'youtube') {
+                    return 'YouTube Video ID';
+                }
+            },
+            getLocalVideoMeta: function() {
                 if (typeof streamWrite === 'function') {
                     const call = {
-                        method: 'getLocalVideoDuration',
+                        method: 'getLocalVideoMeta',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
                             file: this.videoItem.file
@@ -379,10 +396,10 @@
                     streamWrite(call);
                 }
             },
-            getYoutubeVideoDuration: function() {
+            getYoutubeVideoMeta: function() {
                 if (typeof streamWrite === 'function') {
                     const call = {
-                        method: 'getYoutubeVideoDuration',
+                        method: 'getYoutubeVideoMeta',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
                             file: this.videoItem.file
@@ -395,17 +412,17 @@
             },
             isInvalidHours: function(){
                 const hours = this.videoItem.durationHours;
-                return (hours < 0 || hours > 23) && !this.videoItem.durationAutoDetect;
+                return (hours < 0 || hours > 23) && !this.videoItem.autofillMeta;
             },
             isInvalidMin: function(){
                 const min = this.videoItem.durationMin;
-                return (min < 0 || min > 59) && !this.videoItem.durationAutoDetect;
+                return (min < 0 || min > 59) && !this.videoItem.autofillMeta;
             },
             isInvalidSec: function(){
                 const hours = this.videoItem.durationHours;
                 const min = this.videoItem.durationMin;
                 const sec = this.videoItem.durationSec;
-                return (sec < 0 || sec > 59 || (hours + min + sec === 0)) && !this.videoItem.durationAutoDetect;
+                return (sec < 0 || sec > 59 || (hours + min + sec === 0)) && !this.videoItem.autofillMeta;
             },
             mergePlaylists: function() {
                 if (typeof streamWrite === 'function' && this.merge.targetId 
@@ -528,10 +545,11 @@
                 let vsr = this.videoSearchResults[videoIndex];
                 vsr.channel = this.$root._route.params.channel.toLowerCase();
                 this.videoSearchResults = [];
-                this.setVideoDurationForm(vsr);
+                this.setVideoDurationToForm(vsr);
                 //this.videoItem.playlistId = this.activePlaylist.id;
                 this.videoItem.id = vsr.id;
                 this.videoItem.name = vsr.name;
+                this.videoItem.subName = vsr.subName;
                 this.videoItem.file = vsr.file;
                 this.videoItem.duration = vsr.duration;
                 this.videoItem.platform = vsr.platform;
@@ -541,7 +559,7 @@
                 this.videoItem.skipped = 0;
                 this.videoItem.titleCmd = '';
                 this.videoItem.gameCmd = '';
-                this.videoItem.durationAutoDetect = false;
+                this.videoItem.autofillMeta = false;
             },
             setActivePlaylist: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
@@ -571,7 +589,16 @@
                     this.playlistSearchResults = args.playlists;
                 }
             },
-            setVideoDurationForm: function(args) {
+            setVideoMetaToForm: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.setVideoDurationToForm(args);
+
+                    if (args.name.length && !this.videoItem.name.length) {
+                        this.videoItem.name = args.name;
+                    }
+                }
+            },
+            setVideoDurationToForm: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     const durationObject = moment.duration(parseInt(args.duration), 's');
                     this.videoItem.durationHours = durationObject.hours();
@@ -686,7 +713,7 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Title</th>
+                        <th scope="col">Name</th>
                         <th scope="col">Duration</th>
                         <th scope="col">Start</th>
                         <th scope="col">End</th>
@@ -708,10 +735,13 @@
                             </div>
                             {{ index + 1 }}
                         </td>
-                        <td>{{ video.name }}</td>
-                        <td><span class="text-nowrap">{{ (video.duration * 1000)|formatDuration() }}</span></td>
-                        <td><span class="text-nowrap">{{ (video.start * 1000)|formatDateTime($t('time-long-suffix')) }}</span></td>
-                        <td><span class="text-nowrap">{{ (video.end * 1000)|formatDateTime($t('time-long-suffix')) }}</span></td>
+                        <td>
+                            {{ video.name + (video.subName.length ? ' - ' : '') }}
+                            <span v-if="video.subName.length" class="text-muted">{{ video.subName }}</span>
+                        </td>
+                        <td><span class="text-nowrap">{{ video.duration|formatDuration() }}</span></td>
+                        <td><span class="text-nowrap">{{ video.start|formatDateTime($t('time-long-suffix')) }}</span></td>
+                        <td><span class="text-nowrap">{{ video.end|formatDateTime($t('time-long-suffix')) }}</span></td>
                         <td :data-order="video.played ? '1' : '0'" :data-search="video.played ? 'played-yes' : 'played-no'">
                             <div class="custom-control custom-switch">
                                 <input :id="'video-played-' + index" v-model="activePlaylist.videos[index].played" type="checkbox" class="custom-control-input">
@@ -785,7 +815,7 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
-                                                <th scope="col">Title</th>
+                                                <th scope="col">Name</th>
                                                 <th scope="col">Videos</th>
                                                 <th scope="col">Updated at</th>
                                                 <th scope="col">Created at</th>
@@ -799,8 +829,8 @@
                                                 </td>
                                                 <td>{{ playlistItem.name }}</td>
                                                 <td>{{ playlistItem.videoQuantity }}</td>
-                                                <td>{{ (playlistItem.updatedAt * 1000)|formatDateTime($t('datetime')) }}</td>
-                                                <td>{{ (playlistItem.createdAt * 1000)|formatDateTime($t('datetime')) }}</td>
+                                                <td>{{ playlistItem.updatedAt|formatDateTime($t('datetime')) }}</td>
+                                                <td>{{ playlistItem.createdAt|formatDateTime($t('datetime')) }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -830,7 +860,7 @@
                     <div class="modal-body">
                         <div v-if="!updateMode" class="row">
                             <div class="col-12 col-md-10">
-                                <label for="playlist-form-name" class="col-form-label">Title:</label>
+                                <label for="playlist-form-name" class="col-form-label">Name:</label>
                                 <input id="playlist-form-name" v-model="playlist.name" type="text" class="form-control" :class="{'is-invalid': playlist.name === ''}" autocomplete="off">
                             </div>
                             <div class="col-12 col-md-2">
@@ -850,7 +880,7 @@
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="playlist-form-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': videoItem.playlistId === 0}" autocomplete="off" placeholder="Title">
+                                <input id="playlist-form-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': videoItem.playlistId === 0}" autocomplete="off" placeholder="Name">
                                 <div v-if="showLoader.playlist" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>
@@ -861,7 +891,7 @@
                                 </div>
                             </div>
                             <div v-if="playlist.name !== ''" class="col-12">
-                                <label for="playlist-form-name" class="col-form-label">Title:</label>
+                                <label for="playlist-form-name" class="col-form-label">Name:</label>
                                 <div class="form-row">
                                     <div class="col">
                                         <input id="playlist-form-name" v-model="playlist.name" type="text" class="form-control" :class="{'is-invalid': playlist.name === ''}" autocomplete="off">
@@ -877,7 +907,7 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
-                                                <th scope="col">Title</th>
+                                                <th scope="col">Name</th>
                                                 <th scope="col">Duration</th>
                                                 <th scope="col" data-orderable="false"></th>
                                             </tr>
@@ -895,7 +925,7 @@
                                                     {{ index + 1 }}
                                                 </td>
                                                 <td>{{ video.name }}</td>
-                                                <td><span class="text-nowrap">{{ (video.duration * 1000)|formatDuration() }}</span></td>
+                                                <td><span class="text-nowrap">{{ video.duration|formatDuration() }}</span></td>
                                                 <td class="text-center">
                                                     <span class="text-nowrap">
                                                         <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(video, index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
@@ -937,7 +967,7 @@
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="video-form-video-search" v-model="videoSearch" type="text" class="form-control" autocomplete="off" placeholder="Title or File">
+                                <input id="video-form-video-search" v-model="videoSearch" type="text" class="form-control" autocomplete="off" placeholder="Name or File">
                                 <div v-if="showLoader.video" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>
@@ -998,25 +1028,29 @@
                             <div class="col-12">
                                 <hr>
                             </div>
-                            <div class="col-12 col-md-6">
-                                <label for="video-form-name" class="col-form-label">Title:</label>
-                                <input id="video-form-name" v-model="videoItem.name" type="text" class="form-control" :class="{'is-invalid': videoItem.name === ''}" :disabled="videoSearch.length > 0" autocomplete="off">
-                            </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12">
                                 <label for="video-form-file" class="col-form-label">
                                     File:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="YouTube Video ID or relative file path from 'videosFolder'">
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="YouTube Video ID or relative file path based on 'videosFolder'">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="video-form-file" v-model="videoItem.file" type="text" class="form-control" :class="{'is-invalid': videoItem.file === ''}" :disabled="videoSearch.length > 0" autocomplete="off" placeholder="YouTube ID or rel. file path">
+                                <input id="video-form-file" v-model="videoItem.file" type="text" class="form-control" :class="{'is-invalid': videoItem.file === ''}" :disabled="videoSearch.length > 0" autocomplete="off" :placeholder="getFilePlaceholder()">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="video-form-name" class="col-form-label">Name:</label>
+                                <input id="video-form-name" v-model="videoItem.name" type="text" class="form-control" :class="{'is-invalid': videoItem.name === ''}" :disabled="videoSearch.length > 0" autocomplete="off">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="video-form-subname" class="col-form-label">Sub Name:</label>
+                                <input id="video-form-subname" v-model="videoItem.subName" type="text" class="form-control" :disabled="videoSearch.length > 0" autocomplete="off">
                             </div>
                             <div class="col-12 col-md-6">
                                 <label for="video-form-duration-hours" class="col-form-label">Duration:</label>
                                 <div class="form-row">
                                     <div class="col">
                                         <div class="input-group">
-                                            <input id="video-form-duration-hours" v-model.number="videoItem.durationHours" type="number" min="0" max="23" class="form-control" :class="{'is-invalid': isInvalidHours()}" :disabled="videoSearch.length > 0 || videoItem.durationAutoDetect" placeholder="hours">
+                                            <input id="video-form-duration-hours" v-model.number="videoItem.durationHours" type="number" min="0" max="23" class="form-control" :class="{'is-invalid': isInvalidHours()}" :disabled="videoSearch.length > 0" placeholder="hours">
                                             <div class="input-group-append">
                                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                                                 <div class="input-group-text">h</div>
@@ -1025,7 +1059,7 @@
                                     </div>
                                     <div class="col">
                                         <div class="input-group">
-                                            <input id="video-form-duration-min" v-model.number="videoItem.durationMin" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': isInvalidMin()}" :disabled="videoSearch.length > 0 || videoItem.durationAutoDetect" placeholder="min.">
+                                            <input id="video-form-duration-min" v-model.number="videoItem.durationMin" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': isInvalidMin()}" :disabled="videoSearch.length > 0" placeholder="min.">
                                             <div class="input-group-append">
                                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                                                 <div class="input-group-text">m</div>
@@ -1034,7 +1068,7 @@
                                     </div>
                                     <div class="col">
                                         <div class="input-group">
-                                            <input id="video-form-duration-sec" v-model.number="videoItem.durationSec" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': isInvalidSec()}" :disabled="videoSearch.length > 0 || videoItem.durationAutoDetect" placeholder="sec.">
+                                            <input id="video-form-duration-sec" v-model.number="videoItem.durationSec" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': isInvalidSec()}" :disabled="videoSearch.length > 0" placeholder="sec.">
                                             <div class="input-group-append">
                                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                                                 <div class="input-group-text">s</div>
@@ -1052,16 +1086,18 @@
                             </div>
                             <div class="col-12">
                                 <div class="custom-control custom-switch pt-3 pt-md-4 float-left mr-3">
-                                    <input id="video-form-played" v-model.number="videoItem.durationAutoDetect" type="checkbox" value="1" class="custom-control-input" :disabled="(!config.hasYoutubeToken && videoItem.platform === 'platform') || (!config.hasVideosFolder && videoItem.platform === 'local')">
-                                    <label class="custom-control-label" for="video-form-played">Duration auto detect</label>
-                                </div>
-                                <div class="custom-control custom-switch pt-3 pt-md-4 float-left mr-3">
                                     <input id="video-form-played" v-model.number="videoItem.played" type="checkbox" value="1" class="custom-control-input">
                                     <label class="custom-control-label" for="video-form-played">Played</label>
                                 </div>
-                                <div class="custom-control custom-switch pt-3 pt-md-4 float-left">
+                                <div class="custom-control custom-switch pt-3 pt-md-4 float-left mr-3">
                                     <input id="video-form-skipped" v-model.number="videoItem.skipped" type="checkbox" value="1" class="custom-control-input">
                                     <label class="custom-control-label" for="video-form-skipped">Skipped</label>
+                                </div>
+                                <div class="custom-control custom-switch pt-3 pt-md-4 float-left">
+                                    <input id="video-form-autofill" v-model.number="videoItem.autofillMeta" type="checkbox" value="1" class="custom-control-input" :disabled="(!config.hasYoutubeToken && videoItem.platform === 'platform') || (!config.hasVideosFolder && videoItem.platform === 'local')">
+                                    <label class="custom-control-label" for="video-form-autofill" data-toggle="tooltip" data-placement="top" title="Autofill 'Name' and 'Duration' by given 'File'">
+                                        Autofill meta
+                                    </label>
                                 </div>
                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                                 <div class="clearfix"></div>
@@ -1097,7 +1133,7 @@
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="remove-playlist-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': videoItem.playlistId === 0}" autocomplete="off" placeholder="Title">
+                                <input id="remove-playlist-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': videoItem.playlistId === 0}" autocomplete="off" placeholder="Name">
                                 <div v-if="showLoader.playlist" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>
@@ -1161,7 +1197,7 @@
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="merge-playlists-search-source" v-model="playlistSourceSearch" type="text" class="form-control" :class="{'is-invalid': videoItem.playlistId === 0}" autocomplete="off" placeholder="Title">
+                                <input id="merge-playlists-search-source" v-model="playlistSourceSearch" type="text" class="form-control" :class="{'is-invalid': videoItem.playlistId === 0}" autocomplete="off" placeholder="Name">
                                 <div v-if="showLoader.playlist" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>
@@ -1229,7 +1265,7 @@
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="switch-playlist-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': videoItem.playlistId === 0}" autocomplete="off" placeholder="Title">
+                                <input id="switch-playlist-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': videoItem.playlistId === 0}" autocomplete="off" placeholder="Name">
                                 <div v-if="showLoader.playlist" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>

@@ -13,12 +13,22 @@
             return {
                 video: {
                     name: '',
+                    subName: '',
                     file: '',
                     played: false,
+                    skipped: false,
                     duration: 0, // seconds
                     platform: 'empty'
                 }
             };
+        },
+        watch: {
+            'video.name': function() {
+                jQuery('.video .name').removeClass('animation');
+                setTimeout(function() {
+                    jQuery('.video .name').addClass('animation');
+                }, 100);
+            }
         },
         mounted: function() {
             this.getVideo();
@@ -58,6 +68,12 @@
     <div class="video" :class="$route.params.channel.toLowerCase()">
         <div v-if="video.platform !== ''">
             <component :is="video.platform" ref="platform" />
+        </div>
+        <div v-if="video.name.length" class="name overlay px-2 py-1">
+            {{ video.name }}
+            <div v-if="video.subName.length" class="sub-name">
+                {{ video.subName }}
+            </div>
         </div>
     </div>
 </template>

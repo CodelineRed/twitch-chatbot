@@ -104,6 +104,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Remove Played Videos
 * Remove Skipped Videos
 * Add Playlist
+* All Playlists
 * Edit Playlist
 * Switch Playlist
 * Merge Playlists
@@ -112,7 +113,9 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Clear Playlist
 * playlistInfo Command
 * Video url `/channel/[channel]/video` to use browser source in OBS
+* Video name overlay in player
 * Auto detect video duration (local and YouTube)
+* Change stream title and / or category dynamic over [Nightbot](https://nightbot.tv/) (or some similar popular Bot)
 
 ### Commands
 * Cooldown

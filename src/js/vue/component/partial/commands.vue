@@ -101,8 +101,8 @@
                                     </div>
                                 </td>
                                 <td :data-order="command.lastExec">
-                                    <span class="d-inline-block text-nowrap" data-toggle="tooltip" data-placement="top" :title="(command.lastExec * 1000)|formatDateTime($t('datetime'))">
-                                        {{ (command.lastExec * 1000)|formatDateTime($t('time-long-suffix')) }}
+                                    <span class="d-inline-block text-nowrap" data-toggle="tooltip" data-placement="top" :title="command.lastExec|formatDateTime($t('datetime'))">
+                                        {{ command.lastExec|formatDateTime($t('time-long-suffix')) }}
                                     </span>
                                 </td>
                                 <td :data-order="command.active ? '1' : '0'" :data-search="command.active ? 'active-yes' : 'active-no'">

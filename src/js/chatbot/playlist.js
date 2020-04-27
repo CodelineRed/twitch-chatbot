@@ -1,9 +1,15 @@
 const database     = require('./database');
 const fs           = require('fs');
+const latinize     = require('latinize');
 const mediainfo    = require('mediainfo-wrapper');
 const moment       = require('moment');
 const request      = require('request');
 const {v4: uuidv4} = require('uuid');
+
+Object.assign(latinize.characters, {
+    'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue', 'ä': 'ae', 
+    'ö': 'oe', 'ü': 'ue', 'ẞ': 'S'
+});
 
 const playlist = {
     addPlaylist: function(chatbot, args) {
@@ -49,12 +55,13 @@ const playlist = {
             delete args.video.durationHours;
             delete args.video.durationMin;
             delete args.video.durationSec;
-            delete args.video.durationAutoDetect;
+            delete args.video.autofillMeta;
             let time = moment().unix();
 
             let values = {
                 channelId: chatbot.channels[args.channel].id,
                 name: args.video.name,
+                subName: args.video.subName,
                 file: args.video.file,
                 duration: args.video.duration, // unix timestamp (seconds)
                 platform: args.video.platform,
@@ -89,10 +96,12 @@ const playlist = {
                         if (args.video.playlistId === chatbot.activePlaylists[args.channel].id) {
                             values.id = values.videoId;
                             values.name = args.video.name;
+                            values.subName = args.video.subName;
                             values.file = args.video.file;
                             values.duration = args.video.duration; // unix timestamp (seconds)
                             values.platform = args.video.platform;
                             chatbot.activePlaylists[args.channel].videos.push(values);
+                            chatbot.activePlaylists[args.channel].videoQuantity = chatbot.activePlaylists[args.channel].videos.length;
                             playlist.getActivePlaylist(chatbot, args);
                         }
 
@@ -119,9 +128,11 @@ const playlist = {
                             if (args.video.playlistId === chatbot.activePlaylists[args.channel].id) {
                                 values.id = values.videoId;
                                 values.name = args.video.name;
+                                values.subName = args.video.subName;
                                 values.file = args.video.file;
                                 values.duration = args.video.duration; // unix timestamp (seconds)
                                 values.platform = args.video.platform;
+                                chatbot.activePlaylists[args.channel].videoQuantity = chatbot.activePlaylists[args.channel].videos.length;
                                 chatbot.activePlaylists[args.channel].videos.push(values);
                                 playlist.getActivePlaylist(chatbot, args);
                             }
@@ -198,23 +209,38 @@ const playlist = {
             chatbot.socket.write(JSON.stringify(call));
         }
     },
-    getLocalVideoDuration: function(chatbot, args) {
+    getLocalVideoMeta: function(chatbot, args) {
+        let localRegExp = /(.*)(\.mp4)$/i;
         let call = {
             args: {
                 channel: args.channel,
+                name: '',
                 duration: 0
             },
-            method: 'setVideoDurationForm',
+            method: 'setVideoMetaToForm',
             ref: 'playlist',
             env: 'browser'
         };
 
         // if ending with .mp4 and file exists
-        if (/(\.mp4)$/ig.test(args.file) && fs.existsSync(chatbot.config.videosFolder + args.file)) {
+        if (localRegExp.test(args.file) && fs.existsSync(chatbot.config.videosFolder + args.file)) {
             mediainfo(chatbot.config.videosFolder + args.file).then(function(data) {
                 if (data.length && typeof data[0].general !== 'undefined') {
                     // milliseconds to seconds
                     let duration = ((data[0].general.duration[0] / 1000) -.5).toFixed(0);
+                    let name = args.file
+                        .split('/').pop()
+                        .replace(localRegExp, '$1')
+                        .replace(/(-|_| )([a-z])/gi, function($0, $1, $2) {
+                            let prefix = ' ';
+
+                            if ($1 === '-') {
+                                prefix = ' - ';
+                            }
+
+                            return prefix + $2.toUpperCase();
+                        });
+                    name = name[0].toUpperCase() + name.slice(1);
 
                     // if duration greater than 23:59:59 hours
                     if (duration > 86399) {
@@ -222,6 +248,7 @@ const playlist = {
                     }
 
                     if (chatbot.socket !== null) {
+                        call.args.name = name;
                         call.args.duration = duration;
                         chatbot.socket.write(JSON.stringify(call));
                     }
@@ -247,7 +274,7 @@ const playlist = {
 
                 select = 'id, uuid, name, file, duration, platform, start, end, played, skipped, sort, ';
                 select += 'title_cmd AS titleCmd, game_cmd AS gameCmd, pvj.playlist_id AS playlistId, ';
-                select += 'v.updated_at AS updatedAt, v.created_at AS createdAt';
+                select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, sub_name AS subName';
                 let from = 'playlist_video_join AS pvj';
                 where = ['pvj.playlist_id = ' + args.playlist.id];
                 let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
@@ -352,8 +379,10 @@ const playlist = {
 
             let video = {
                 name: '',
+                subName: '',
                 file: '',
                 played: false,
+                skipped: false,
                 duration: 0,
                 platform: 'empty'
             };
@@ -454,19 +483,20 @@ const playlist = {
             }
         });
     },
-    getYoutubeVideoDuration: function(chatbot, args) {
+    getYoutubeVideoMeta: function(chatbot, args) {
         let call = {
             args: {
                 channel: args.channel,
+                name: '',
                 duration: 0
             },
-            method: 'setVideoDurationForm',
+            method: 'setVideoMetaToForm',
             ref: 'playlist',
             env: 'browser'
         };
 
         // if id is 11 chars long and fits pattern
-        if (/^[A-Za-z0-9_-]{11}$/.test(args.file) && chatbot.config.youtubeToken.length) {
+        if (/^[a-z0-9_-]{11}$/i.test(args.file) && chatbot.config.youtubeToken.length) {
             // get single youtube video
             request(`https://www.googleapis.com/youtube/v3/videos?id=${args.file}&key=${chatbot.config.youtubeToken}&part=snippet,contentDetails,statistics,status`, { json: true }, (err, res, body) => {
                 if (err) {
@@ -478,6 +508,7 @@ const playlist = {
                     let durationRegExp = /^PT([0-9]+H)?([0-9]+M)?([0-9]+S)?/;
                     let durationString = body.items[0].contentDetails.duration;
                     let multiplier = 60 * 60;
+                    let name = body.items[0].snippet.title;
 
                     // if duration fits pattern
                     if (durationRegExp.test(durationString)) {
@@ -496,6 +527,7 @@ const playlist = {
                         }
 
                         if (chatbot.socket !== null) {
+                            call.args.name = name;
                             call.args.duration = duration;
                             chatbot.socket.write(JSON.stringify(call));
                         }
@@ -509,7 +541,7 @@ const playlist = {
     mergePlaylists: function(chatbot, args) {
         let select = 'id, uuid, name, file, duration, platform, start, end, played, skipped, sort, ';
         select += 'title_cmd AS titleCmd, game_cmd AS gameCmd, pvj.playlist_id AS playlistId, ';
-        select += 'v.updated_at AS updatedAt, v.created_at AS createdAt';
+        select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, sub_name AS subName';
         let from = 'playlist_video_join AS pvj';
         let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
         let limit = 0; // equal to: args.merge.from === 0 && args.merge.to === 0
@@ -694,7 +726,7 @@ const playlist = {
                     chatbot.activePlaylists[args.channel].videos = [];
 
                     database.update('playlist', {active: 1, updatedAt: moment().unix()}, ['id = ' + chatbot.playlists[args.channel][0].id], function(update) {
-                        let select = 'id, uuid, name, file, duration, platform, start, end, played, skipped, ';
+                        let select = 'id, uuid, name, sub_name AS subName, file, duration, platform, start, end, played, skipped, ';
                         select += 'title_cmd AS titleCmd, game_cmd AS gameCmd, v.updated_at AS updatedAt, v.created_at AS createdAt';
                         let from = 'playlist_video_join AS pvj';
                         let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
@@ -754,7 +786,7 @@ const playlist = {
         chatbot.activePlaylists[args.channel].updatedAt = time;
         chatbot.activePlaylists[args.channel].createdAt = args.playlist.createdAt;
 
-        let select = 'id, uuid, name, file, duration, platform, start, end, v.updated_at, v.created_at, '; 
+        let select = 'id, uuid, name, sub_name, file, duration, platform, start, end, v.updated_at, v.created_at, '; 
         select += 'pvj.played, pvj.skipped, pvj.sort, pvj.title_cmd, pvj.game_cmd, pvj.playlist_id';
         let from = 'playlist_video_join AS pvj';
         let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
@@ -767,13 +799,14 @@ const playlist = {
                     uuid: row.uuid,
                     playlistId: row.playlist_id,
                     name: row.name,
+                    subName: row.sub_name,
                     file: row.file,
                     duration: row.duration, // unix timestamp (seconds)
                     platform: row.platform,
                     start: row.start,
                     end: row.end,
-                    played: row.played ? true : false,
-                    skipped: row.skipped ? true : false,
+                    played: !!row.played,
+                    skipped: !!row.skipped,
                     titleCmd: row.title_cmd,
                     gameCmd: row.game_cmd,
                     sort: row.sort,
@@ -818,10 +851,12 @@ const playlist = {
             delete args.video.durationHours;
             delete args.video.durationMin;
             delete args.video.durationSec;
+            delete args.video.autofillMeta;
             args.video.updatedAt = moment().unix(); // unix timestamp (seconds)
 
             let set = {
                 name: args.video.name,
+                subName: args.video.subName,
                 file: args.video.file,
                 duration: args.video.duration, // unix timestamp (seconds)
                 platform: args.video.platform,

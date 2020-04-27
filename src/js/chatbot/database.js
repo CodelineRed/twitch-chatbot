@@ -71,7 +71,7 @@ const database = {
     prepareActivePlaylists: function(chatbot, channel) {
         if (database.connection !== null) {
             let select = 'SELECT p.id AS p_id, p.name AS p_name, p.updated_at AS p_updated_at, p.created_at AS p_created_at, ';
-            select += 'v.id, v.name, v.file, v.duration, v.platform, v.updated_at, v.created_at, ';
+            select += 'v.id, v.name, v.sub_name, v.file, v.duration, v.platform, v.updated_at, v.created_at, ';
             select += 'pvj.uuid, pvj.start, pvj.end, pvj.played, pvj.uuid, pvj.start, pvj.end, pvj.played, ';
             select += 'pvj.skipped, pvj.title_cmd, pvj.game_cmd, pvj.sort ';
             let from = 'FROM playlist AS p ';
@@ -102,8 +102,9 @@ const database = {
                             chatbot.activePlaylists[channel].videos.push({
                                 id: row.id,
                                 uuid: row.uuid,
-                                playlistId: row.p_Id,
+                                playlistId: row.p_id,
                                 name: row.name,
+                                subName: row.sub_name,
                                 file: row.file,
                                 duration: row.duration, // unix timestamp (seconds)
                                 platform: row.platform,

@@ -65,6 +65,7 @@
         "datatables.net": "^1.10.20",
         "datatables.net-bs4": "^1.10.20",
         "jquery": "^3.5.0",
+        "latinize": "^0.4.1",
         "linkifyjs": "^2.1.9",
         "mediainfo-wrapper": "^1.2.0",
         "moment": "^2.24.0",
