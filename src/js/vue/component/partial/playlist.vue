@@ -10,7 +10,8 @@
                 activePlaylist: {videos: []},
                 config: {
                     hasYoutubeToken: false,
-                    hasVideosFolder: false
+                    hasVideosFolder: false,
+                    hasTwitchClipAutofill: false
                 },
                 currentVideoStart: 0, // seconds
                 dataTable: null,
@@ -55,7 +56,7 @@
                     playlistId: 0,
                     titleCmd: '',
                     gameCmd: '',
-                    autofillMeta: true
+                    autofill: true
                 },
                 videoIndex: 0,
                 videoSearch: '',
@@ -68,20 +69,28 @@
                 this.getPlaylist();
             },
             'videoItem.file': function() {
-                if (this.videoItem.autofillMeta === true) {
-                    if (this.videoItem.platform === 'local' 
-                        && this.videoItem.file === this.$options.filters.localFile(this.videoItem.file)) {
-                        this.getLocalVideoMeta();
-                    } else if (this.videoItem.platform === 'local') {
-                        this.videoItem.file = this.$options.filters.localFile(this.videoItem.file);
-                    }
+                if (this.videoItem.platform === 'local' && this.videoItem.autofill === true 
+                    && this.videoItem.file === this.$options.filters.localFile(this.videoItem.file)) {
+                    this.getLocalVideoMeta();
+                } else if (this.videoItem.platform === 'local'
+                    && this.videoItem.file !== this.$options.filters.localFile(this.videoItem.file)) {
+                    this.videoItem.file = this.$options.filters.localFile(this.videoItem.file);
+                }
 
-                    if (this.videoItem.platform === 'youtube' 
-                        && this.videoItem.file === this.$options.filters.youtubeFile(this.videoItem.file)) {
-                        this.getYoutubeVideoMeta();
-                    } else if (this.videoItem.platform === 'youtube') {
-                        this.videoItem.file = this.$options.filters.youtubeFile(this.videoItem.file);
-                    }
+                if (this.videoItem.platform === 'twitch-clip' && this.videoItem.autofill === true 
+                    && this.videoItem.file === this.$options.filters.twitchClipFile(this.videoItem.file)) {
+                    //this.getTwitchClipMeta();
+                } else if (this.videoItem.platform === 'twitch-clip'
+                    && this.videoItem.file !== this.$options.filters.twitchClipFile(this.videoItem.file)) {
+                    this.videoItem.file = this.$options.filters.twitchClipFile(this.videoItem.file);
+                }
+
+                if (this.videoItem.platform === 'youtube' && this.videoItem.autofill === true 
+                    && this.videoItem.file === this.$options.filters.youtubeFile(this.videoItem.file)) {
+                    this.getYoutubeVideoMeta();
+                } else if (this.videoItem.platform === 'youtube'
+                    && this.videoItem.file !== this.$options.filters.youtubeFile(this.videoItem.file)) {
+                    this.videoItem.file = this.$options.filters.youtubeFile(this.videoItem.file);
                 }
             },
             'videoItem.durationHours': function() {
@@ -94,17 +103,21 @@
                 this.calculatevideoItemDuration(this.videoItem.durationHours, this.videoItem.durationMin, this.videoItem.durationSec);
             },
             'videoItem.platform': function() {
-                this.videoItem.autofillMeta = true;
+                this.videoItem.autofill = true;
 
                 if (this.videoItem.platform === 'local' && this.config.hasVideosFolder === false) {
-                    this.videoItem.autofillMeta = false;
+                    this.videoItem.autofill = false;
+                }
+
+                if (this.videoItem.platform === 'twitch-clip') {
+                    this.videoItem.autofill = false;
                 }
 
                 if (this.videoItem.platform === 'youtube' && this.config.hasYoutubeToken === false) {
-                    this.videoItem.autofillMeta = false;
+                    this.videoItem.autofill = false;
                 }
-                
-                if (this.videoItem.autofillMeta === true) {
+
+                if (this.videoItem.autofill === true) {
                     if (this.videoItem.platform === 'local') {
                         this.getLocalVideoMeta();
                     }
@@ -210,7 +223,7 @@
                     durationHours: 0,
                     durationMin: 0,
                     durationSec: 0,
-                    autofillMeta: true,
+                    autofill: true,
                     platform: 'youtube',
                     playlistId: $this.activePlaylist.id,
                     titleCmd: '',
@@ -287,7 +300,11 @@
             },
             getFilePlaceholder: function() {
                 if (this.videoItem.platform === 'local') {
-                    return 'relative file path';
+                    return 'Relative File Path';
+                }
+
+                if (this.videoItem.platform === 'twitch-clip') {
+                    return 'Twitch Clip Slug';
                 }
 
                 if (this.videoItem.platform === 'youtube') {
@@ -382,6 +399,19 @@
 
                 return result;
             },
+            getVideoPlatformIcon: function(platform) {
+                let icon = ['far', 'question-circle'];
+
+                if (platform === 'local') {
+                    icon = ['fas', 'hdd'];
+                } else if (platform === 'twitch-clip') {
+                    icon = ['fab', 'twitch'];
+                } else if (platform === 'youtube') {
+                    icon = ['fab', 'youtube'];
+                }
+
+                return icon;
+            },
             getVideoSearchResults: function() {
                 if (typeof streamWrite === 'function') {
                     const call = {
@@ -410,19 +440,37 @@
                     streamWrite(call);
                 }
             },
-            isInvalidHours: function(){
+            isDisabledAutofill: function() {
+                return (!this.config.hasYoutubeToken && this.videoItem.platform === 'youtube') 
+                    || (!this.config.hasVideosFolder && this.videoItem.platform === 'local') 
+                    || (!this.config.hasTwitchClipAutofill && this.videoItem.platform === 'twitch-clip');
+            },
+            isInvalidFile: function() {
+                if (this.videoItem.file === '') {
+                    return true;
+                } else if (this.videoItem.platform === 'local' 
+                    && !/(.*)(\.mp4)$/i.test(this.videoItem.file)) {
+                    return true;
+                } else if (this.videoItem.platform === 'youtube' 
+                    && this.videoItem.file.length !== 11) {
+                    return true;
+                }
+
+                return false;
+            },
+            isInvalidHours: function() {
                 const hours = this.videoItem.durationHours;
-                return (hours < 0 || hours > 23) && !this.videoItem.autofillMeta;
+                return (hours < 0 || hours > 23);
             },
-            isInvalidMin: function(){
+            isInvalidMin: function() {
                 const min = this.videoItem.durationMin;
-                return (min < 0 || min > 59) && !this.videoItem.autofillMeta;
+                return (min < 0 || min > 59);
             },
-            isInvalidSec: function(){
+            isInvalidSec: function() {
                 const hours = this.videoItem.durationHours;
                 const min = this.videoItem.durationMin;
                 const sec = this.videoItem.durationSec;
-                return (sec < 0 || sec > 59 || (hours + min + sec === 0)) && !this.videoItem.autofillMeta;
+                return (sec < 0 || sec > 59 || (hours + min + sec === 0));
             },
             mergePlaylists: function() {
                 if (typeof streamWrite === 'function' && this.merge.targetId 
@@ -546,6 +594,7 @@
                 vsr.channel = this.$root._route.params.channel.toLowerCase();
                 this.videoSearchResults = [];
                 this.setVideoDurationToForm(vsr);
+                this.videoItem.autofill = false;
                 //this.videoItem.playlistId = this.activePlaylist.id;
                 this.videoItem.id = vsr.id;
                 this.videoItem.name = vsr.name;
@@ -559,7 +608,6 @@
                 this.videoItem.skipped = 0;
                 this.videoItem.titleCmd = '';
                 this.videoItem.gameCmd = '';
-                this.videoItem.autofillMeta = false;
             },
             setActivePlaylist: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
@@ -592,10 +640,7 @@
             setVideoMetaToForm: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.setVideoDurationToForm(args);
-
-                    if (args.name.length && !this.videoItem.name.length) {
-                        this.videoItem.name = args.name;
-                    }
+                    this.videoItem.name = args.name;
                 }
             },
             setVideoDurationToForm: function(args) {
@@ -736,6 +781,7 @@
                             {{ index + 1 }}
                         </td>
                         <td>
+                            <font-awesome-icon :icon="getVideoPlatformIcon(video.platform)" class="fa-fw mr-2"></font-awesome-icon>
                             {{ video.name + (video.subName.length ? ' - ' : '') }}
                             <span v-if="video.subName.length" class="text-muted">{{ video.subName }}</span>
                         </td>
@@ -1012,7 +1058,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <label for="video-form-game-cmd" class="col-form-label">
-                                    Category Command:&nbsp;
+                                    Game Command:&nbsp;
                                     <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="From this video, change channel game/cat. to">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
@@ -1028,14 +1074,22 @@
                             <div class="col-12">
                                 <hr>
                             </div>
-                            <div class="col-12">
+                            <div class="col-12 col-md-6">
+                                <label for="video-form-platform" class="col-form-label">Platform:</label>
+                                <select id="video-form-platform" v-model="videoItem.platform" :disabled="videoSearch.length > 0" class="custom-select">
+                                    <option value="local" :disabled="!config.hasVideosFolder">Local Video</option>
+                                    <option value="twitch-clip">Twitch Clip</option>
+                                    <option value="youtube">Youtube Video</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-6">
                                 <label for="video-form-file" class="col-form-label">
                                     File:&nbsp;
                                     <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="YouTube Video ID or relative file path based on 'videosFolder'">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="video-form-file" v-model="videoItem.file" type="text" class="form-control" :class="{'is-invalid': videoItem.file === ''}" :disabled="videoSearch.length > 0" autocomplete="off" :placeholder="getFilePlaceholder()">
+                                <input id="video-form-file" v-model="videoItem.file" type="text" class="form-control" :class="{'is-invalid': isInvalidFile()}" :disabled="videoSearch.length > 0" autocomplete="off" :placeholder="getFilePlaceholder()">
                             </div>
                             <div class="col-12 col-md-6">
                                 <label for="video-form-name" class="col-form-label">Name:</label>
@@ -1077,26 +1131,19 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6">
-                                <label for="video-form-platform" class="col-form-label">Platform:</label>
-                                <select id="video-form-platform" v-model="videoItem.platform" :disabled="videoSearch.length > 0" class="custom-select">
-                                    <option value="local" :disabled="!config.hasVideosFolder">Local</option>
-                                    <option value="youtube">Youtube</option>
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <div class="custom-control custom-switch pt-3 pt-md-4 float-left mr-3">
+                            <div class="col-12 col-md-6 pt-3 pt-md-5">
+                                <div class="custom-control custom-switch float-left mr-3">
                                     <input id="video-form-played" v-model.number="videoItem.played" type="checkbox" value="1" class="custom-control-input">
                                     <label class="custom-control-label" for="video-form-played">Played</label>
                                 </div>
-                                <div class="custom-control custom-switch pt-3 pt-md-4 float-left mr-3">
+                                <div class="custom-control custom-switch float-left mr-3">
                                     <input id="video-form-skipped" v-model.number="videoItem.skipped" type="checkbox" value="1" class="custom-control-input">
                                     <label class="custom-control-label" for="video-form-skipped">Skipped</label>
                                 </div>
-                                <div class="custom-control custom-switch pt-3 pt-md-4 float-left">
-                                    <input id="video-form-autofill" v-model.number="videoItem.autofillMeta" type="checkbox" value="1" class="custom-control-input" :disabled="(!config.hasYoutubeToken && videoItem.platform === 'platform') || (!config.hasVideosFolder && videoItem.platform === 'local')">
+                                <div class="custom-control custom-switch float-left">
+                                    <input id="video-form-autofill" v-model.number="videoItem.autofill" type="checkbox" value="1" class="custom-control-input" :disabled="isDisabledAutofill()">
                                     <label class="custom-control-label" for="video-form-autofill" data-toggle="tooltip" data-placement="top" title="Autofill 'Name' and 'Duration' by given 'File'">
-                                        Autofill meta
+                                        Autofill
                                     </label>
                                 </div>
                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->

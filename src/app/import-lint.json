@@ -20,7 +20,7 @@
         "import/no-named-as-default": "warn",
         "import/no-named-as-default-member": "warn",
         "import/no-duplicates": "warn",
-        
+
         "constructor-super": "error",
         "for-direction": "error",
         "getter-return": "error",
@@ -67,7 +67,7 @@
         "require-yield": "error",
         "use-isnan": "error",
         "valid-typeof": "error",
-        
+
         "array-bracket-newline": ["warn", {"multiline": true}],
         "block-spacing": ["warn", "always"],
         "brace-style": 1,

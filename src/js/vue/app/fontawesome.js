@@ -3,7 +3,8 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import {
     faEthereum as fabEthereum,
     faFontAwesomeFlag as fabFontAwesomeFlag,
-    faTwitch as fabTwitch
+    faTwitch as fabTwitch,
+    faYoutube as fabYoutube
 } from '@fortawesome/free-brands-svg-icons';
 
 import {
@@ -25,6 +26,7 @@ import {
     faGift as fasGift,
     faGlobe as fasGlobe,
     faHammer as fasHammer,
+    faHdd as fasHdd,
     faHome as fasHome,
     faMoneyBill as fasMoneyBill,
     faPlay as fasPlay,
@@ -45,11 +47,11 @@ import {
 
 import { FontAwesomeIcon, FontAwesomeLayers } from '@fortawesome/vue-fontawesome';
 
-library.add(fabEthereum, fabFontAwesomeFlag, fabTwitch);
+library.add(fabEthereum, fabFontAwesomeFlag, fabTwitch, fabYoutube);
 library.add(farSadCry, farQuestionCircle);
 library.add(
     fasAward, fasBolt, fasCheckCircle, fasChevronRight, fasCogs, fasCrown, fasEdit, 
-    fasExternalLinkAlt, fasGavel, fasGem, fasGift, fasGlobe, fasHammer, fasHome, 
+    fasExternalLinkAlt, fasGavel, fasGem, fasGift, fasGlobe, fasHammer, fasHdd, fasHome, 
     fasMoneyBill, fasPlay, fasRobot, fasSave, fasSnowflake, fasStar, fasStepForward, 
     fasSync, fasTerminal, fasTicketAlt, fasTrain, fasTrashAlt, fasTrophy, fasVideo, fasWrench
 );

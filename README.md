@@ -94,7 +94,8 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * FrankerFaceZ Emotes
 
 ### Playlist
-* Play local MP4 files with `localhost:3060` domain. (See [`docker-compose.local-videos.yml`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/docker-compose.local-videos.yml))
+* Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.local-videos.yml`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/docker-compose.local-videos.yml))
+* Play Twitch Clips
 * Play YouTube Videos
 * Add Video
 * Edit Video
@@ -150,6 +151,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * [BetterTTV API](https://community.nightdev.com/t/is-there-a-bettertwitchtv-api/5223/3)
 * [FrankerFaceZ API](https://www.frankerfacez.com/developers)
 * [Spotify with Snip](https://github.com/dlrudie/Snip/releases)
+* [Twitch Clip Embed](https://dev.twitch.tv/docs/embed/video-and-clips/#non-interactive-iframes-for-clips)
 * [ESLint Js Rules](https://eslint.org/docs/rules/)
 * [ESLint Vue Rules](https://vuejs.github.io/eslint-plugin-vue/rules/)
 * [ESLint Import Rules](https://github.com/benmosher/eslint-plugin-import/tree/master/docs/rules)

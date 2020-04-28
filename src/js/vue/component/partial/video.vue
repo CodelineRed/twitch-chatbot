@@ -1,12 +1,14 @@
 <script>
     import Empty from './platform/empty';
     import Local from './platform/local';
+    import TwitchClip from './platform/twitch-clip';
     import Youtube from './platform/youtube';
 
     export default {
         components: {
             'empty': Empty,
             'local': Local,
+            'twitch-clip': TwitchClip,
             'youtube': Youtube
         },
         data: function() {

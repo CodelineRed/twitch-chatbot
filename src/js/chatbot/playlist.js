@@ -55,7 +55,7 @@ const playlist = {
             delete args.video.durationHours;
             delete args.video.durationMin;
             delete args.video.durationSec;
-            delete args.video.autofillMeta;
+            delete args.video.autofill;
             let time = moment().unix();
 
             let values = {
@@ -306,7 +306,8 @@ const playlist = {
                     channel: args.channel,
                     config: {
                         hasYoutubeToken: !!chatbot.config.youtubeToken.length,
-                        hasVideosFolder: fs.existsSync(chatbot.config.videosFolder)
+                        hasVideosFolder: fs.existsSync(chatbot.config.videosFolder),
+                        hasTwitchClipAutofill: false
                     }
                 },
                 method: 'setPlaylistConfig',
@@ -851,7 +852,7 @@ const playlist = {
             delete args.video.durationHours;
             delete args.video.durationMin;
             delete args.video.durationSec;
-            delete args.video.autofillMeta;
+            delete args.video.autofill;
             args.video.updatedAt = moment().unix(); // unix timestamp (seconds)
 
             let set = {

@@ -47,7 +47,7 @@
         "require-yield": "error",
         "use-isnan": "error",
         "valid-typeof": "error",
-        
+
         "array-bracket-newline": ["warn", {"multiline": true}],
         "block-spacing": ["warn", "always"],
         "brace-style": 1,

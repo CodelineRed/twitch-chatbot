@@ -21,7 +21,7 @@
         display: none;
         position: absolute;
         z-index: 10;
-        
+
         &.name {
             background-color: $navbar-light-hover-color;
             border-radius: 5px;
@@ -33,11 +33,11 @@
             max-width: 90%;
             opacity: 0;
             transform: translateX(-50%);
-            
+
             &.animation {
-                animation: video-name-fade 10s linear;
+                animation: video-name-fade 120s linear;
             }
-            
+
             .sub-name {
                 font-size: 1rem;
             }

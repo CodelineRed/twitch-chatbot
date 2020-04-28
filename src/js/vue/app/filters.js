@@ -41,6 +41,21 @@ const filters = {
      * @param {string} file
      * @returns {string}
      */
+    twitchClipFile: function(file) {
+        let twitchClipRegExp = /^[A-Z][A-Za-z0-9]+$/;
+        let blacklistRegExp = /(^[a-z]|[^A-Za-z0-9])/;
+
+        if (!twitchClipRegExp.test(file)) {
+            // remove blacklist chars
+            file = file.replace(blacklistRegExp, '');
+        }
+
+        return file;
+    },
+    /**
+     * @param {string} file
+     * @returns {string}
+     */
     youtubeFile: function(file) {
         let youtubeRegExp = /^[a-z0-9_-]$/i;
         let blacklistRegExp = /([^a-z0-9-_])/i;

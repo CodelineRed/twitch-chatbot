@@ -13,6 +13,7 @@ Vue.component('l-empty', EmptyLayout);
 Vue.filter('formatDateTime', filters.formatDateTime);
 Vue.filter('formatDuration', filters.formatDuration);
 Vue.filter('localFile', filters.localFile);
+Vue.filter('twitchClipFile', filters.twitchClipFile);
 Vue.filter('youtubeFile', filters.youtubeFile);
 
 Vue.config.productionTip = false;
