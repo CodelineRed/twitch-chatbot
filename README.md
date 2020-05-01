@@ -64,9 +64,9 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | username            | Required - Twitch User Name                                                                                                      |
 | tmiToken            | Required - [Twitch TMI Token](https://twitchapps.com/tmi/)                                                                       |
-| apiToken            | Optional - [Twitch API Token](https://dev.twitch.tv/) (currently unused)                                                         |
+| clientIdToken       | Optional - [Twitch Client ID Token](https://dev.twitch.tv/) (is presetted)                                                       |
 | youtubeToken        | Optional - [YouTube API Token](https://console.developers.google.com)                                                            |
-| videosFolder        | Optional - Absolute path to videos folder                                                                                        |
+| videosFolder        | Optional - Absolute path to videos folder with trailing slash                                                                    |
 | channels            | Required - List of Channels to connect                                                                                           |
 
 ## Chatbot Commands
@@ -95,7 +95,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 
 ### Playlist
 * Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.local-videos.yml`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/docker-compose.local-videos.yml))
-* Play Twitch Clips
+* Play Twitch Clips and Videos (past broadcasts, highlights and video uploads)
 * Play YouTube Videos
 * Add Video
 * Edit Video
@@ -115,8 +115,8 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * playlistInfo Command
 * Video url `/channel/[channel]/video` to use browser source in OBS
 * Video name overlay in player
-* Auto detect video duration (local and YouTube)
-* Change stream title and / or category dynamic over [Nightbot](https://nightbot.tv/) (or some similar popular Bot)
+* Autofill video name, sub name (only Twitch) and duration (Depence on `videosFolder`, `youtubeToken` and `clientIdToken` settings)
+* Change stream title and / or game dynamic over [Nightbot](https://nightbot.tv/) (or some similar Bot)
 
 ### Commands
 * Cooldown
@@ -151,7 +151,10 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * [BetterTTV API](https://community.nightdev.com/t/is-there-a-bettertwitchtv-api/5223/3)
 * [FrankerFaceZ API](https://www.frankerfacez.com/developers)
 * [Spotify with Snip](https://github.com/dlrudie/Snip/releases)
+* [Twitch Clip API](https://dev.twitch.tv/docs/v5/reference/clips#get-clip)
 * [Twitch Clip Embed](https://dev.twitch.tv/docs/embed/video-and-clips/#non-interactive-iframes-for-clips)
+* [Twitch Video API](https://dev.twitch.tv/docs/v5/reference/videos#get-video)
+* [Twitch Video Embed](https://dev.twitch.tv/docs/embed/video-and-clips/#non-interactive-inline-frames-for-live-streams-and-vods)
 * [ESLint Js Rules](https://eslint.org/docs/rules/)
 * [ESLint Vue Rules](https://vuejs.github.io/eslint-plugin-vue/rules/)
 * [ESLint Import Rules](https://github.com/benmosher/eslint-plugin-import/tree/master/docs/rules)

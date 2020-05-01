@@ -45,6 +45,7 @@ function js() {
     return gulp.src([
             'node_modules/jquery/dist/jquery.js',
             'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
+//          'node_modules/@fortawesome/fontawesome-free/js/all.js',
             'node_modules/skateboard/skateboard.min.js',
             'node_modules/moment/moment.js',
             config.sourcePath + 'js/lib/**/*.js',
@@ -77,7 +78,6 @@ function jsRequire() {
     const modules = {
         'require': 'node_modules/requirejs/require.js',
         'vue': 'node_modules/vue/dist/vue.min.js',
-//        'fontawesome-free-all': 'node_modules/@fortawesome/fontawesome-free/js/all.js',
         'vue-router': 'node_modules/vue-router/dist/vue-router.min.js',
         'vue-i18n': 'node_modules/vue-i18n/dist/vue-i18n.js',
         'fontawesome-svg-core': 'node_modules/@fortawesome/fontawesome-svg-core/index.js',

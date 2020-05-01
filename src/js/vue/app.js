@@ -14,6 +14,7 @@ Vue.filter('formatDateTime', filters.formatDateTime);
 Vue.filter('formatDuration', filters.formatDuration);
 Vue.filter('localFile', filters.localFile);
 Vue.filter('twitchClipFile', filters.twitchClipFile);
+Vue.filter('twitchVideoFile', filters.twitchVideoFile);
 Vue.filter('youtubeFile', filters.youtubeFile);
 
 Vue.config.productionTip = false;

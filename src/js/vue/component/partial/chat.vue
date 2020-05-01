@@ -186,7 +186,7 @@
                         <span v-if="showBadges">
                             <!-- eslint-disable-next-line vue/require-v-for-key -->
                             <span v-for="(badge, badgeName) in message.badges" class="twitch-badge" data-toggle="tooltip" data-placement="top" :title="badge.title">
-                                <font-awesome-icon v-if="badge" :icon="[badge.style, badge.icon]" class="fa-fw" :class="badge.cssClass == null ? badgeName : badge.cssClass" :transform="badge.transform" />
+                                <font-awesome-icon :icon="[badge.style, badge.icon]" class="fa-fw" :class="badge.cssClass == null ? badgeName : badge.cssClass" :transform="badge.transform" />
                             </span>
                         </span>
                         <span class="user mr-1" :style="{color: showUserColor ? message.color : null}">

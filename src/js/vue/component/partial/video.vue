@@ -2,6 +2,7 @@
     import Empty from './platform/empty';
     import Local from './platform/local';
     import TwitchClip from './platform/twitch-clip';
+    import TwitchVideo from './platform/twitch-video';
     import Youtube from './platform/youtube';
 
     export default {
@@ -9,6 +10,7 @@
             'empty': Empty,
             'local': Local,
             'twitch-clip': TwitchClip,
+            'twitch-video': TwitchVideo,
             'youtube': Youtube
         },
         data: function() {

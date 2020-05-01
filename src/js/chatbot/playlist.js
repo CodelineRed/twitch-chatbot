@@ -215,6 +215,7 @@ const playlist = {
             args: {
                 channel: args.channel,
                 name: '',
+                subName: '',
                 duration: 0
             },
             method: 'setVideoMetaToForm',
@@ -247,7 +248,7 @@ const playlist = {
                         duration = 0;
                     }
 
-                    if (chatbot.socket !== null) {
+                    if (chatbot.socket !== null && duration) {
                         call.args.name = name;
                         call.args.duration = duration;
                         chatbot.socket.write(JSON.stringify(call));
@@ -307,7 +308,7 @@ const playlist = {
                     config: {
                         hasYoutubeToken: !!chatbot.config.youtubeToken.length,
                         hasVideosFolder: fs.existsSync(chatbot.config.videosFolder),
-                        hasTwitchClipAutofill: false
+                        hasTwitchClientIdToken: !!chatbot.config.clientIdToken.length
                     }
                 },
                 method: 'setPlaylistConfig',
@@ -371,6 +372,111 @@ const playlist = {
                 chatbot.socket.write(JSON.stringify(call));
             }
         });
+    },
+    getTwitchClipMeta: function(chatbot, args) {
+        let call = {
+            args: {
+                channel: args.channel,
+                name: '',
+                subName: '',
+                duration: 0
+            },
+            method: 'setVideoMetaToForm',
+            ref: 'playlist',
+            env: 'browser'
+        };
+
+        // if file fits pattern and token is defined
+        if (/^[A-Z][A-Za-z0-9]+$/.test(args.file) && chatbot.config.clientIdToken.length) {
+            var options = {
+                url: `https://api.twitch.tv/kraken/clips/${args.file}`,
+                method: 'GET',
+                headers: {
+                    'Client-ID': chatbot.config.clientIdToken,
+                    'Accept': 'application/vnd.twitchtv.v5+json'
+                }
+            };
+            // get single twitch video
+            request(options, (err, res, body) => {
+                if (err) {
+                    return console.log(err);
+                }
+                body = JSON.parse(body);
+
+                if (typeof body.error === 'undefined') {
+                    let duration = (body.duration -.5).toFixed(0);
+                    let name = body.title;
+                    let subName = `Clip - ${body.game}`;
+
+                    // if duration greater than 23:59:59 hours
+                    if (duration > 86399) {
+                        duration = 0;
+                    }
+
+                    if (chatbot.socket !== null && duration) {
+                        call.args.name = name;
+                        call.args.subName = subName;
+                        call.args.duration = duration;
+                        chatbot.socket.write(JSON.stringify(call));
+                    }
+                }
+            });
+        } else if (chatbot.socket !== null) {
+            chatbot.socket.write(JSON.stringify(call));
+        }
+    },
+    getTwitchVideoMeta: function(chatbot, args) {
+        let call = {
+            args: {
+                channel: args.channel,
+                name: '',
+                subName: '',
+                duration: 0
+            },
+            method: 'setVideoMetaToForm',
+            ref: 'playlist',
+            env: 'browser'
+        };
+
+        // if file fits pattern and token is defined
+        if (/^[0-9]+$/.test(args.file) && chatbot.config.clientIdToken.length) {
+            var options = {
+                url: `https://api.twitch.tv/kraken/videos/${args.file}`,
+                method: 'GET',
+                headers: {
+                    'Client-ID': chatbot.config.clientIdToken,
+                    'Accept': 'application/vnd.twitchtv.v5+json'
+                }
+            };
+            // get single twitch video
+            request(options, (err, res, body) => {
+                if (err) {
+                    return console.log(err);
+                }
+                body = JSON.parse(body);
+
+                if (typeof body.error === 'undefined' 
+                    && body.status === 'recorded') {
+                    let duration = body.length;
+                    let name = body.title;
+                    let subName = body.game;
+
+                    // if duration greater than 23:59:59 hours
+                    if (duration > 86399) {
+                        duration = 0;
+                    }
+
+                    if (chatbot.socket !== null && duration) {
+                        call.args.name = name;
+                        call.args.subName = subName;
+                        call.args.duration = duration;
+                        chatbot.socket.write(JSON.stringify(call));
+                    }
+                }
+            });
+        } else if (chatbot.socket !== null) {
+            chatbot.socket.write(JSON.stringify(call));
+        }
     },
     getVideo: function(chatbot, args) {
         if (chatbot.socketVideo !== null) {
@@ -489,6 +595,7 @@ const playlist = {
             args: {
                 channel: args.channel,
                 name: '',
+                subName: '',
                 duration: 0
             },
             method: 'setVideoMetaToForm',
@@ -496,10 +603,10 @@ const playlist = {
             env: 'browser'
         };
 
-        // if id is 11 chars long and fits pattern
+        // if file is 11 chars long, fits pattern and token is defined
         if (/^[a-z0-9_-]{11}$/i.test(args.file) && chatbot.config.youtubeToken.length) {
             // get single youtube video
-            request(`https://www.googleapis.com/youtube/v3/videos?id=${args.file}&key=${chatbot.config.youtubeToken}&part=snippet,contentDetails,statistics,status`, { json: true }, (err, res, body) => {
+            request(`https://www.googleapis.com/youtube/v3/videos?id=${args.file}&key=${chatbot.config.youtubeToken}&part=snippet,contentDetails,statistics,status`, {json: true}, (err, res, body) => {
                 if (err) {
                     return console.log(err);
                 }
@@ -533,6 +640,8 @@ const playlist = {
                             chatbot.socket.write(JSON.stringify(call));
                         }
                     }
+                } else {
+                    console.log(body);
                 }
             });
         } else if (chatbot.socket !== null) {

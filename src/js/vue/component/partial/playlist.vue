@@ -11,7 +11,7 @@
                 config: {
                     hasYoutubeToken: false,
                     hasVideosFolder: false,
-                    hasTwitchClipAutofill: false
+                    hasTwitchClientIdToken: false
                 },
                 currentVideoStart: 0, // seconds
                 dataTable: null,
@@ -79,10 +79,18 @@
 
                 if (this.videoItem.platform === 'twitch-clip' && this.videoItem.autofill === true 
                     && this.videoItem.file === this.$options.filters.twitchClipFile(this.videoItem.file)) {
-                    //this.getTwitchClipMeta();
+                    this.getTwitchClipMeta();
                 } else if (this.videoItem.platform === 'twitch-clip'
                     && this.videoItem.file !== this.$options.filters.twitchClipFile(this.videoItem.file)) {
                     this.videoItem.file = this.$options.filters.twitchClipFile(this.videoItem.file);
+                }
+
+                if (this.videoItem.platform === 'twitch-video' && this.videoItem.autofill === true 
+                    && this.videoItem.file === this.$options.filters.twitchVideoFile(this.videoItem.file)) {
+                    this.getTwitchVideoMeta();
+                } else if (this.videoItem.platform === 'twitch-video'
+                    && this.videoItem.file !== this.$options.filters.twitchVideoFile(this.videoItem.file)) {
+                    this.videoItem.file = this.$options.filters.twitchVideoFile(this.videoItem.file);
                 }
 
                 if (this.videoItem.platform === 'youtube' && this.videoItem.autofill === true 
@@ -105,21 +113,23 @@
             'videoItem.platform': function() {
                 this.videoItem.autofill = true;
 
-                if (this.videoItem.platform === 'local' && this.config.hasVideosFolder === false) {
-                    this.videoItem.autofill = false;
-                }
-
-                if (this.videoItem.platform === 'twitch-clip') {
-                    this.videoItem.autofill = false;
-                }
-
-                if (this.videoItem.platform === 'youtube' && this.config.hasYoutubeToken === false) {
+                if ((this.videoItem.platform === 'local' && this.config.hasVideosFolder === false) 
+                    || (/twitch/.test(this.videoItem.platform) && this.config.hasTwitchClientIdToken === false) 
+                    || (this.videoItem.platform === 'youtube' && this.config.hasYoutubeToken === false)) {
                     this.videoItem.autofill = false;
                 }
 
                 if (this.videoItem.autofill === true) {
                     if (this.videoItem.platform === 'local') {
                         this.getLocalVideoMeta();
+                    }
+
+                    if (this.videoItem.platform === 'twitch-clip') {
+                        this.getTwitchClipMeta();
+                    }
+
+                    if (this.videoItem.platform === 'twitch-video') {
+                        this.getTwitchVideoMeta();
                     }
 
                     if (this.videoItem.platform === 'youtube') {
@@ -307,6 +317,10 @@
                     return 'Twitch Clip Slug';
                 }
 
+                if (this.videoItem.platform === 'twitch-video') {
+                    return 'Twitch Video ID';
+                }
+
                 if (this.videoItem.platform === 'youtube') {
                     return 'YouTube Video ID';
                 }
@@ -382,6 +396,34 @@
                     streamWrite(call);
                 }
             },
+            getTwitchClipMeta: function() {
+                if (typeof streamWrite === 'function') {
+                    const call = {
+                        method: 'getTwitchClipMeta',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            file: this.videoItem.file
+                        },
+                        env: 'node'
+                    };
+
+                    streamWrite(call);
+                }
+            },
+            getTwitchVideoMeta: function() {
+                if (typeof streamWrite === 'function') {
+                    const call = {
+                        method: 'getTwitchVideoMeta',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            file: this.videoItem.file
+                        },
+                        env: 'node'
+                    };
+
+                    streamWrite(call);
+                }
+            },
             getVideoCommands: function(videoIndex) {
                 let result = '';
 
@@ -404,7 +446,7 @@
 
                 if (platform === 'local') {
                     icon = ['fas', 'hdd'];
-                } else if (platform === 'twitch-clip') {
+                } else if (/twitch/.test(platform)) {
                     icon = ['fab', 'twitch'];
                 } else if (platform === 'youtube') {
                     icon = ['fab', 'youtube'];
@@ -443,7 +485,7 @@
             isDisabledAutofill: function() {
                 return (!this.config.hasYoutubeToken && this.videoItem.platform === 'youtube') 
                     || (!this.config.hasVideosFolder && this.videoItem.platform === 'local') 
-                    || (!this.config.hasTwitchClipAutofill && this.videoItem.platform === 'twitch-clip');
+                    || (!this.config.hasTwitchClientIdToken && /twitch/.test(this.videoItem.platform));
             },
             isInvalidFile: function() {
                 if (this.videoItem.file === '') {
@@ -641,6 +683,7 @@
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.setVideoDurationToForm(args);
                     this.videoItem.name = args.name;
+                    this.videoItem.subName = args.subName;
                 }
             },
             setVideoDurationToForm: function(args) {
@@ -1079,6 +1122,7 @@
                                 <select id="video-form-platform" v-model="videoItem.platform" :disabled="videoSearch.length > 0" class="custom-select">
                                     <option value="local" :disabled="!config.hasVideosFolder">Local Video</option>
                                     <option value="twitch-clip">Twitch Clip</option>
+                                    <option value="twitch-video">Twitch Video</option>
                                     <option value="youtube">Youtube Video</option>
                                 </select>
                             </div>

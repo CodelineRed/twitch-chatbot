@@ -41,6 +41,8 @@ const chatbot = {
     getPlaylistConfig: playlist.getPlaylistConfig,
     getPlaylists: playlist.getPlaylists,
     getPlaylistSearchResults: playlist.getPlaylistSearchResults,
+    getTwitchClipMeta: playlist.getTwitchClipMeta,
+    getTwitchVideoMeta: playlist.getTwitchVideoMeta,
     getVideo: playlist.getVideo,
     getVideoSearchResults: playlist.getVideoSearchResults,
     getYoutubeVideoMeta: playlist.getYoutubeVideoMeta,

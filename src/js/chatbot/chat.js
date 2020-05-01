@@ -61,31 +61,31 @@ const chat = {
 
         // further badges can be found in Chatty > Settings > Look > Badges > Enable Custom Badges > Edit Item > ID/Version
         const badges = {
-            broadcaster: typeof args.badges.broadcaster === 'string' ? {style: 'fas', icon: 'video', transform: null, title: 'Broadcaster', cssClass: null} : false,
-            admin: typeof args.badges.admin === 'string' ? {style: 'fab', icon: 'twitch', transform: null, title: 'Admin', cssClass: null} : false,
-            staff: typeof args.badges.staff === 'string' ? {style: 'fas', icon: 'wrench', transform: null, title: 'Staff', cssClass: null} : false,
-            globalMod: typeof args.badges.global_mod === 'string' ? {style: 'fas', icon: 'hammer', transform: null, title: 'Global Mod', cssClass: 'global-mod'} : false,
-            vip: typeof args.badges.vip === 'string' ? {style: 'fas', icon: 'gem', transform: null, title: 'Vip', cssClass: null} : false,
-            mod: typeof args.badges.moderator === 'string' ? {style: 'fas', icon: 'gavel', transform: null, title: 'Mod', cssClass: null} : false,
-            founder: typeof args.badges.founder === 'string' ? {style: 'fas', icon: 'award', transform: null, title: 'Founder', cssClass: null} : false,
-            subscriber: typeof args.badges.subscriber === 'string' ? {style: 'fas', icon: 'star', transform: null, title: 'Sub (' + args.badgeInfo.subscriber + ')', cssClass: null} : false,
-            hypeTrain: typeof args.badges['hype-train'] === 'string' ? {style: 'fas', icon: 'train', transform: null, title: (args.badges['hype-train'] === '2' ? 'Former ' : '') + 'Hype Train Conductor', cssClass: args.badges['hype-train'] === '2' ? 'hype-train former' : 'hype-train'} : false,
-            bits: typeof args.badges.bits === 'string' ? {style: 'fab', icon: 'ethereum', transform: null, title: 'Bits (' + args.badges.bits + ')', cssClass: null} : false,
-            bitsLeader: typeof args.badges['bits-leader'] === 'string' ? {style: 'fab', icon: 'ethereum', transform: null, title: 'Bits Leader', cssClass: 'bits-leader'} : false,
-            subGifter: typeof args.badges['sub-gifter'] === 'string' ? {style: 'fas', icon: 'gift', transform: null, title: 'Sub Gifter (' + args.badges['sub-gifter'] + ')', cssClass: 'sub-gifter'} : false,
-            subGiftLeader: typeof args.badges['sub-gift-leader'] === 'string' ? {style: 'fas', icon: 'gift', transform: null, title: 'Sub Gift Leader', cssClass: 'sub-gift-leader'} : false,
-            bitsCharity: typeof args.badges['bits-charity'] === 'string' ? {style: 'fas', icon: 'snowflake', transform: null, title: 'Direct Relief 2018', cssClass: 'bits-charity'} : false,
-            glhfPledge: typeof args.badges['glhf-pledge'] === 'string' ? {style: 'fas', icon: 'money-bill', transform: null, title: 'GLHF Pledge', cssClass: 'glhf-pledge'} : false,
-            premium: typeof args.badges.premium === 'string' ? {style: 'fas', icon: 'crown', transform: null, title: 'Prime', cssClass: null} : false,
-            turbo: typeof args.badges.turbo === 'string' ? {style: 'fas', icon: 'bolt', transform: null, title: 'Turbo', cssClass: null} : false,
-            twitchconEU2019: typeof args.badges.twitchconEU2019 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon EU 2019', cssClass: 'tc-eu-2019'} : false,
-            twitchconEU2020: typeof args.badges.twitchconAmsterdam2020 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon EU 2020', cssClass: 'tc-eu-2020'} : false,
-            twitchconUSA2017: typeof args.badges.twitchcon2017 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2017', cssClass: 'tc-usa-2017'} : false,
-            twitchconUSA2018: typeof args.badges.twitchcon2018 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2018', cssClass: 'tc-usa-2018'} : false,
-            twitchconUSA2019: typeof args.badges.twitchconNA2019 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2019', cssClass: 'tc-usa-2019'} : false,
-            twitchconUSA2020: typeof args.badges.twitchconNA2020 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2019', cssClass: 'tc-usa-2019'} : false,
-            partner: typeof args.badges.partner === 'string' ? {style: 'fas', icon: 'check-circle', transform: null, title: 'Partner', cssClass: null} : false,
-            bot: chatbot.bots.indexOf(args.user.toLowerCase()) > -1 ? {style: 'fas', icon: 'robot', transform: null, title: 'Bot', cssClass: null} : false
+            broadcaster: typeof args.badges.broadcaster === 'string' ? {style: 'fas', icon: 'video', transform: null, title: 'Broadcaster', cssClass: null} : undefined,
+            admin: typeof args.badges.admin === 'string' ? {style: 'fab', icon: 'twitch', transform: null, title: 'Admin', cssClass: null} : undefined,
+            staff: typeof args.badges.staff === 'string' ? {style: 'fas', icon: 'wrench', transform: null, title: 'Staff', cssClass: null} : undefined,
+            globalMod: typeof args.badges.global_mod === 'string' ? {style: 'fas', icon: 'hammer', transform: null, title: 'Global Mod', cssClass: 'global-mod'} : undefined,
+            vip: typeof args.badges.vip === 'string' ? {style: 'fas', icon: 'gem', transform: null, title: 'Vip', cssClass: null} : undefined,
+            mod: typeof args.badges.moderator === 'string' ? {style: 'fas', icon: 'gavel', transform: null, title: 'Mod', cssClass: null} : undefined,
+            founder: typeof args.badges.founder === 'string' ? {style: 'fas', icon: 'award', transform: null, title: 'Founder', cssClass: null} : undefined,
+            subscriber: typeof args.badges.subscriber === 'string' ? {style: 'fas', icon: 'star', transform: null, title: 'Sub (' + args.badgeInfo.subscriber + ')', cssClass: null} : undefined,
+            hypeTrain: typeof args.badges['hype-train'] === 'string' ? {style: 'fas', icon: 'train', transform: null, title: (args.badges['hype-train'] === '2' ? 'Former ' : '') + 'Hype Train Conductor', cssClass: args.badges['hype-train'] === '2' ? 'hype-train former' : 'hype-train'} : undefined,
+            bits: typeof args.badges.bits === 'string' ? {style: 'fab', icon: 'ethereum', transform: null, title: 'Bits (' + args.badges.bits + ')', cssClass: null} : undefined,
+            bitsLeader: typeof args.badges['bits-leader'] === 'string' ? {style: 'fab', icon: 'ethereum', transform: null, title: 'Bits Leader', cssClass: 'bits-leader'} : undefined,
+            subGifter: typeof args.badges['sub-gifter'] === 'string' ? {style: 'fas', icon: 'gift', transform: null, title: 'Sub Gifter (' + args.badges['sub-gifter'] + ')', cssClass: 'sub-gifter'} : undefined,
+            subGiftLeader: typeof args.badges['sub-gift-leader'] === 'string' ? {style: 'fas', icon: 'gift', transform: null, title: 'Sub Gift Leader', cssClass: 'sub-gift-leader'} : undefined,
+            bitsCharity: typeof args.badges['bits-charity'] === 'string' ? {style: 'fas', icon: 'snowflake', transform: null, title: 'Direct Relief 2018', cssClass: 'bits-charity'} : undefined,
+            glhfPledge: typeof args.badges['glhf-pledge'] === 'string' ? {style: 'fas', icon: 'money-bill', transform: null, title: 'GLHF Pledge', cssClass: 'glhf-pledge'} : undefined,
+            premium: typeof args.badges.premium === 'string' ? {style: 'fas', icon: 'crown', transform: null, title: 'Prime', cssClass: null} : undefined,
+            turbo: typeof args.badges.turbo === 'string' ? {style: 'fas', icon: 'bolt', transform: null, title: 'Turbo', cssClass: null} : undefined,
+            twitchconEU2019: typeof args.badges.twitchconEU2019 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon EU 2019', cssClass: 'tc-eu-2019'} : undefined,
+            twitchconEU2020: typeof args.badges.twitchconAmsterdam2020 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon EU 2020', cssClass: 'tc-eu-2020'} : undefined,
+            twitchconUSA2017: typeof args.badges.twitchcon2017 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2017', cssClass: 'tc-usa-2017'} : undefined,
+            twitchconUSA2018: typeof args.badges.twitchcon2018 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2018', cssClass: 'tc-usa-2018'} : undefined,
+            twitchconUSA2019: typeof args.badges.twitchconNA2019 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2019', cssClass: 'tc-usa-2019'} : undefined,
+            twitchconUSA2020: typeof args.badges.twitchconNA2020 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2019', cssClass: 'tc-usa-2019'} : undefined,
+            partner: typeof args.badges.partner === 'string' ? {style: 'fas', icon: 'check-circle', transform: null, title: 'Partner', cssClass: null} : undefined,
+            bot: chatbot.bots.indexOf(args.user.toLowerCase()) > -1 ? {style: 'fas', icon: 'robot', transform: null, title: 'Bot', cssClass: null} : undefined
         };
 
         return badges;
@@ -185,6 +185,8 @@ const chat = {
 
         // get the latest 100 messages
         database.find(select, from, '', [], '', order, 0, function(rows) {
+            chatbot.messages[args.channel] = [];
+            
             rows.forEach(function(row) {
                 let formatBadges = {
                     user: row.user,
