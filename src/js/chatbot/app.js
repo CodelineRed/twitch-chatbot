@@ -3,6 +3,7 @@ const channel  = require('./channel');
 const command  = require('./command');
 const counter  = require('./counter');
 const database = require('./database');
+const locales  = require('./locales');
 const playlist = require('./playlist');
 
 /**
@@ -28,6 +29,7 @@ const chatbot = {
     socketRaffle: null, // skateboard socket
     socketPoll: null, // skateboard socket
     socketCounter: null, // skateboard socket
+    t: {}, // translation
     addPlaylist: playlist.addPlaylist,
     addVideo: playlist.addVideo,
     clearActivePlaylist: playlist.clearActivePlaylist,
@@ -53,6 +55,13 @@ const chatbot = {
     removeVideo: playlist.removeVideo,
     removeVideoFromActivePlaylist: playlist.removeVideoFromActivePlaylist,
     removeVideosByFlagFromActivePlaylist: playlist.removeVideosByFlagFromActivePlaylist,
+    setTranslation: function() {
+        if (typeof locales[chatbot.config.locale] === 'undefined') {
+            chatbot.t = locales.en;
+        } else {
+            chatbot.t = locales[chatbot.config.locale];
+        }
+    },
     switchPlaylist: playlist.switchPlaylist,
     updateCommand: command.updateCommand,
     updateCommandLastExec: command.updateCommandLastExec,

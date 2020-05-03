@@ -64,7 +64,7 @@ const playlist = {
                 subName: args.video.subName,
                 file: args.video.file,
                 duration: args.video.duration, // unix timestamp (seconds)
-                platform: args.video.platform,
+                player: args.video.player,
                 updatedAt: time, // unix timestamp (seconds)
                 createdAt: time // unix timestamp (seconds)
             };
@@ -99,7 +99,7 @@ const playlist = {
                             values.subName = args.video.subName;
                             values.file = args.video.file;
                             values.duration = args.video.duration; // unix timestamp (seconds)
-                            values.platform = args.video.platform;
+                            values.player = args.video.player;
                             chatbot.activePlaylists[args.channel].videos.push(values);
                             chatbot.activePlaylists[args.channel].videoQuantity = chatbot.activePlaylists[args.channel].videos.length;
                             playlist.getActivePlaylist(chatbot, args);
@@ -131,7 +131,7 @@ const playlist = {
                                 values.subName = args.video.subName;
                                 values.file = args.video.file;
                                 values.duration = args.video.duration; // unix timestamp (seconds)
-                                values.platform = args.video.platform;
+                                values.player = args.video.player;
                                 chatbot.activePlaylists[args.channel].videoQuantity = chatbot.activePlaylists[args.channel].videos.length;
                                 chatbot.activePlaylists[args.channel].videos.push(values);
                                 playlist.getActivePlaylist(chatbot, args);
@@ -229,6 +229,7 @@ const playlist = {
                 if (data.length && typeof data[0].general !== 'undefined') {
                     // milliseconds to seconds
                     let duration = ((data[0].general.duration[0] / 1000) -.5).toFixed(0);
+                    let format = chatbot.t['date'];
                     let name = args.file
                         .split('/').pop()
                         .replace(localRegExp, '$1')
@@ -242,6 +243,8 @@ const playlist = {
                             return prefix + $2.toUpperCase();
                         });
                     name = name[0].toUpperCase() + name.slice(1);
+                    let isoDate = data[0].general.file_creation_date[0].replace(/^(UTC )([0-9-]+) ([0-9:.]+)$/, '$2T$3Z');
+                    let subName = moment(isoDate).format(format);
 
                     // if duration greater than 23:59:59 hours
                     if (duration > 86399) {
@@ -250,6 +253,7 @@ const playlist = {
 
                     if (chatbot.socket !== null && duration) {
                         call.args.name = name;
+                        call.args.subName = subName;
                         call.args.duration = duration;
                         chatbot.socket.write(JSON.stringify(call));
                     }
@@ -273,7 +277,7 @@ const playlist = {
             if (rows.length) {
                 selectedPlaylist = rows[0];
 
-                select = 'id, uuid, name, file, duration, platform, start, end, played, skipped, sort, ';
+                select = 'id, uuid, name, file, duration, player, start, end, played, skipped, sort, ';
                 select += 'title_cmd AS titleCmd, game_cmd AS gameCmd, pvj.playlist_id AS playlistId, ';
                 select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, sub_name AS subName';
                 let from = 'playlist_video_join AS pvj';
@@ -405,8 +409,10 @@ const playlist = {
 
                 if (typeof body.error === 'undefined') {
                     let duration = (body.duration -.5).toFixed(0);
+                    let format = chatbot.t['date'];
                     let name = body.title;
-                    let subName = `Clip - ${body.game}`;
+                    let subName = (body.game.length ? `${body.game} - ` : '') + 'Clip';
+                    subName += ` (${moment(body.created_at).format(format)})`;
 
                     // if duration greater than 23:59:59 hours
                     if (duration > 86399) {
@@ -458,8 +464,9 @@ const playlist = {
                 if (typeof body.error === 'undefined' 
                     && body.status === 'recorded') {
                     let duration = body.length;
+                    let format = chatbot.t['date'];
                     let name = body.title;
-                    let subName = body.game;
+                    let subName = body.game.length ? `${body.game} (${moment(body.created_at).format(format)})` : moment(body.created_at).format(format);
 
                     // if duration greater than 23:59:59 hours
                     if (duration > 86399) {
@@ -491,7 +498,7 @@ const playlist = {
                 played: false,
                 skipped: false,
                 duration: 0,
-                platform: 'empty'
+                player: 'empty'
             };
 
             for (let i = 0; i < chatbot.activePlaylists[args.channel].videos.length; i++) {
@@ -568,7 +575,8 @@ const playlist = {
     },
     getVideoSearchResults: function(chatbot, args) {
         let search = args.videoSearch.replace(/ /g, '%');
-        let select = 'id, name, file, duration, platform, updated_at AS updatedAt, created_at AS createdAt';
+        let select = 'id, name, sub_name AS subName, file, ';
+        select += 'duration, player, updated_at AS updatedAt, created_at AS createdAt';
         let where = [
             `channel_id = ${chatbot.channels[args.channel].id}`,
             `name LIKE '%${search}%' OR file LIKE '%${search}%'`
@@ -615,8 +623,11 @@ const playlist = {
                     let duration = 0;
                     let durationRegExp = /^PT([0-9]+H)?([0-9]+M)?([0-9]+S)?/;
                     let durationString = body.items[0].contentDetails.duration;
+                    let format = chatbot.t['date'];
                     let multiplier = 60 * 60;
                     let name = body.items[0].snippet.title;
+                    let subName = body.items[0].snippet.tags.length ? body.items[0].snippet.tags[0] : '';
+                    subName += subName.length ? ` (${moment(body.items[0].snippet.publishedAt).format(format)})` : moment(body.items[0].snippet.publishedAt).format(format);
 
                     // if duration fits pattern
                     if (durationRegExp.test(durationString)) {
@@ -636,12 +647,11 @@ const playlist = {
 
                         if (chatbot.socket !== null) {
                             call.args.name = name;
+                            call.args.subName = subName;
                             call.args.duration = duration;
                             chatbot.socket.write(JSON.stringify(call));
                         }
                     }
-                } else {
-                    console.log(body);
                 }
             });
         } else if (chatbot.socket !== null) {
@@ -649,7 +659,7 @@ const playlist = {
         }
     },
     mergePlaylists: function(chatbot, args) {
-        let select = 'id, uuid, name, file, duration, platform, start, end, played, skipped, sort, ';
+        let select = 'id, uuid, name, file, duration, player, start, end, played, skipped, sort, ';
         select += 'title_cmd AS titleCmd, game_cmd AS gameCmd, pvj.playlist_id AS playlistId, ';
         select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, sub_name AS subName';
         let from = 'playlist_video_join AS pvj';
@@ -836,7 +846,7 @@ const playlist = {
                     chatbot.activePlaylists[args.channel].videos = [];
 
                     database.update('playlist', {active: 1, updatedAt: moment().unix()}, ['id = ' + chatbot.playlists[args.channel][0].id], function(update) {
-                        let select = 'id, uuid, name, sub_name AS subName, file, duration, platform, start, end, played, skipped, ';
+                        let select = 'id, uuid, name, sub_name AS subName, file, duration, player, start, end, played, skipped, ';
                         select += 'title_cmd AS titleCmd, game_cmd AS gameCmd, v.updated_at AS updatedAt, v.created_at AS createdAt';
                         let from = 'playlist_video_join AS pvj';
                         let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
@@ -896,7 +906,7 @@ const playlist = {
         chatbot.activePlaylists[args.channel].updatedAt = time;
         chatbot.activePlaylists[args.channel].createdAt = args.playlist.createdAt;
 
-        let select = 'id, uuid, name, sub_name, file, duration, platform, start, end, v.updated_at, v.created_at, '; 
+        let select = 'id, uuid, name, sub_name, file, duration, player, start, end, v.updated_at, v.created_at, '; 
         select += 'pvj.played, pvj.skipped, pvj.sort, pvj.title_cmd, pvj.game_cmd, pvj.playlist_id';
         let from = 'playlist_video_join AS pvj';
         let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
@@ -912,7 +922,7 @@ const playlist = {
                     subName: row.sub_name,
                     file: row.file,
                     duration: row.duration, // unix timestamp (seconds)
-                    platform: row.platform,
+                    player: row.player,
                     start: row.start,
                     end: row.end,
                     played: !!row.played,
@@ -969,7 +979,7 @@ const playlist = {
                 subName: args.video.subName,
                 file: args.video.file,
                 duration: args.video.duration, // unix timestamp (seconds)
-                platform: args.video.platform,
+                player: args.video.player,
                 updatedAt: args.video.updatedAt
             };
 
@@ -1001,7 +1011,7 @@ const playlist = {
             name: args.video.name,
             file: args.video.file,
             duration: args.video.duration,
-            platform: args.video.platform,
+            player: args.video.player,
             updatedAt: args.video.updatedAt
         };
 

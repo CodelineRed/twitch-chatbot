@@ -186,7 +186,7 @@ const chat = {
         // get the latest 100 messages
         database.find(select, from, '', [], '', order, 0, function(rows) {
             chatbot.messages[args.channel] = [];
-            
+
             rows.forEach(function(row) {
                 let formatBadges = {
                     user: row.user,

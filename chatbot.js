@@ -8,6 +8,7 @@ const chatbot     = require('./src/js/chatbot/app');
 const chat        = require('./src/js/chatbot/chat');
 
 chatbot.config = config;
+chatbot.setTranslation();
 
 // define configuration options
 const opts = {

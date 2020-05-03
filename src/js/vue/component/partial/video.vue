@@ -1,9 +1,9 @@
 <script>
-    import Empty from './platform/empty';
-    import Local from './platform/local';
-    import TwitchClip from './platform/twitch-clip';
-    import TwitchVideo from './platform/twitch-video';
-    import Youtube from './platform/youtube';
+    import Empty from './player/empty';
+    import Local from './player/local';
+    import TwitchClip from './player/twitch-clip';
+    import TwitchVideo from './player/twitch-video';
+    import Youtube from './player/youtube';
 
     export default {
         components: {
@@ -22,7 +22,7 @@
                     played: false,
                     skipped: false,
                     duration: 0, // seconds
-                    platform: 'empty'
+                    player: 'empty'
                 }
             };
         },
@@ -45,7 +45,7 @@
 
                     if (parseInt(this.video.duration) > 0) {
                         setTimeout(function() {
-                            $this.video.platform = 'empty';
+                            $this.video.player = 'empty';
                             $this.getVideo();
                         }, parseInt($this.video.duration) * 1000);
                     }
@@ -70,10 +70,10 @@
 
 <template>
     <div class="video" :class="$route.params.channel.toLowerCase()">
-        <div v-if="video.platform !== ''">
-            <component :is="video.platform" ref="platform" />
+        <div v-if="video.player !== ''">
+            <component :is="video.player" ref="player" />
         </div>
-        <div v-if="video.name.length" class="name overlay px-2 py-1">
+        <div v-if="video.name.length" class="name overlay px-2 pb-1">
             {{ video.name }}
             <div v-if="video.subName.length" class="sub-name">
                 {{ video.subName }}

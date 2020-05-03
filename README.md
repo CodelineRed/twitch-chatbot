@@ -67,6 +67,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 | clientIdToken       | Optional - [Twitch Client ID Token](https://dev.twitch.tv/) (is presetted)                                                       |
 | youtubeToken        | Optional - [YouTube API Token](https://console.developers.google.com)                                                            |
 | videosFolder        | Optional - Absolute path to videos folder with trailing slash                                                                    |
+| locale              | Required - German and English are presetted                                                                                      |
 | channels            | Required - List of Channels to connect                                                                                           |
 
 ## Chatbot Commands
@@ -115,8 +116,18 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * playlistInfo Command
 * Video url `/channel/[channel]/video` to use browser source in OBS
 * Video name overlay in player
-* Autofill video name, sub name (only Twitch) and duration (Depence on `videosFolder`, `youtubeToken` and `clientIdToken` settings)
+* Autofill video name, sub name and duration (Depence on `videosFolder`, `youtubeToken` and `clientIdToken` settings)
 * Change stream title and / or game dynamic over [Nightbot](https://nightbot.tv/) (or some similar Bot)
+
+### Autofill
+| Player        | Name                               | Sub Name              | Duration |
+|---------------|------------------------------------|-----------------------| ---------|
+| Local         | Yes<sup>1</sup> (Parsed File Name) | Yes (Creation Date)   | Yes      |
+| Twitch Clip   | Yes (Clip Title)                   | Yes (Game/ Category)  | Yes      |
+| Twitch Video  | Yes (Video Title)                  | Yes (Game/ Category)  | Yes      |
+| YouTube Video | Yes (Video Title)                  | Yes (First Video Tag) | Yes      |
+
+<sup>1</sup> `example_video-2020.mp4` parsed to `Example Video - 2020`
 
 ### Commands
 * Cooldown
