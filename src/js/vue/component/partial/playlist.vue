@@ -85,10 +85,10 @@
                     this.video.file = this.$options.filters.twitchClipFile(this.video.file);
                 }
 
-                if (this.video.player === 'twitch-video' && this.video.autofill === true 
+                if (this.video.player === 'twitch' && this.video.autofill === true 
                     && this.video.file === this.$options.filters.twitchVideoFile(this.video.file)) {
                     this.getTwitchVideoMeta();
-                } else if (this.video.player === 'twitch-video'
+                } else if (this.video.player === 'twitch'
                     && this.video.file !== this.$options.filters.twitchVideoFile(this.video.file)) {
                     this.video.file = this.$options.filters.twitchVideoFile(this.video.file);
                 }
@@ -128,7 +128,7 @@
                         this.getTwitchClipMeta();
                     }
 
-                    if (this.video.player === 'twitch-video') {
+                    if (this.video.player === 'twitch') {
                         this.getTwitchVideoMeta();
                     }
 
@@ -310,14 +310,14 @@
             },
             getFilePlaceholder: function() {
                 if (this.video.player === 'local') {
-                    return 'Relative File Path';
+                    return 'Rel. File Path starting from \'videosFolder\'';
                 }
 
                 if (this.video.player === 'twitch-clip') {
                     return 'Twitch Clip Slug';
                 }
 
-                if (this.video.player === 'twitch-video') {
+                if (this.video.player === 'twitch') {
                     return 'Twitch Video ID';
                 }
 
@@ -547,8 +547,8 @@
                     streamWrite(call);
                 }
             },
-            popoutVideo: function() {
-                const url = this.$router.resolve({name: 'video', params: {channel: this.$root._route.params.channel}}).href;
+            popoutPlayer: function() {
+                const url = this.$router.resolve({name: 'player', params: {channel: this.$root._route.params.channel}}).href;
                 const params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1280,height=800';
                 window.open(url, 'Video', params);
             },
@@ -791,7 +791,7 @@
 <template>
     <div class="playlist p-2">
         <div v-if="activePlaylist.videos.length > 0" class="h4 text-center">
-            <a href="#" onclick="javascript:return false;" @click="popoutVideo()">{{ activePlaylist.name }} <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
+            <a href="#" onclick="javascript:return false;" @click="popoutPlayer()">{{ activePlaylist.name }} <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
         </div>
         <div v-if="activePlaylist.videos.length == 0" class="h4 text-center">
             {{ activePlaylist.name }}
@@ -850,8 +850,8 @@
                         <td class="text-center">
                             <span class="text-nowrap">
                                 <button type="button" class="btn btn-sm btn-primary btn-animation mr-2" data-animation-success="success" data-animation-error="error" data-toggle="tooltip" data-placement="top" title="Save" @click="updateVideoFromActivePlaylist(index)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
-                                <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Update" @click="showVideoForm(video, index)"><font-awesome-icon :icon="['fas', 'edit']" class="fa-fw" /></button>
-                                <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(video, index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Update" @click="showVideoForm(videoItem, index)"><font-awesome-icon :icon="['fas', 'edit']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(videoItem, index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                             </span>
                         </td>
                     </tr>
@@ -1017,7 +1017,7 @@
                                                 <td><span class="text-nowrap">{{ videoItem.duration|formatDuration() }}</span></td>
                                                 <td class="text-center">
                                                     <span class="text-nowrap">
-                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(video, index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(videoItem, index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                                                     </span>
                                                 </td>
                                             </tr>
@@ -1122,17 +1122,12 @@
                                 <select id="video-form-player" v-model="video.player" :disabled="videoSearch.length > 0" class="custom-select">
                                     <option value="local" :disabled="!config.hasVideosFolder">Local Video</option>
                                     <option value="twitch-clip">Twitch Clip</option>
-                                    <option value="twitch-video">Twitch Video</option>
+                                    <option value="twitch">Twitch Video</option>
                                     <option value="youtube">Youtube Video</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label for="video-form-file" class="col-form-label">
-                                    File:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="YouTube Video ID or relative file path based on 'videosFolder'">
-                                        <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
-                                    </span>
-                                </label>
+                                <label for="video-form-file" class="col-form-label">File:</label>
                                 <input id="video-form-file" v-model="video.file" type="text" class="form-control" :class="{'is-invalid': isInvalidFile()}" :disabled="videoSearch.length > 0" autocomplete="off" :placeholder="getFilePlaceholder()">
                             </div>
                             <div class="col-12 col-md-6">

@@ -1,3 +1,4 @@
+const fs      = require('fs');
 const moment  = require('moment');
 const request = require('request');
 const sqlite3 = require('sqlite3').verbose();
@@ -16,6 +17,20 @@ const database = {
     },
     open: function() {
         database.connection = new sqlite3.Database(this.file, sqlite3.OPEN_READWRITE);
+        this.backup();
+    },
+    backup: function(format) {
+        format = typeof format === 'undefined' ? 'YYYY-MM-DD' : format;
+        let backupFile = './data/backup/chatbot.' + moment().format(format) + '.sqlite3';
+        if (fs.existsSync(this.file) && !fs.existsSync(backupFile)) {
+            fs.copyFile(this.file, backupFile, (err) => {
+                if (err) {
+                    throw err;
+                }
+
+                console.log(`* Backup was created. ${backupFile}`);
+            });
+        }
     },
     /**
      * @param {string} select
@@ -31,6 +46,7 @@ const database = {
      */
     find: function(select, from, join, where, group, order, limit, callback, callbackArgs) {
         if (database.connection !== null) {
+            this.backup();
             database.connection.serialize(() => {
                 let query = `SELECT ${select} FROM ${from} `;
 
@@ -446,6 +462,7 @@ const database = {
     },
     remove: function(table, where, callback, callbackArgs) {
         if (database.connection !== null) {
+            this.backup();
             database.connection.serialize(() => {
                 database.connection.run(`DELETE FROM ${table} WHERE ${where.join(' AND ')}`, function(errDeleteRow) {
                     if (errDeleteRow) {
@@ -466,6 +483,7 @@ const database = {
     },
     insert: function(table, values, callback, callbackArgs) {
         if (database.connection !== null) {
+            this.backup();
             database.connection.serialize(() => {
                 let valueKeys = values.length ? Object.keys(values[0]) : [];
                 let colArray = [];
@@ -521,6 +539,7 @@ const database = {
     },
     update: function(table, set, where, callback, callbackArgs) {
         if (database.connection !== null) {
+            this.backup();
             database.connection.serialize(() => {
                 let setKeys = Object.keys(set);
                 let setArray = [];

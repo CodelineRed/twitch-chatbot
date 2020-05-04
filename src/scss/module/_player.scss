@@ -1,11 +1,11 @@
 .container-fluid {
-    .video {
+    .player {
         margin-left: -($grid-gutter-width / 2);
         margin-right: -($grid-gutter-width / 2);
     }
 }
 
-.video {
+.player {
     position: relative;
 
     .empty {
@@ -22,24 +22,28 @@
         position: absolute;
         z-index: 10;
 
-        &.name {
+        &.video-name {
             background-color: $navbar-light-hover-color;
             border-radius: 5px;
             bottom: 25px;
             color: $white;
             display: block;
             font-size: 1.5rem;
-            left: 50%;
+            left: 25px;
             max-width: 90%;
             opacity: 0;
-            transform: translateX(-50%);
 
             &.animation {
-                animation: video-name-fade 10s linear;
+                animation: video-name-fade 15s 2.5s linear;
             }
 
             .sub-name {
-                font-size: 1rem;
+                font-size: .75em;
+            }
+
+            @include media-breakpoint-up(xxl) {
+                border-radius: 10px;
+                font-size: 3rem;
             }
         }
     }
@@ -50,11 +54,11 @@
         opacity: 0;
     }
 
-    10% {
+    5% {
         opacity: 1;
     }
 
-    90% {
+    95% {
         opacity: 1;
     }
 

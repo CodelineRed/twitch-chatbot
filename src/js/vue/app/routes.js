@@ -2,7 +2,7 @@ import Home from '../component/page/home';
 import Channel from '../component/page/channel';
 import Chat from '../component/partial/chat';
 import Counter from '../component/partial/counter';
-import Video from '../component/partial/video';
+import Player from '../component/partial/player';
 import About from '../component/page/about';
 import ErrorPage from '../component/page/error-page';
 
@@ -44,11 +44,11 @@ const routes = [
         }
     },
     {
-        component: Video,
-        name: 'video',
-        path: '/channel/:channel/video',
+        component: Player,
+        name: 'player',
+        path: '/channel/:channel/player',
         meta: {
-            title: 'Video',
+            title: 'Player',
             layout: 'empty'
         }
     },

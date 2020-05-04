@@ -539,7 +539,7 @@ const playlist = {
                     video: video
                 },
                 method: 'setVideo',
-                ref: 'video',
+                ref: 'player',
                 env: 'browser'
             };
 
@@ -626,7 +626,7 @@ const playlist = {
                     let format = chatbot.t['date'];
                     let multiplier = 60 * 60;
                     let name = body.items[0].snippet.title;
-                    let subName = body.items[0].snippet.tags.length ? body.items[0].snippet.tags[0] : '';
+                    let subName = typeof body.items[0].snippet.tags === 'undefined' ? '' : body.items[0].snippet.tags[0];
                     subName += subName.length ? ` (${moment(body.items[0].snippet.publishedAt).format(format)})` : moment(body.items[0].snippet.publishedAt).format(format);
 
                     // if duration fits pattern

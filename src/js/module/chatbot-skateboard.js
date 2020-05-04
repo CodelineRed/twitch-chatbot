@@ -58,7 +58,7 @@ function initChatbotSkateboard() {
         initChatbotPort(3140);
     } else if (/^#\/channel\/(.*)\/raffle\/?/.test(window.location.hash)) {
         initChatbotPort(3130);
-    } else if (/^#\/channel\/(.*)\/video\/?/.test(window.location.hash)) {
+    } else if (/^#\/channel\/(.*)\/player\/?/.test(window.location.hash)) {
         initChatbotPort(3120);
     } else if (/^#\/channel\/(.*)\/chat\/?/.test(window.location.hash)) {
         initChatbotPort(3110);
