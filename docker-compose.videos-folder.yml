@@ -9,7 +9,7 @@ services:
     # http://localhost:3060
     webserver:
         image: php:7-alpine
-        container_name: twitch-chatbot-local-videos
+        container_name: twitch-chatbot-videos-folder
         working_dir: /var/www
         command: php -S 0.0.0.0:8080 -t ./
         environment:

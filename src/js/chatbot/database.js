@@ -21,9 +21,12 @@ const database = {
     },
     backup: function(format) {
         format = typeof format === 'undefined' ? 'YYYY-MM-DD' : format;
-        let backupFile = './data/backup/chatbot.' + moment().format(format) + '.sqlite3';
-        if (fs.existsSync(this.file) && !fs.existsSync(backupFile)) {
-            fs.copyFile(this.file, backupFile, (err) => {
+        let backupFile = 'chatbot.' + moment().format(format) + '.sqlite3';
+        let backupFolder = './data/backup/';
+
+        // if database exists and backup databse not exists
+        if (fs.existsSync(this.file) && !fs.existsSync(backupFolder + backupFile)) {
+            fs.copyFile(this.file, backupFolder + backupFile, (err) => {
                 if (err) {
                     throw err;
                 }

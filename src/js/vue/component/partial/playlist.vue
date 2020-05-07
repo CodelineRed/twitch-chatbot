@@ -825,8 +825,8 @@
                         </td>
                         <td>
                             <font-awesome-icon :icon="getVideoPlayerIcon(videoItem.player)" class="fa-fw mr-2"></font-awesome-icon>
-                            {{ videoItem.name + (videoItem.subName.length ? ' - ' : '') }}
-                            <span v-if="videoItem.subName.length" class="text-muted">{{ videoItem.subName }}</span>
+                            {{ videoItem.name }}
+                            <span v-if="videoItem.subName.length" class="text-muted"> - {{ videoItem.subName }}</span>
                         </td>
                         <td><span class="text-nowrap">{{ videoItem.duration|formatDuration() }}</span></td>
                         <td><span class="text-nowrap">{{ videoItem.start|formatDateTime($t('time-long-suffix')) }}</span></td>

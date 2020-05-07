@@ -50,11 +50,11 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | 3000                | [BrowserSync](https://www.npmjs.com/package/browser-sync)                                                                        |
 | 3001                | [BrowserSync UI](https://www.npmjs.com/package/browser-sync)                                                                     |
-| 3050                | Docker Container (twitch-chatbot)                                                                                                |
-| 3060                | Docker Container (twitch-chatbot-local-videos)                                                                                   |
+| 3050                | Docker Container [twitch-chatbot](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/docker-compose.yml)                     |
+| 3060                | Docker Container [twitch-chatbot-videos-folder](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/docker-compose.videos-folder.yml) |
 | 3100                | Main Window (Skateboard Socket for Web UI)                                                                                       |
 | 3110                | Chat Window (Skateboard Socket for Web UI)                                                                                       |
-| 3120                | Video Window (Skateboard Socket for Web UI)                                                                                      |
+| 3120                | Player Window (Skateboard Socket for Web UI)                                                                                     |
 | 3130                | Raffle Window (Skateboard Socket for Web UI)                                                                                     |
 | 3140                | Poll Window (Skateboard Socket for Web UI)                                                                                       |
 | 3150                | Counter Window (Skateboard Socket for Web UI)                                                                                    |
