@@ -983,10 +983,10 @@
                                 <label for="playlist-form-name" class="col-form-label">Name:</label>
                                 <div class="form-row">
                                     <div class="col">
-                                        <input id="playlist-form-name" v-model="playlist.name" type="text" class="form-control" :class="{'is-invalid': playlist.name === ''}" autocomplete="off">
+                                        <input id="playlist-form-name" v-model="playlist.name" type="text" class="form-control" :class="{'is-invalid': playlist.name === ''}" autocomplete="off" :disabled="playlist.name.toLowerCase() === 'general'">
                                     </div>
                                     <div class="col-auto">
-                                        <button type="button" class="btn btn-primary" @click="updatePlaylist()"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
+                                        <button type="button" class="btn btn-primary" :disabled="playlist.name.toLowerCase() === 'general'" @click="updatePlaylist()"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
                                     </div>
                                 </div>
                             </div>
@@ -1233,7 +1233,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger" @click="removePlaylist()">Remove</button>
+                        <button type="button" class="btn btn-danger" :disabled="playlist.name.toLowerCase() === 'general'" @click="removePlaylist()">Remove</button>
                     </div>
                 </div>
             </div>

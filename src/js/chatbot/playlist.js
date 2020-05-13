@@ -243,7 +243,7 @@ const playlist = {
                             return prefix + $2.toUpperCase();
                         });
                     name = name[0].toUpperCase() + name.slice(1);
-                    let isoDate = data[0].general.file_creation_date[0].replace(/^(UTC )([0-9-]+) ([0-9:.]+)$/, '$2T$3Z');
+                    let isoDate = data[0].general.file_last_modification_date[0].replace(/^(UTC )([0-9-]+) ([0-9:.]+)$/, '$2T$3Z');
                     let subName = moment(isoDate).format(format);
 
                     // if duration greater than 23:59:59 hours
@@ -837,7 +837,7 @@ const playlist = {
         }
     },
     removePlaylist: function(chatbot, args) {
-        if (chatbot.socket !== null) {
+        if (chatbot.socket !== null && args.playlist.name.toLowerCase() !== 'general') {
             database.remove('playlist', ['id = ' + args.playlist.id], function(remove) {
                 playlist.getPlaylists(chatbot, args);
 
@@ -948,23 +948,25 @@ const playlist = {
         });
     },
     updatePlaylist: function(chatbot, args) {
-        let set = {
-            name: args.playlist.name,
-            updatedAt: moment().unix()
-        };
-        let where = [
-            'id = ' + args.playlist.id,
-            'channel_id = ' + chatbot.channels[args.channel].id
-        ];
+        if (args.playlist.name.toLowerCase() !== 'general') {
+            let set = {
+                name: args.playlist.name,
+                updatedAt: moment().unix()
+            };
+            let where = [
+                'id = ' + args.playlist.id,
+                'channel_id = ' + chatbot.channels[args.channel].id
+            ];
 
-        database.update('playlist', set, where, function(update) {
-            if (args.playlist.id === chatbot.activePlaylists[args.channel].id) {
-                chatbot.activePlaylists[args.channel].name = args.playlist.name;
-                playlist.getActivePlaylist(chatbot, args);
-            }
+            database.update('playlist', set, where, function(update) {
+                if (args.playlist.id === chatbot.activePlaylists[args.channel].id) {
+                    chatbot.activePlaylists[args.channel].name = args.playlist.name;
+                    playlist.getActivePlaylist(chatbot, args);
+                }
 
-            playlist.getPlaylists(chatbot, args);
-        });
+                playlist.getPlaylists(chatbot, args);
+            });
+        }
     },
     updateVideo: function(chatbot, args) {
         if (chatbot.socket !== null) {

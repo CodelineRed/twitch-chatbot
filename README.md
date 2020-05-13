@@ -120,12 +120,12 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Change stream title and / or game dynamic over [Nightbot](https://nightbot.tv/) (or some similar Bot)
 
 ### Autofill
-| Player        | Name                               | Sub Name              | Duration |
-|---------------|------------------------------------|-----------------------| ---------|
-| Local         | Yes<sup>1</sup> (Parsed File Name) | Yes (Creation Date)   | Yes      |
-| Twitch Clip   | Yes (Clip Title)                   | Yes (Game/ Category)  | Yes      |
-| Twitch Video  | Yes (Video Title)                  | Yes (Game/ Category)  | Yes      |
-| YouTube Video | Yes (Video Title)                  | Yes (First Video Tag) | Yes      |
+| Player        | Name                               | Sub Name                | Duration |
+|---------------|------------------------------------|-------------------------|----------|
+| Local         | Yes<sup>1</sup> (Parsed File Name) | Yes (Modification Date) | Yes      |
+| Twitch Clip   | Yes (Clip Title)                   | Yes (Game/ Category)    | Yes      |
+| Twitch Video  | Yes (Video Title)                  | Yes (Game/ Category)    | Yes      |
+| YouTube Video | Yes (Video Title)                  | Yes (First Video Tag)   | Yes      |
 
 <sup>1</sup> `example_video-2020.mp4` parsed to `Example Video - 2020`
 
@@ -139,9 +139,31 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Preset of 5 Bots (Mod4YouBot, Moobot, Nightbot, StreamElements, Streamlabs)
 * Bot autofilling with BetterTTV API
 
+## [import-videos-folder.js](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/import-videos-folder.js)
+| Option              | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| --help, -h          | Shows list of options                                                                                                            |
+| --backup, -b        | Create an additional backup (default: false)                                                                                     |
+| --channel, -c       | Channel name which owns the videos (required)                                                                                    |
+| --identity, -i      | Channel id / Room id. (required if channel is not in databse)                                                                    |
+| --log               | Show logs in CLI (default: true)                                                                                                 |
+| --locale, -l        | Locale to use in date generation (default: en)                                                                                   |
+| --subname, --sn     | Add date as sub name (default: true)                                                                                             |
+| --version           | Show version number                                                                                                              |
+
+Example execution: `$ node import-videos-folder.js -c InsanityMeetsHH`
+
+### Import Requirements:
+* `videosFolder` in [`chatbot.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/chatbot.dist.json) points to existing folder
+* each folder under `videosFolder` corresponds to a playlist
+* only MP4 files are allowed
+
+The Script only imports videos which are not in the database.
+
 ## Localization
-* [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/app/i18n-locales.js)
-* [`langswitch.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/component/partial/langswitch.vue)
+* Web UI: [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/app/i18n-locales.js)
+* Web UI: [`langswitch.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/component/partial/langswitch.vue)
+* Node: [`locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/chatbot/locales.js)
 
 ## Installation with [Docker](https://www.docker.com/)
 * Get project via `$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git` or [zip download](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/develop.zip)
