@@ -53,7 +53,6 @@ const chatbot = {
     resetActivePlaylist: playlist.resetActivePlaylist,
     removePlaylist: playlist.removePlaylist,
     removeVideo: playlist.removeVideo,
-    removeVideoFromActivePlaylist: playlist.removeVideoFromActivePlaylist,
     removeVideosByFlagFromActivePlaylist: playlist.removeVideosByFlagFromActivePlaylist,
     setTranslation: function() {
         if (typeof locales[chatbot.config.locale] === 'undefined') {
@@ -68,7 +67,6 @@ const chatbot = {
     updateCounter: counter.updateCounter,
     updatePlaylist: playlist.updatePlaylist,
     updateVideo: playlist.updateVideo,
-    updateVideoFromActivePlaylist: playlist.updateVideoFromActivePlaylist,
     warmUpDatabase: function(channelState) {
         database.prepareBotTable(this, channelState.channel.slice(1));
         database.prepareChannelTable(this, channelState);

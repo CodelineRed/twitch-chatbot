@@ -184,7 +184,7 @@ const chat = {
         let order = 'created_at ASC';
 
         // get the latest 100 messages
-        database.find(select, from, '', [], '', order, 0, function(rows) {
+        database.find(select, from, '', [], '', order, 0, [], function(rows) {
             chatbot.messages[args.channel] = [];
 
             rows.forEach(function(row) {
@@ -326,9 +326,12 @@ const chat = {
                 ];
 
                 database.update('chat', set, where, function(update) {
-                    where = [`user_id = '${args.userstate['target-user-id']}'`];
+                    let from = 'chat';
+                    let where = ['user_id = ?'];
+                    let order = 'created_at DESC';
+                    let prepare = [args.userstate['target-user-id']];
 
-                    database.find('*', 'chat', '', where, '', 'created_at DESC', 1, function(rows) {
+                    database.find('*', from, '', where, '', order, 1, prepare, function(rows) {
                         if (rows.length) {
                             set.purge = JSON.parse(set.purge);
                             set.purge.showMessage = true;

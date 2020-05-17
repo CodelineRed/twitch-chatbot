@@ -52,21 +52,25 @@ const dataTable = {
                     // on length change
                     $('.data-table').on('length.dt', function(e, settings, len) {
                         $this.setDataTableState($(e.target).attr('id'));
+                        $('[data-toggle="popover"]').popover('hide');
                     });
 
                     // on order change
                     $('.data-table').on('order.dt', function(e, settings, ordArr) {
                         $this.setDataTableState($(e.target).attr('id'));
+                        $('[data-toggle="popover"]').popover('hide');
                     });
 
                     // on page change
                     $('.data-table').on('page.dt', function(e, settings) {
                         $this.setDataTableState($(e.target).attr('id'));
+                        $('[data-toggle="popover"]').popover('hide');
                     });
 
                     // on search change
                     $('.data-table').on('search.dt', function(e, settings) {
                         $this.setDataTableState($(e.target).attr('id'));
+                        $('[data-toggle="popover"]').popover('hide');
                     });
                 }, 300);
             })(jQuery, this);

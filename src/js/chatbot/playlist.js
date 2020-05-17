@@ -24,29 +24,21 @@ const playlist = {
             };
 
             database.insert('playlist', [values], function(insert) {
+                // if new playlist is active playlist
                 if (args.playlist.active) {
-                    chatbot.activePlaylists[args.channel] = {
-                        id: insert.lastID,
-                        name: args.playlist.name,
-                        active: true,
-                        updatedAt: time,
-                        createdAt: time,
-                        videoQuantity: 0,
-                        videos: []
-                    };
-                    playlist.getActivePlaylist(chatbot, args);
-
                     let where = [
                         'channel_id = ' + chatbot.channels[args.channel].id,
                         'id != ' + insert.lastID
                     ];
 
                     database.update('playlist', {active: 0, updatedAt: time}, where, function(update) {
+                        playlist.getActivePlaylist(chatbot, args);
                         playlist.getPlaylists(chatbot, args);
                     });
                 } else {
                     playlist.getPlaylists(chatbot, args);
                 }
+                console.log(`* Added playlist "${args.playlist.name}"`);
             });
         }
     },
@@ -69,12 +61,14 @@ const playlist = {
                 createdAt: time // unix timestamp (seconds)
             };
 
-            let select = 'id, uuid, sort';
-            let from = 'playlist_video_join AS pvj';
-            let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
+            let select = 'v.id, p.name, pvj.sort';
+            let from = 'playlist AS p';
+            let join = 'LEFT JOIN playlist_video_join AS pvj ON p.id = pvj.playlist_id ';
+            join += 'LEFT JOIN video AS v ON pvj.video_id = v.id';
+            let where = ['p.id = ?'];
 
             // find videos from playlist
-            database.find(select, from, join, ['pvj.playlist_id = ' + args.video.playlistId], '', 'sort', 0, function(rows) {
+            database.find(select, from, join, where, '', 'sort', 0, [args.video.playlistId], function(rows) {
                 // if video.id is defined, just add playlist relation
                 if (args.video.id) {
                     values = {
@@ -87,7 +81,7 @@ const playlist = {
                         gameCmd: args.video.gameCmd,
                         start: 0,
                         end: 0,
-                        sort: rows.length === 0 ? rows.length : 1 * (rows[rows.length - 1].sort + 1),
+                        sort: rows[0].sort === null ? 0 : 1 * (rows[rows.length - 1].sort + 1),
                         updatedAt: time, // unix timestamp (seconds)
                         createdAt: time // unix timestamp (seconds)
                     };
@@ -100,12 +94,11 @@ const playlist = {
                             values.file = args.video.file;
                             values.duration = args.video.duration; // unix timestamp (seconds)
                             values.player = args.video.player;
-                            chatbot.activePlaylists[args.channel].videos.push(values);
-                            chatbot.activePlaylists[args.channel].videoQuantity = chatbot.activePlaylists[args.channel].videos.length;
                             playlist.getActivePlaylist(chatbot, args);
                         }
 
                         playlist.getPlaylists(chatbot, args);
+                        console.log(`* Added video "${args.video.name}" to playlist "${rows[0].name}"`);
                     });
                 } else {
                     database.insert('video', [values], function(insert) {
@@ -119,7 +112,7 @@ const playlist = {
                             gameCmd: args.video.gameCmd,
                             start: 0,
                             end: 0,
-                            sort: rows.length === 0 ? rows.length : 1 * (rows[rows.length - 1].sort + 1),
+                            sort: rows[0].sort === null ? 0 : 1 * (rows[rows.length - 1].sort + 1),
                             updatedAt: time,
                             createdAt: time
                         };
@@ -132,12 +125,11 @@ const playlist = {
                                 values.file = args.video.file;
                                 values.duration = args.video.duration; // unix timestamp (seconds)
                                 values.player = args.video.player;
-                                chatbot.activePlaylists[args.channel].videoQuantity = chatbot.activePlaylists[args.channel].videos.length;
-                                chatbot.activePlaylists[args.channel].videos.push(values);
                                 playlist.getActivePlaylist(chatbot, args);
                             }
 
                             playlist.getPlaylists(chatbot, args);
+                            console.log(`* Added video "${args.video.name}" to playlist "${rows[0].name}"`);
                         });
                     });
                 }
@@ -146,68 +138,127 @@ const playlist = {
     },
     clearActivePlaylist: function(chatbot, args) {
         if (chatbot.socket !== null) {
-            chatbot.activePlaylists[args.channel].videos = [];
-            playlist.getActivePlaylist(chatbot, args);
-            database.remove('playlist_video_join', ['playlist_id = ' + chatbot.activePlaylists[args.channel].id]);
+            let select = 'playlist_video_join';
+            let where = ['playlist_id = ?'];
+            let prepare = [chatbot.activePlaylists[args.channel].id];
+
+            database.remove(select, where, prepare, function(remove) {
+                playlist.getActivePlaylist(chatbot, args);
+                console.log(`* Cleared playlist "${chatbot.activePlaylists[args.channel].name}"`);
+            });
         }
     },
     getActivePlaylist: function(chatbot, args) {
-        if (chatbot.socket !== null) {
-            let currentTime = chatbot.currentVideoStart[args.channel];
+        let select = 'p.id AS p_id, p.name AS p_name, p.updated_at AS p_updated_at, p.created_at AS p_created_at, ';
+        select += 'v.id, v.name, v.sub_name, v.file, v.duration, v.player, v.updated_at, v.created_at, ';
+        select += 'pvj.uuid, pvj.start, pvj.end, pvj.played, pvj.uuid, pvj.start, pvj.end, pvj.played, ';
+        select += 'pvj.skipped, pvj.title_cmd, pvj.game_cmd, pvj.sort';
+        let from = 'playlist AS p';
+        let join = 'LEFT JOIN playlist_video_join AS pvj ON p.id = pvj.playlist_id ';
+        join += 'LEFT JOIN video AS v ON pvj.video_id = v.id ';
+        let where = ['p.channel_id = ?', 'p.active = ?'];
+        let prepare = [chatbot.channels[args.channel].id, 1];
 
-            // sets start and end timestamp
-            for (let i = 0; i < chatbot.activePlaylists[args.channel].videos.length; i++) {
-                if (chatbot.activePlaylists[args.channel].videos[i].skipped) {
-                    chatbot.activePlaylists[args.channel].videos[i].start = 0;
-                    chatbot.activePlaylists[args.channel].videos[i].end = 0;
-                    continue;
+        database.find(select, from, join, where, '', 'sort', 0, prepare, function(rows) {
+            if (rows.length) {
+                chatbot.activePlaylists[args.channel] = {
+                    id: rows[0].p_id,
+                    name: rows[0].p_name,
+                    updatedAt: rows[0].p_updated_at, // unix timestamp (seconds)
+                    createdAt: rows[0].p_created_at, // unix timestamp (seconds)
+                    active: true,
+                    videoQuantity: 0,
+                    videos: []
+                };
+
+                // if any video found
+                if (rows[0].name !== null) {
+                    chatbot.activePlaylists[args.channel].videoQuantity = rows.length;
+
+                    rows.forEach(function(row) {
+                        chatbot.activePlaylists[args.channel].videos.push({
+                            id: row.id,
+                            uuid: row.uuid,
+                            playlistId: row.p_id,
+                            name: row.name,
+                            subName: row.sub_name,
+                            file: row.file,
+                            duration: row.duration, // unix timestamp (seconds)
+                            player: row.player,
+                            start: row.start,
+                            end: row.end,
+                            played: !!row.played,
+                            skipped: !!row.skipped,
+                            titleCmd: row.title_cmd,
+                            gameCmd: row.game_cmd,
+                            sort: row.sort,
+                            updatedAt: row.updated_at, // unix timestamp (seconds)
+                            createdAt: row.created_at // unix timestamp (seconds)
+                        });
+                    });
                 }
 
-                if ((!chatbot.activePlaylists[args.channel].videos[i].played 
-                    || (i + 1) === chatbot.activePlaylists[args.channel].videos.length) && currentTime > 0) {
-                    chatbot.activePlaylists[args.channel].videos[i].start = currentTime;
-                    chatbot.activePlaylists[args.channel].videos[i].end = currentTime + chatbot.activePlaylists[args.channel].videos[i].duration;
-                    currentTime += chatbot.activePlaylists[args.channel].videos[i].duration;
-                } else {
-                    let currentVideoFile = '';
-                    chatbot.activePlaylists[args.channel].videos[i].start = 0;
-                    chatbot.activePlaylists[args.channel].videos[i].end = 0;
+                if (chatbot.socket !== null) {
+                    let currentTime = chatbot.currentVideoStart[args.channel];
 
-                    if (currentTime === 0) {
-                        continue;
-                    }
+                    // sets start and end timestamp
+                    for (let i = 0; i < chatbot.activePlaylists[args.channel].videos.length; i++) {
+                        // if video is skipped
+                        if (chatbot.activePlaylists[args.channel].videos[i].skipped) {
+                            chatbot.activePlaylists[args.channel].videos[i].start = 0;
+                            chatbot.activePlaylists[args.channel].videos[i].end = 0;
+                            continue;
+                        }
 
-                    // find currentVideoFile
-                    for (let j = chatbot.activePlaylists[args.channel].videos.length - 1; j >= 0; j--) {
-                        if (chatbot.activePlaylists[args.channel].videos[j].played 
-                                || (!chatbot.activePlaylists[args.channel].videos[j].played && j === 0)) {
-                            currentVideoFile = chatbot.activePlaylists[args.channel].videos[j].file;
-                            break;
+                        // if video not played or is last video in list and currentTime is set
+                        if ((!chatbot.activePlaylists[args.channel].videos[i].played 
+                            || (i + 1) === chatbot.activePlaylists[args.channel].videos.length) && currentTime > 0) {
+                            chatbot.activePlaylists[args.channel].videos[i].start = currentTime;
+                            chatbot.activePlaylists[args.channel].videos[i].end = currentTime + chatbot.activePlaylists[args.channel].videos[i].duration;
+                            currentTime += chatbot.activePlaylists[args.channel].videos[i].duration;
+                        } else {
+                            // if video played
+                            let currentVideoFile = '';
+                            chatbot.activePlaylists[args.channel].videos[i].start = 0;
+                            chatbot.activePlaylists[args.channel].videos[i].end = 0;
+
+                            if (currentTime === 0) {
+                                continue;
+                            }
+
+                            // find currentVideoFile
+                            for (let j = chatbot.activePlaylists[args.channel].videos.length - 1; j >= 0; j--) {
+                                if (chatbot.activePlaylists[args.channel].videos[j].played 
+                                        || (!chatbot.activePlaylists[args.channel].videos[j].played && j === 0)) {
+                                    currentVideoFile = chatbot.activePlaylists[args.channel].videos[j].file;
+                                    break;
+                                }
+                            }
+
+                            // if file is currently played
+                            if (currentVideoFile === chatbot.activePlaylists[args.channel].videos[i].file 
+                                && typeof currentTime !== 'undefined') {
+                                chatbot.activePlaylists[args.channel].videos[i].start = currentTime;
+                                chatbot.activePlaylists[args.channel].videos[i].end = currentTime + chatbot.activePlaylists[args.channel].videos[i].duration;
+                                currentTime += chatbot.activePlaylists[args.channel].videos[i].duration;
+                            }
                         }
                     }
 
-                    // if file is currently played
-                    if (currentVideoFile === chatbot.activePlaylists[args.channel].videos[i].file 
-                        && typeof currentTime !== 'undefined') {
-                        chatbot.activePlaylists[args.channel].videos[i].start = currentTime;
-                        chatbot.activePlaylists[args.channel].videos[i].end = currentTime + chatbot.activePlaylists[args.channel].videos[i].duration;
-                        currentTime += chatbot.activePlaylists[args.channel].videos[i].duration;
-                    }
+                    const call = {
+                        args: {
+                            channel: args.channel,
+                            activePlaylist: chatbot.activePlaylists[args.channel]
+                        },
+                        method: 'setActivePlaylist',
+                        ref: 'playlist',
+                        env: 'browser'
+                    };
+
+                    chatbot.socket.write(JSON.stringify(call));
                 }
             }
-
-            const call = {
-                args: {
-                    channel: args.channel,
-                    activePlaylist: chatbot.activePlaylists[args.channel]
-                },
-                method: 'setActivePlaylist',
-                ref: 'playlist',
-                env: 'browser'
-            };
-
-            chatbot.socket.write(JSON.stringify(call));
-        }
+        });
     },
     getLocalVideoMeta: function(chatbot, args) {
         let localRegExp = /(.*)(\.mp4)$/i;
@@ -268,24 +319,24 @@ const playlist = {
     getPlaylist: function(chatbot, args) {
         let selectedPlaylist = {};
         let select = 'id, name, active, updated_at AS updatedAt, created_at AS createdAt';
-        let where = [
-            'id = ' + args.playlist.id,
-            'channel_id = ' + chatbot.channels[args.channel].id
-        ];
+        let from = 'playlist';
+        let where = ['id = ?', 'channel_id = ?'];
+        let prepare = [args.playlist.id, chatbot.channels[args.channel].id];
 
-        database.find(select, 'playlist', '', where, '', '', 1, function(rows) {
+        database.find(select, from, '', where, '', '', 1, prepare, function(rows) {
             if (rows.length) {
                 selectedPlaylist = rows[0];
 
                 select = 'id, uuid, name, file, duration, player, start, end, played, skipped, sort, ';
                 select += 'title_cmd AS titleCmd, game_cmd AS gameCmd, pvj.playlist_id AS playlistId, ';
                 select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, sub_name AS subName';
-                let from = 'playlist_video_join AS pvj';
-                where = ['pvj.playlist_id = ' + args.playlist.id];
+                from = 'playlist_video_join AS pvj';
+                where = ['pvj.playlist_id = ?'];
                 let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
+                prepare = [args.playlist.id];
 
                 // find videos from target playlist
-                database.find(select, from, join, where, '', 'sort', 0, function(rowsVideo) {
+                database.find(select, from, join, where, '', 'sort', 0, prepare, function(rowsVideo) {
                     if (chatbot.socket !== null) {
                         selectedPlaylist.videos = rowsVideo;
                         const call = {
@@ -327,11 +378,13 @@ const playlist = {
         let select = 'id, name, active, p.updated_at AS updatedAt, ';
         select += 'p.created_at AS createdAt, COUNT(pvj.playlist_id) AS videoQuantity';
         let from = 'playlist AS p';
-        let join = 'LEFT JOIN playlist_video_join AS pvj ON pvj.playlist_id = p.id ';
-        let where = ['channel_id = ' + chatbot.channels[args.channel].id];
+        let join = 'LEFT JOIN playlist_video_join AS pvj ON p.id = pvj.playlist_id ';
+        let where = ['channel_id = ?'];
         let group = 'name';
         let order = group;
-        database.find(select, from, join, where, group, order, 0, function(rows) {
+        let prepare = [chatbot.channels[args.channel].id];
+
+        database.find(select, from, join, where, group, order, 0, prepare, function(rows) {
             if (chatbot.socket !== null) {
                 chatbot.playlists[args.channel] = rows;
                 const call = {
@@ -353,15 +406,13 @@ const playlist = {
         let select = 'id, name, active, p.updated_at AS updatedAt, ';
         select += 'p.created_at AS createdAt, COUNT(pvj.playlist_id) AS videoQuantity';
         let from = 'playlist AS p';
-        let join = 'LEFT JOIN playlist_video_join AS pvj ON pvj.playlist_id = p.id ';
-        let where = [
-            `channel_id = ${chatbot.channels[args.channel].id}`,
-            `name LIKE '%${search}%'`
-        ];
+        let join = 'LEFT JOIN playlist_video_join AS pvj ON p.id = pvj.playlist_id ';
+        let where = ['channel_id = ?', 'name LIKE ?'];
         let group = 'name';
         let order = group;
+        let prepare = [chatbot.channels[args.channel].id, `%${search}%`];
 
-        database.find(select, from, join, where, group, order, 30, function(rows) {
+        database.find(select, from, join, where, group, order, 30, prepare, function(rows) {
             if (chatbot.socket !== null) {
                 const call = {
                     args: {
@@ -507,11 +558,13 @@ const playlist = {
                     chatbot.activePlaylists[args.channel].videos[i].played = false;
                     uuidArray.push(chatbot.activePlaylists[args.channel].videos[i].uuid);
 
+                    // if video is skipped
                     if (chatbot.activePlaylists[args.channel].videos[i].skipped) {
                         continue;
                     }
                 }
 
+                // find next video to play
                 if (!chatbot.activePlaylists[args.channel].videos[i].played && !match) {
                     video = chatbot.activePlaylists[args.channel].videos[i];
                     chatbot.activePlaylists[args.channel].videos[i].played = true;
@@ -521,14 +574,12 @@ const playlist = {
                 }
             }
 
-            if (video.duration === 0) {
-                //chatbot.currentVideoStart[args.channel] = 0;
-            }
-
+            // if titleCmd is set, change stream titel
             if (typeof video.titleCmd !== 'undefined' && video.titleCmd.length) {
                 chatbot.client.say('#' + args.channel, `!title ${video.titleCmd}`);
             }
 
+            // if gameCmd is set, change stream game
             if (typeof video.gameCmd !== 'undefined' && video.gameCmd.length) {
                 chatbot.client.say('#' + args.channel, `!game ${video.gameCmd}`);
             }
@@ -544,25 +595,28 @@ const playlist = {
             };
 
             chatbot.socketVideo.write(JSON.stringify(call));
-            playlist.getActivePlaylist(chatbot, args);
 
             if (matchUuid.length) {
-                database.update('playlist_video_join', {played: true, start: 0, end: 0}, [`uuid = '${matchUuid}'`], function(update) {
+                let select = 'playlist_video_join';
+                let set = {played: true, start: 0, end: 0};
+                let where = [`uuid = '${matchUuid}'`];
+
+                database.update(select, set, where, function(update) {
                     if (uuidArray.length) {
-                        database.update('playlist_video_join', {played: false, start: 0, end: 0}, [`uuid IN ('${uuidArray.join('\', \'')}')`]);
+                        set = {played: false, start: 0, end: 0};
+                        where = [`uuid IN ('${uuidArray.join('\', \'')}')`];
+
+                        database.update(select, set, where, function(updateNotPlayed) {
+                            playlist.getActivePlaylist(chatbot, args);
+                        });
+                    } else {
+                        playlist.getActivePlaylist(chatbot, args);
                     }
                 });
+            } else {
+                playlist.getActivePlaylist(chatbot, args);
             }
         }
-    },
-    getVideoIndexFromActivePlaylist: function(chatbot, channel, video) {
-        for (let i = 0; i < chatbot.activePlaylists[channel].videos.length; i++) {
-            if (video.uuid === chatbot.activePlaylists[channel].videos[i].uuid) {
-                return i;
-            }
-        }
-
-        return -1;
     },
     getVideoIndexFromVideos: function(videos, video) {
         for (let i = 0; i < videos.length; i++) {
@@ -570,19 +624,16 @@ const playlist = {
                 return i;
             }
         }
-
         return -1;
     },
     getVideoSearchResults: function(chatbot, args) {
         let search = args.videoSearch.replace(/ /g, '%');
         let select = 'id, name, sub_name AS subName, file, ';
         select += 'duration, player, updated_at AS updatedAt, created_at AS createdAt';
-        let where = [
-            `channel_id = ${chatbot.channels[args.channel].id}`,
-            `name LIKE '%${search}%' OR file LIKE '%${search}%'`
-        ];
+        let where = ['channel_id = ?', '(name LIKE ? OR file LIKE ?)'];
+        let prepare = [chatbot.channels[args.channel].id, `%${search}%`, `%${search}%`];
 
-        database.find(select, 'video', '', where, '', 'name', 30, function(rows) {
+        database.find(select, 'video', '', where, '', 'name', 30, prepare, function(rows) {
             if (chatbot.socket !== null) {
                 const call = {
                     args: {
@@ -664,7 +715,10 @@ const playlist = {
         select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, sub_name AS subName';
         let from = 'playlist_video_join AS pvj';
         let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
+        let where = ['pvj.playlist_id = ?'];
+        let order = 'sort';
         let limit = 0; // equal to: args.merge.from === 0 && args.merge.to === 0
+        let prepare = [args.merge.target.id];
 
         if (args.merge.from > 0 && args.merge.to > 0) {
             limit = (args.merge.from - 1) + ',' + (args.merge.to - args.merge.from) + 1;
@@ -675,9 +729,11 @@ const playlist = {
         }
 
         // find videos from target playlist
-        database.find(select, from, join, ['pvj.playlist_id = ' + args.merge.targetId], '', 'sort', 0, function(rowsTarget) {
-            // find videos from sorce playlist
-            database.find(select, from, join, ['pvj.playlist_id = ' + args.merge.sourceId], '', 'sort', limit, function(rowsSource) {
+        database.find(select, from, join, where, '', order, 0, prepare, function(rowsTarget) {
+            prepare = [args.merge.source.id];
+
+            // find videos from source playlist
+            database.find(select, from, join, where, '', order, limit, prepare, function(rowsSource) {
                 let values = [];
                 let counter = 0;
                 let sort = 0;
@@ -692,7 +748,7 @@ const playlist = {
 
                     values.push({
                         uuid: uuidv4(),
-                        playlistId: args.merge.targetId,
+                        playlistId: args.merge.target.id,
                         videoId: row.id,
                         played: 0,
                         skipped: 0,
@@ -709,21 +765,19 @@ const playlist = {
                 // append playlist
                 if (args.merge.method === 1) {
                     database.insert('playlist_video_join', values, function(insert) {
-                        database.find(select, from, join, ['pvj.playlist_id = ' + args.merge.targetId], '', 'sort', 0, function(rowsTargetRefresh) {
-                            if (args.merge.targetId === chatbot.activePlaylists[args.channel].id) {
-                                chatbot.activePlaylists[args.channel].videos = rowsTargetRefresh;
-                                playlist.getActivePlaylist(chatbot, args);
-                            }
+                        if (args.merge.target.id === chatbot.activePlaylists[args.channel].id) {
+                            playlist.getActivePlaylist(chatbot, args);
+                        }
 
-                            playlist.getPlaylists(chatbot, args);
-                        });
+                        playlist.getPlaylists(chatbot, args);
+                        console.log(`* Merged ${rowsSource.length} videos from "${args.merge.source.name}" to "${args.merge.target.name}"`);
                     });
                 } else {
                     // prepend playlist
                     rowsTarget.forEach(function(row) {
                         values.push({
                             uuid: uuidv4(),
-                            playlistId: args.merge.targetId,
+                            playlistId: args.merge.target.id,
                             videoId: row.id,
                             played: row.played,
                             skipped: row.skipped,
@@ -738,19 +792,15 @@ const playlist = {
                     });
 
                     // remove current relations
-                    database.remove('playlist_video_join', ['playlist_id = ' + args.merge.targetId], function(remove) {
+                    database.remove('playlist_video_join', ['playlist_id = ?'], [args.merge.target.id], function(remove) {
                         // insert new relations
                         database.insert('playlist_video_join', values, function(insert) {
-                            if (args.merge.targetId === chatbot.activePlaylists[args.channel].id) {
-                                database.find(select, from, join, ['pvj.playlist_id = ' + args.merge.targetId], '', 'sort', 0, function(rowsTargetRefresh) {
-                                    if (args.merge.targetId === chatbot.activePlaylists[args.channel].id) {
-                                        chatbot.activePlaylists[args.channel].videos = rowsTargetRefresh;
-                                        playlist.getActivePlaylist(chatbot, args);
-                                    }
-
-                                    playlist.getPlaylists(chatbot, args);
-                                });
+                            if (args.merge.target.id === chatbot.activePlaylists[args.channel].id) {
+                                playlist.getActivePlaylist(chatbot, args);
                             }
+
+                            playlist.getPlaylists(chatbot, args);
+                            console.log(`* Merged ${rowsSource.length} videos from "${args.merge.source.name}" to "${args.merge.target.name}"`);
                         });
                     });
                 }
@@ -759,72 +809,47 @@ const playlist = {
     },
     moveVideo: function(chatbot, args) {
         let time = moment().unix();
+        let from = 'playlist_video_join';
+        let direction = args.direction > 0 ? 'down' : 'up';
+        let where = ['playlist_id = ?'];
+        let prepare = [args.playlist.id];
 
-        if (args.playlist.id === chatbot.activePlaylists[args.channel].id) {
-            let videoIndex = playlist.getVideoIndexFromActivePlaylist(chatbot, args.channel, args.video);
-            let sort = chatbot.activePlaylists[args.channel].videos[videoIndex].sort;
-            chatbot.activePlaylists[args.channel].videos[videoIndex].sort = chatbot.activePlaylists[args.channel].videos[videoIndex + args.direction].sort;
-            chatbot.activePlaylists[args.channel].videos[videoIndex + args.direction].sort = sort;
+        database.find('*', from, '', where, '', 'sort', 0, prepare, function(rows) {
+            let videoIndex = playlist.getVideoIndexFromVideos(rows, args.video);
 
+            if (videoIndex < 0) {
+                return false;
+            }
+
+            let sort = rows[videoIndex].sort;
+            rows[videoIndex].sort = rows[videoIndex + args.direction].sort;
+            rows[videoIndex + args.direction].sort = sort;
             let set = {
                 updatedAt: time,
-                sort: chatbot.activePlaylists[args.channel].videos[videoIndex].sort
+                sort: rows[videoIndex].sort
             };
-            let where = [`uuid = '${chatbot.activePlaylists[args.channel].videos[videoIndex].uuid}'`];
-            database.update('playlist_video_join', set, where);
+            where = [`uuid = '${rows[videoIndex].uuid}'`];
 
-            set = {
-                updatedAt: time,
-                sort: chatbot.activePlaylists[args.channel].videos[videoIndex + args.direction].sort
-            };
-            where = [`uuid = '${chatbot.activePlaylists[args.channel].videos[videoIndex + args.direction].uuid}'`];
-            database.update('playlist_video_join', set, where);
-
-            let movedVideo = chatbot.activePlaylists[args.channel].videos.splice(videoIndex, 1)[0];
-            chatbot.activePlaylists[args.channel].videos.splice(videoIndex + args.direction, 0, movedVideo);
-            playlist.getActivePlaylist(chatbot, args);
-        } else {
-            let from = 'playlist_video_join';
-            let where = ['playlist_id = ' + args.playlist.id];
-
-            database.find('*', from, '', where, '', 'sort', 0, function(rows) {
-                let videoIndex = playlist.getVideoIndexFromVideos(rows, args.video);
-                let sort = rows[videoIndex].sort;
-                rows[videoIndex].sort = rows[videoIndex + args.direction].sort;
-                rows[videoIndex + args.direction].sort = sort;
-
-                let set = {
-                    updatedAt: time,
-                    sort: rows[videoIndex].sort
-                };
-                where = [`uuid = '${rows[videoIndex].uuid}'`];
-                database.update('playlist_video_join', set, where);
-
+            database.update(from, set, where, function() {
                 set = {
                     updatedAt: time,
                     sort: rows[videoIndex + args.direction].sort
                 };
                 where = [`uuid = '${rows[videoIndex + args.direction].uuid}'`];
-                database.update('playlist_video_join', set, where);
 
-                playlist.getPlaylist(chatbot, args);
+                database.update(from, set, where, function() {
+                    if (args.playlist.id === chatbot.activePlaylists[args.channel].id) {
+                        playlist.getActivePlaylist(chatbot, args);
+                    }
+                    playlist.getPlaylist(chatbot, args);
+                    console.log(`* Moved video "${args.video.name}" ${direction} in playlist "${args.playlist.name}"`);
+                });
             });
-        }
+        });
     },
     resetActivePlaylist: function(chatbot, args) {
         if (chatbot.socket !== null) {
-            const playlistLength = chatbot.activePlaylists[args.channel].videos.length;
             chatbot.currentVideoStart[args.channel] = 0;
-
-            for (let i = 0; i < playlistLength; i++) {
-                chatbot.activePlaylists[args.channel].videos[i].played = false;
-                chatbot.activePlaylists[args.channel].videos[i].skipped = false;
-                chatbot.activePlaylists[args.channel].videos[i].start = 0;
-                chatbot.activePlaylists[args.channel].videos[i].end = 0;
-            }
-
-            playlist.getActivePlaylist(chatbot, args);
-
             let set = {
                 played: 0,
                 skipped: 0,
@@ -832,119 +857,88 @@ const playlist = {
                 end: 0,
                 updatedAt: moment().unix()
             };
+            let where = ['playlist_id = ' + chatbot.activePlaylists[args.channel].id];
 
-            database.update('playlist_video_join', set, ['playlist_id = ' + chatbot.activePlaylists[args.channel].id]);
+            database.update('playlist_video_join', set, where, function(update) {
+                playlist.getActivePlaylist(chatbot, args);
+                console.log(`* Resetted playlist "${chatbot.activePlaylists[args.channel].name}"`);
+            });
         }
     },
     removePlaylist: function(chatbot, args) {
         if (chatbot.socket !== null && args.playlist.name.toLowerCase() !== 'general') {
-            database.remove('playlist', ['id = ' + args.playlist.id], function(remove) {
+            database.remove('playlist', ['id = ?'], [args.playlist.id], function(remove) {
                 playlist.getPlaylists(chatbot, args);
 
                 if (args.playlist.active) {
-                    chatbot.activePlaylists[args.channel] = chatbot.playlists[args.channel][0];
-                    chatbot.activePlaylists[args.channel].videos = [];
+                    let playlistId = chatbot.playlists[args.channel][0].id;
+                    
+                    if (chatbot.playlists[args.channel][0].id === args.playlist.id) {
+                        playlistId = chatbot.playlists[args.channel][1].id;
+                    }
+                    
+                    let select = 'playlist';
+                    let set = {
+                        active: 1,
+                        updatedAt: moment().unix()
+                    };
+                    let where = ['id = ' + playlistId];
 
-                    database.update('playlist', {active: 1, updatedAt: moment().unix()}, ['id = ' + chatbot.playlists[args.channel][0].id], function(update) {
-                        let select = 'id, uuid, name, sub_name AS subName, file, duration, player, start, end, played, skipped, ';
-                        select += 'title_cmd AS titleCmd, game_cmd AS gameCmd, v.updated_at AS updatedAt, v.created_at AS createdAt';
-                        let from = 'playlist_video_join AS pvj';
-                        let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
-
-                        // find videos from playlist
-                        database.find(select, from, join, ['pvj.playlist_id = ' + chatbot.activePlaylists[args.channel].id], '', '', 0, function(rows) {
-                            chatbot.activePlaylists[args.channel].videos = rows;
-                            playlist.getActivePlaylist(chatbot, args);
-                        });
+                    database.update(select, set, where, function(update) {
+                        playlist.getActivePlaylist(chatbot, args);
+                        console.log(`* Removed playlist "${args.playlist.name}"`);
                     });
+                } else {
+                    console.log(`* Removed playlist "${args.playlist.name}"`);
                 }
             });
         }
     },
     removeVideo: function(chatbot, args) {
-        if (args.video.playlistId === chatbot.activePlaylists[args.channel].id) {
-            chatbot.activePlaylists[args.channel].videos.splice(args.videoIndex, 1)[0];
-            playlist.getActivePlaylist(chatbot, args);
-        }
-
-        database.remove('playlist_video_join', [`uuid = '${args.video.uuid}'`], function(remove) {
+        database.remove('playlist_video_join', ['uuid = ?'], [args.video.uuid], function(remove) {
             playlist.getPlaylists(chatbot, args);
 
-            if (args.video.playlistId !== chatbot.activePlaylists[args.channel].id) {
-                args.playlist = {id: args.video.playlistId};
-                playlist.getPlaylist(chatbot, args);
+            // if is active playlist
+            if (args.playlist.id === chatbot.activePlaylists[args.channel].id) {
+                playlist.getActivePlaylist(chatbot, args);
             }
+
+            playlist.getPlaylist(chatbot, args);
+            console.log(`* Removed video "${args.video.name}" from playlist "${args.playlist.name}"`);
         });
     },
     removeVideosByFlagFromActivePlaylist: function(chatbot, args) {
         let uuidArray = [];
         let videos = chatbot.activePlaylists[args.channel].videos;
-        chatbot.activePlaylists[args.channel].videos = [];
 
         for (let i = 0; i < videos.length; i++) {
+            // convert to boolean and compare
             if (!!videos[i][args.flag] === !!args.value) {
                 uuidArray.push(videos[i].uuid);
-            } else {
-                chatbot.activePlaylists[args.channel].videos.push(videos[i]);
             }
         }
 
         if (uuidArray.length) {
-            database.remove('playlist_video_join', [`uuid IN ('${uuidArray.join('\' ,\'')}')`], function(remove) {
+            database.remove('playlist_video_join', [`uuid IN ('${uuidArray.join('\', \'')}')`], [], function(remove) {
+                playlist.getActivePlaylist(chatbot, args);
                 playlist.getPlaylists(chatbot, args);
+                console.log(`* Removed ${remove.changes} videos from "${chatbot.activePlaylists[args.channel].name}"`);
             });
+        } else {
+            playlist.getActivePlaylist(chatbot, args);
         }
-
-        playlist.getActivePlaylist(chatbot, args);
     },
     switchPlaylist: function(chatbot, args) {
         let time = moment().unix();
-        chatbot.activePlaylists[args.channel].id = args.playlist.id;
-        chatbot.activePlaylists[args.channel].name = args.playlist.name;
-        chatbot.activePlaylists[args.channel].active = args.playlist.active;
-        chatbot.activePlaylists[args.channel].videos = [];
-        chatbot.activePlaylists[args.channel].updatedAt = time;
-        chatbot.activePlaylists[args.channel].createdAt = args.playlist.createdAt;
 
-        let select = 'id, uuid, name, sub_name, file, duration, player, start, end, v.updated_at, v.created_at, '; 
-        select += 'pvj.played, pvj.skipped, pvj.sort, pvj.title_cmd, pvj.game_cmd, pvj.playlist_id';
-        let from = 'playlist_video_join AS pvj';
-        let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
-
-        // find videos from target playlist
-        database.find(select, from, join, ['pvj.playlist_id = ' + args.playlist.id], '', 'sort', 0, function(rowsAll) {
-            rowsAll.forEach(function(row) {
-                chatbot.activePlaylists[args.channel].videos.push({
-                    id: row.id,
-                    uuid: row.uuid,
-                    playlistId: row.playlist_id,
-                    name: row.name,
-                    subName: row.sub_name,
-                    file: row.file,
-                    duration: row.duration, // unix timestamp (seconds)
-                    player: row.player,
-                    start: row.start,
-                    end: row.end,
-                    played: !!row.played,
-                    skipped: !!row.skipped,
-                    titleCmd: row.title_cmd,
-                    gameCmd: row.game_cmd,
-                    sort: row.sort,
-                    updatedAt: row.updated_at, // unix timestamp (seconds)
-                    createdAt: row.created_at // unix timestamp (seconds)
-                });
+        // reset playlists to active = 0
+        database.update('playlist', {active: 0, updatedAt: time}, ['channel_id = ' + chatbot.channels[args.channel].id], function(updateAll) {
+            // set playlist to active = 1
+            database.update('playlist', {active: 1, updatedAt: time}, ['id = ' + args.playlist.id], function(update) {
+                playlist.getActivePlaylist(chatbot, args);
+                playlist.getPlaylists(chatbot, args);
+                console.log(`* Switched to playlist "${args.playlist.name}"`);
             });
-
-            // reset playlists to active = 0
-            database.update('playlist', {active: 0, updatedAt: time}, ['channel_id = ' + chatbot.channels[args.channel].id], function(updateAll) {
-                // set playlist to active = 1
-                database.update('playlist', {active: 1, updatedAt: time}, ['id = ' + chatbot.activePlaylists[args.channel].id], function(update) {
-                    playlist.getPlaylists(chatbot, args);
-                });
-            });
-
-            chatbot.activePlaylists[args.channel].videoQuantity = rowsAll.length;
-            playlist.getActivePlaylist(chatbot, args);
         });
     },
     updatePlaylist: function(chatbot, args) {
@@ -960,21 +954,27 @@ const playlist = {
 
             database.update('playlist', set, where, function(update) {
                 if (args.playlist.id === chatbot.activePlaylists[args.channel].id) {
-                    chatbot.activePlaylists[args.channel].name = args.playlist.name;
                     playlist.getActivePlaylist(chatbot, args);
                 }
 
                 playlist.getPlaylists(chatbot, args);
+                console.log(`* Updated playlist "${args.playlist.name}"`);
             });
         }
     },
     updateVideo: function(chatbot, args) {
         if (chatbot.socket !== null) {
-            delete args.video.durationHours;
-            delete args.video.durationMin;
-            delete args.video.durationSec;
-            delete args.video.autofill;
+            let reloadActivePlaylist = false;
+            let deleteProperties = ['durationHours', 'durationMin', 'durationSec', 'autofill'];
             args.video.updatedAt = moment().unix(); // unix timestamp (seconds)
+
+            // delete properties which are not in database
+            for (let i = 0; i < deleteProperties.length; i++) {
+                if (typeof args.video[deleteProperties[i]] !== 'undefined') {
+                    delete args.video[deleteProperties[i]];
+                    reloadActivePlaylist = true;
+                }
+            }
 
             let set = {
                 name: args.video.name,
@@ -997,39 +997,20 @@ const playlist = {
                 };
 
                 database.update('playlist_video_join', set, [`uuid = '${args.video.uuid}'`], function() {
+                    // if is active playlist
                     if (args.video.playlistId === chatbot.activePlaylists[args.channel].id) {
-                        chatbot.activePlaylists[args.channel].videos[args.videoIndex] = args.video;
-                        playlist.getActivePlaylist(chatbot, args);
+                        let videoIndex = playlist.getVideoIndexFromVideos(chatbot.activePlaylists[args.channel].videos, args.video);
+                        chatbot.activePlaylists[args.channel].videos[videoIndex] = args.video;
+
+                        if (reloadActivePlaylist) {
+                            playlist.getActivePlaylist(chatbot, args);
+                        }
                     }
+
+                    console.log(`* Updated video "${args.video.name}" in playlist "${args.playlist.name}"`);
                 });
             });
         }
-    },
-    updateVideoFromActivePlaylist: function(chatbot, args) {
-        args.video.updatedAt = moment().unix(); // unix timestamp (seconds)
-        chatbot.activePlaylists[args.channel].videos[args.videoIndex] = args.video;
-
-        let set = {
-            name: args.video.name,
-            file: args.video.file,
-            duration: args.video.duration,
-            player: args.video.player,
-            updatedAt: args.video.updatedAt
-        };
-
-        database.update('video', set, ['id = ' + args.video.id], function(update) {
-            set = {
-                played: args.video.played,
-                skipped: args.video.skipped,
-                titleCmd: args.video.titleCmd,
-                gameCmd: args.video.gameCmd,
-                start: args.video.start,
-                end: args.video.end,
-                updatedAt: args.video.updatedAt
-            };
-
-            database.update('playlist_video_join', set, [`uuid = '${args.video.uuid}'`]);
-        });
     }
 };
 

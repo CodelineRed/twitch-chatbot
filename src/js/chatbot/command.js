@@ -3,21 +3,44 @@ const moment   = require('moment');
 
 const command = {
     getCommands: function(chatbot, args) {
-        if (chatbot.socket !== null) {
-            const call = {
-                args: {
-                    channel: args.channel,
-                    commands: chatbot.commands[args.channel]
-                },
-                method: 'setCommands',
-                ref: 'commands',
-                env: 'browser'
-            };
+        let select = 'cmd.id, cmd.name, cmd.created_at AS createdAt, ccj.cooldown, ';
+        select += 'ccj.active, ccj.last_exec AS lastExec, ccj.updated_at AS updatedAt';
+        let from = 'channel AS c';
+        let join = 'JOIN channel_command_join AS ccj ON c.id = ccj.channel_id ';
+        join += 'JOIN command AS cmd ON ccj.command_id = cmd.id';
+        let where = ['c.id = ?'];
+        let order = 'cmd.name';
+        let prepare = [chatbot.channels[args.channel].id];
 
-            chatbot.socket.write(JSON.stringify(call));
-        }
+        database.find(select, from, join, where, '', order, 0, prepare, function(rows) {
+            chatbot.commands[args.channel] = [];
+            
+            if (rows.length) {
+                chatbot.commands[args.channel] = rows;
+            }
+
+            for (let i = 0; i < chatbot.commands[args.channel].length; i++) {
+                // convert to boolean
+                chatbot.commands[args.channel][i].active = !!chatbot.commands[args.channel][i].active;
+            }
+
+            if (chatbot.socket !== null) {
+                const call = {
+                    args: {
+                        channel: args.channel,
+                        commands: chatbot.commands[args.channel]
+                    },
+                    method: 'setCommands',
+                    ref: 'commands',
+                    env: 'browser'
+                };
+
+                chatbot.socket.write(JSON.stringify(call));
+            }
+        });
     },
     logCommand: function(args) {
+        // extract command from message
         args.message = args.message.replace(/^(![a-z0-9]+)(.*)/, '$1');
         console.log(`* Executed ${args.message} command by ${args.userstate['display-name']} at ${args.channel}.`);
     },

@@ -31,7 +31,6 @@ function scss() {
         }))
         .pipe(gulpIf(isEnv(['test', 'prod'], config.env), minifyCss({compatibility: 'ie8'})))
         .pipe(sourcemaps.write('./'))
-//        .pipe(gulp.dest(config.systemPath + 'css/'))
         .pipe(gulp.dest(config.publicPath + 'css/'));
 }
 
@@ -45,7 +44,7 @@ function js() {
     return gulp.src([
             'node_modules/jquery/dist/jquery.js',
             'node_modules/bootstrap/dist/js/bootstrap.bundle.js',
-//          'node_modules/@fortawesome/fontawesome-free/js/all.js',
+//            'node_modules/@fortawesome/fontawesome-free/js/all.js',
             'node_modules/skateboard/skateboard.min.js',
             'node_modules/moment/moment.js',
             config.sourcePath + 'js/lib/**/*.js',
@@ -63,7 +62,6 @@ function js() {
         .pipe(concat('scripts.js'))
         .pipe(gulpIf(isEnv(['test', 'prod'], config.env), uglify()))
         .pipe(sourcemaps.write('./'))
-//        .pipe(gulp.dest(config.systemPath + 'js/'))
         .pipe(gulp.dest(config.publicPath + 'js/'));
 }
 
@@ -98,7 +96,6 @@ function jsRequire() {
         returnValue = gulp.src(modules[key])
             .pipe(rename({ basename: key }))
             .pipe(gulpIf(isEnv(['test', 'prod'], config.env), uglify()))
-//            .pipe(gulp.dest(config.systemPath + 'js/require/'))
             .pipe(gulp.dest(config.publicPath + 'js/require/'));
     }
     return returnValue;
@@ -110,7 +107,6 @@ function json() {
             config.sourcePath + 'json/**/*.json'
         ])
         .pipe(minifyJson())
-//        .pipe(gulp.dest(config.systemPath + 'json/'))
         .pipe(gulp.dest(config.publicPath + 'json/'));
 }
 
@@ -122,7 +118,6 @@ function img() {
             minifyImg.mozjpeg({progressive: true}),
             minifyImg.optipng({optimizationLevel: 5})
         ]))
-//        .pipe(gulp.dest(config.systemPath + 'img/'))
         .pipe(gulp.dest(config.publicPath + 'img/'));
 }
 
@@ -133,7 +128,6 @@ function font() {
             'node_modules/slick-carousel/slick/fonts/**',
             config.sourcePath + 'font/**'
         ])
-//        .pipe(gulp.dest(config.systemPath + 'font/'))
         .pipe(gulp.dest(config.publicPath + 'font/'));
 }
 
@@ -152,7 +146,6 @@ function svg() {
                 ]
             })
         ]))
-//        .pipe(gulp.dest(config.systemPath + 'svg/'))
         .pipe(gulp.dest(config.publicPath + 'svg/'));
 }
 
@@ -163,7 +156,6 @@ function vue() {
         .pipe(babel({ plugins: ['@babel/plugin-transform-modules-amd'] }))
         .pipe(rename({ extname: '.js' }))
         .pipe(gulpIf(isEnv(['test', 'prod'], config.env), uglify()))
-//        .pipe(gulp.dest(config.systemPath + 'js/vue/'))
         .pipe(gulp.dest(config.publicPath + 'js/vue/'));
 }
 
@@ -172,7 +164,6 @@ function vueJs() {
     return gulp.src(config.sourcePath + 'js/vue/**/*.js')
         .pipe(babel({ plugins: ['@babel/plugin-transform-modules-amd'] }))
         .pipe(gulpIf(isEnv(['test', 'prod'], config.env), uglify()))
-//        .pipe(gulp.dest(config.systemPath + 'js/vue/'))
         .pipe(gulp.dest(config.publicPath + 'js/vue/'));
 }
 
@@ -188,20 +179,11 @@ function vueLint() {
 
 // lint chatbot js files
 function chatbotLint() {
-    return lint(gulp, eslint, [config.sourcePath + 'js/chatbot/**/*.js', 'chatbot.js'], 'import');
+    return lint(gulp, eslint, [config.sourcePath + 'js/chatbot/**/*.js', 'chatbot.js', 'import-videos-folder.js'], 'import');
 }
 
 // clean up folders
 function cleanUp() {
-//    del([
-//            config.systemPath + 'css/**/*',
-//            config.systemPath + 'js/**/*',
-//            config.systemPath + 'img/**/*',
-//            config.systemPath + 'json/**/*',
-//            config.systemPath + 'font/**/*',
-//            config.systemPath + 'svg/**/*'
-//        ], {force: true});
-        
     return del([
             config.publicPath + 'css/**/*',
             config.publicPath + 'js/**/*',

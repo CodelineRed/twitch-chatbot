@@ -1,21 +1,20 @@
+const config       = require('./src/app/chatbot.json');
+const database     = require('./src/js/chatbot/database');
+const locales      = require('./src/js/chatbot/locales');
+
 const fs           = require('fs');
-const glob         = require("glob");
+const glob         = require('glob');
 const mediainfo    = require('mediainfo-wrapper');
 const moment       = require('moment');
 const {v4: uuidv4} = require('uuid');
 const yargs        = require('yargs');
 
-const config       = require('./src/app/chatbot.json');
-const database     = require('./src/js/chatbot/database');
-const locales      = require('./src/js/chatbot/locales');
-
 let addedVideosAmount = 0;
 let localRegExp = /(.*)(\.mp4)$/i;
+let options = {};
 let playlists = [];
 let slashesRegExp = /(\/|\\)+/g;
-let options = {};
 let time = moment().unix();
-let videosAmount = 0;
 let videosFolder = config.videosFolder.replace(slashesRegExp, '/');
 
 const argv = yargs
@@ -74,42 +73,28 @@ if (typeof argv.subname === 'undefined') {
     argv.subname = true;
 }
 
-if (fs.existsSync(videosFolder) && typeof argv.channel === 'string' && argv.channel.length) {
-    if (argv.backup) {
-        database.backup('YYYY-MM-DD_HH-mm-ss');
+function log(message) {
+    if (argv.log === true) {
+        console.log(message);
     }
+}
 
-    glob(videosFolder + '*/*.mp4', options, function(error, videos) {
-        if (error) {
-            console.log(error);
-        } else {
-            let select = 'id, name, room_id AS roomId, updated_at AS updatedAt, created_at AS createdAt';
-            database.find(select, 'channel', '', [`name = '${argv.channel}'`], '', '', 1, function(rows) {
-                if (rows.length) {
-                    log(`* Found channel ${argv.channel}`);
-                    addVideoRecursive(videos, rows[0], 0);
-                } else if (typeof argv.channelid === 'number' && argv.channelid > 0) {
-                    let values = {
-                        name: argv.channel,
-                        roomId: argv.channelid,
-                        updatedAt: time,
-                        createdAt: time
-                    };
+function importSummary(videos, index) {
+    // if all files processed and no video was added
+    if (index === videos.length && !addedVideosAmount) {
+        log('* All videos already exists in database');
+    } else if (index === videos.length && addedVideosAmount) {
+        const vs = addedVideosAmount > 1 ? 's' : '';
+        const ps = playlists.length > 1 ? 's' : '';
+        const durationObject = moment.duration(moment().unix() - time, 's');
+        const hours = ('0' + durationObject.hours()).substr(-2);
+        const minutes = ('0' + durationObject.minutes()).substr(-2);
+        const seconds = ('0' + durationObject.seconds()).substr(-2);
+        const duration = hours + ':' + minutes + ':' + seconds + ' h';
 
-                    database.insert('channel', [values], function(insert) {
-                        values.id = insert.lastID;
-                        addVideoRecursive(videos, values, 0);
-                    });
-                } else {
-                    log('* Option --channelid is missing or empty');
-                }
-            });
-        }
-    });
-} else if (!fs.existsSync(videosFolder)) {
-    log(`* Folder not found (${config.videosFolder})`);
-} else if  (typeof argv.channel === 'undefined' || !argv.channel.length) {
-    log('* Option --channel is missing or empty');
+        log('----- Summary -----');
+        log(`* Added ${addedVideosAmount} video${vs} in ${playlists.length} playlist${ps} in ${duration}`);
+    }
 }
 
 function addVideoRecursive(videos, channel, index) {
@@ -121,12 +106,11 @@ function addVideoRecursive(videos, channel, index) {
     }
 
     let relFilePath = videos[index].replace(videosFolder, '');
-    let where = [
-        `file = '${relFilePath}'`,
-        `channel_id = ${channel.id}`
-    ];
+    let join = 'JOIN playlist_video_join AS pvj ON pvj.video_id = v.id';
+    let where = ['file = ?', 'channel_id = ?'];
+    let prepare = [relFilePath, channel.id];
 
-    database.find('name', 'video AS v', 'JOIN playlist_video_join AS pvj ON pvj.video_id = v.id', where, '', '', 1, function(videoRows) {
+    database.find('name', 'video AS v', join, where, '', '', 1, prepare, function(videoRows) {
         // if video not exits
         if (!videoRows.length) {
             mediainfo(videos[index]).then(function(data) {
@@ -136,7 +120,6 @@ function addVideoRecursive(videos, channel, index) {
                     let duration = ((data[0].general.duration[0] / 1000) -.5).toFixed(0);
                     let format = locales[argv.locale]['date'];
                     let playlist = relFilePath.indexOf('/') ? relFilePath.split('/')[0] : 'General';
-//                    let playlist = 'General';
                     let name = relFilePath
                         .split('/').pop()
                         .replace(localRegExp, '$1')
@@ -175,15 +158,21 @@ function addVideoRecursive(videos, channel, index) {
                             // if video was added
                             if (insert.lastID) {
                                 addedVideosAmount++;
-                                log(`* Added video "${name}" for playlist "${playlist}" (#${addedVideosAmount})`);
+                                log(`* Added video "${name}" to playlist "${playlist}" (#${addedVideosAmount})`);
                             }
 
-                            database.find('id', 'playlist', '', [`name = '${playlist}'`], '', '', 1, function(playlistRows) {
+                            let select = 'p.id, COUNT(pvj.playlist_id) AS videoQuantity';
+                            let from = 'playlist AS p';
+                            join = 'LEFT JOIN playlist_video_join AS pvj ON p.id = pvj.playlist_id ';
+                            where = ['name = ?'];
+                            prepare = [playlist];
+
+                            database.find(select, from, join, where, '', '', 1, prepare, function(playlistRows) {
                                 values = {
                                     uuid: uuidv4(),
                                     playlistId: null,
                                     videoId: insert.lastID,
-                                    sort: videoRows.length === 0 ? videoRows.length : 1 * (videoRows[videoRows.length - 1].sort + 1),
+                                    sort: 0,
                                     updatedAt: time, // unix timestamp (seconds)
                                     createdAt: time // unix timestamp (seconds)
                                 };
@@ -196,6 +185,7 @@ function addVideoRecursive(videos, channel, index) {
                                     }
 
                                     values.playlistId = playlistRows[0].id;
+                                    values.sort = 1 * playlistRows[0].videoQuantity;
                                     database.insert('playlist_video_join', [values], function(pvjInsert) {
                                         index++;
                                         if (typeof videos[index] !== 'undefined') {
@@ -244,26 +234,41 @@ function addVideoRecursive(videos, channel, index) {
     });
 }
 
-function importSummary(videos, index) {
-    // if all files processed and no video was added
-    if (index === videos.length && !addedVideosAmount) {
-        log('* All videos already exists in database');
-    } else if (index === videos.length && addedVideosAmount) {
-        const vs = addedVideosAmount > 1 ? 's' : '';
-        const ps = playlists.length > 1 ? 's' : '';
-        const durationObject = moment.duration(moment().unix() - time, 's');
-        const hours = ('0' + durationObject.hours()).substr(-2);
-        const minutes = ('0' + durationObject.minutes()).substr(-2);
-        const seconds = ('0' + durationObject.seconds()).substr(-2);
-        duration = hours + ':' + minutes + ':' + seconds + ' h';
-
-        log('----- Summary -----');
-        log(`* Added ${addedVideosAmount} video${vs} in ${playlists.length} playlist${ps} in ${duration}`);
+if (fs.existsSync(videosFolder) && typeof argv.channel === 'string' && argv.channel.length) {
+    if (argv.backup === true) {
+        database.backup('YYYY-MM-DD_HH-mm-ss');
     }
+
+    glob(videosFolder + '*/*.mp4', options, function(error, videos) {
+        if (error) {
+            console.log(error);
+        } else {
+            let select = 'id, name, room_id AS roomId, updated_at AS updatedAt, created_at AS createdAt';
+            database.find(select, 'channel', '', ['name = ?'], '', '', 1, [argv.channel], function(rows) {
+                if (rows.length) {
+                    log(`* Found channel ${argv.channel}`);
+                    addVideoRecursive(videos, rows[0], 0);
+                } else if (typeof argv.channelid === 'number' && argv.channelid > 0) {
+                    let values = {
+                        name: argv.channel,
+                        roomId: argv.channelid,
+                        updatedAt: time,
+                        createdAt: time
+                    };
+
+                    database.insert('channel', [values], function(insert) {
+                        values.id = insert.lastID;
+                        addVideoRecursive(videos, values, 0);
+                    });
+                } else {
+                    log('* Option --channelid is missing or empty');
+                }
+            });
+        }
+    });
+} else if (!fs.existsSync(videosFolder)) {
+    log(`* Folder not found (${config.videosFolder})`);
+} else if  (typeof argv.channel === 'undefined' || !argv.channel.length) {
+    log('* Option --channel is missing or empty');
 }
 
-function log(message) {
-    if (argv.log) {
-        console.log(message);
-    }
-}

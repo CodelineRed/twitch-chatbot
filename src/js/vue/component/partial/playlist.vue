@@ -17,9 +17,9 @@
                 dataTable: null,
                 updateMode: false,
                 merge: {
-                    targetId: 0,
+                    target: {},
                     method: 1,
-                    sourceId: 0,
+                    source: {},
                     from: 0,
                     to: 0
                 },
@@ -155,14 +155,17 @@
                 if (this.playlistSourceSearch.length >= 3 && !/\(|\)/g.test(this.playlistSourceSearch)) {
                     this.playlistSearch = this.playlistSourceSearch;
                 } else if (this.playlistSourceSearch.length < 3) {
-                    this.merge.sourceId = 0;
+                    this.merge.source = {};
                 }
             },
             playlistTargetSearch: function() {
                 if (this.playlistTargetSearch.length >= 3 && !/\(|\)/g.test(this.playlistTargetSearch)) {
                     this.playlistSearch = this.playlistTargetSearch;
                 } else if (this.playlistTargetSearch.length < 3) {
-                    this.merge.targetId = this.activePlaylist.id;
+                    this.merge.target = {
+                        id: this.activePlaylist.id,
+                        name: this.activePlaylist.name
+                    };
                 }
             },
             videoSearch: function() {
@@ -190,7 +193,10 @@
                 jQuery(this).find('input[type="text"]').first().trigger('focus');
 
                 if (jQuery(this).attr('id') === 'merge-playlist') {
-                    $this.merge.targetId = $this.activePlaylist.id;
+                    $this.merge.target = {
+                        id: $this.activePlaylist.id,
+                        name: $this.activePlaylist.name
+                    };
                 }
             });
 
@@ -209,9 +215,12 @@
             jQuery('#merge-playlists').on('hidden.bs.modal', function() {
                 // reset
                 $this.merge = {
-                    targetId: $this.activePlaylist.id,
+                    target: {
+                        id: $this.activePlaylist.id,
+                        name: $this.activePlaylist.name
+                    },
                     method: 1,
-                    sourceId: 0,
+                    source: {},
                     from: 0,
                     to: 0
                 };
@@ -424,19 +433,18 @@
                     streamWrite(call);
                 }
             },
-            getVideoCommands: function(videoIndex) {
+            getVideoCommands: function(video) {
                 let result = '';
 
-                if (this.activePlaylist.videos[videoIndex].titleCmd !== '') {
-                    result += '!title ' + this.activePlaylist.videos[videoIndex].titleCmd;
+                if (video.titleCmd.length) {
+                    result += '!title ' + video.titleCmd;
                 }
-                if (this.activePlaylist.videos[videoIndex].titleCmd !== '' 
-                    && this.activePlaylist.videos[videoIndex].gameCmd !== '') {
+                if (video.titleCmd.length && video.gameCmd.length) {
                     result += '<br>';
                 }
 
-                if (this.activePlaylist.videos[videoIndex].gameCmd !== '') {
-                    result += '!game ' + this.activePlaylist.videos[videoIndex].gameCmd;
+                if (video.gameCmd.length) {
+                    result += '!game ' + video.gameCmd;
                 }
 
                 return result;
@@ -515,8 +523,8 @@
                 return (sec < 0 || sec > 59 || (hours + min + sec === 0));
             },
             mergePlaylists: function() {
-                if (typeof streamWrite === 'function' && this.merge.targetId 
-                    && this.merge.sourceId && jQuery('#merge-playlists .is-invalid').length === 0) {
+                if (typeof streamWrite === 'function' && typeof this.merge.target.id === 'number' 
+                    && typeof this.merge.source.id === 'number' && jQuery('#merge-playlists .is-invalid').length === 0) {
                     jQuery('#merge-playlists').modal('hide');
 
                     const call = {
@@ -531,14 +539,17 @@
                     streamWrite(call);
                 }
             },
-            moveVideo: function(playlist, video, direction) {
+            moveVideo: function(video, direction, playlist) {
                 if (typeof streamWrite === 'function') {
                     const call = {
                         method: 'moveVideo',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
                             direction: direction,
-                            playlist: playlist,
+                            playlist: {
+                                id: playlist.id,
+                                name: playlist.name
+                            },
                             video: video
                         },
                         env: 'node'
@@ -552,12 +563,16 @@
                 const params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1280,height=800';
                 window.open(url, 'Video', params);
             },
-            removeVideo: function(video, index) {
+            removeVideo: function(video, index, playlist) {
                 if (typeof streamWrite === 'function' && confirm('Are you sure to remove video "' + video.name + '"?')) {
                     const call = {
                         method: 'removeVideo',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
+                            playlist: {
+                                id: playlist.id,
+                                name: playlist.name
+                            },
                             video: video,
                             videoIndex: index
                         },
@@ -595,14 +610,22 @@
                     streamWrite(call);
                 }
             },
-            removePlaylist: function() {
-                if (typeof streamWrite === 'function' && this.playlist.id > 0 && this.playlists.length > 1 
-                    && confirm('Are you sure to remove playlist "' + this.playlist.name + '"?')) {
+            removePlaylist: function(playlist) {
+                if (typeof playlist === 'undefined') {
+                    playlist = this.playlist;
+                }
+
+                if (typeof streamWrite === 'function' && playlist.id > 0 && this.playlists.length > 1 
+                    && confirm('Are you sure to remove playlist "' + playlist.name + '"?')) {
                     const call = {
                         method: 'removePlaylist',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            playlist: this.playlist
+                            playlist: {
+                                id: playlist.id,
+                                name: playlist.name,
+                                active: playlist.active
+                            }
                         },
                         env: 'node'
                     };
@@ -616,10 +639,10 @@
                     this.video.playlistId = playlist.id;
                     this.playlistSearch = this.getPlaylistLabel(playlist);
                 } else if (prozess === 'merge-target') {
-                    this.merge.targetId = playlist.id;
+                    this.merge.target = playlist;
                     this.playlistTargetSearch = this.getPlaylistLabel(playlist);
                 } else if (prozess === 'merge-source') {
-                    this.merge.sourceId = playlist.id;
+                    this.merge.source = playlist;
                     this.playlistSourceSearch = this.getPlaylistLabel(playlist);
                 } else {
                     // prozess: update, switch and remove
@@ -655,7 +678,10 @@
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.activePlaylist = args.activePlaylist;
                     this.video.playlistId = args.activePlaylist.id;
-                    this.merge.targetId = args.activePlaylist.id;
+                    this.merge.target = {
+                        id: args.activePlaylist.id,
+                        name: args.activePlaylist.name
+                    };
                     this.initDataTable();
                 }
             },
@@ -719,20 +745,24 @@
                 this.video.durationSec = durationObject.seconds();
                 jQuery('#video-form').modal('show');
             },
-            switchPlaylist: function() {
+            switchPlaylist: function(playlist) {
                 if (typeof streamWrite === 'function') {
 
                     const call = {
                         method: 'switchPlaylist',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            playlist: this.playlist
+                            playlist: typeof playlist === 'undefined' ? this.playlist : playlist
                         },
                         env: 'node'
                     };
 
                     streamWrite(call);
-                    jQuery('#switch-playlist').modal('hide');
+                    if (typeof playlist === 'undefined') {
+                        jQuery('#switch-playlist').modal('hide');
+                    } else {
+                        jQuery('#all-playlists').modal('hide');
+                    }
                 }
             },
             updatePlaylist: function() {
@@ -749,39 +779,31 @@
                     streamWrite(call);
                 }
             },
-            updateVideo: function() {
-                if (typeof streamWrite === 'function' && jQuery('#video-form .is-invalid').length === 0) {
+            updateVideo: function(video, videoIndex, playlist) {
+                if (typeof streamWrite === 'function' 
+                    && (jQuery('#video-form .is-invalid').length === 0 || typeof video !== 'undefined')) {
                     const call = {
                         method: 'updateVideo',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            videoIndex: this.videoIndex,
-                            video: this.video
+                            playlist: {
+                                id: typeof playlist === 'undefined' ? this.activePlaylist.id : playlist.id,
+                                name: typeof playlist === 'undefined' ? this.activePlaylist.name : playlist.name
+                            },
+                            video: typeof video === 'undefined' ? this.video : video
                         },
                         env: 'node'
                     };
 
                     streamWrite(call);
-                    this.videoIndex = 0;
-                    this.updateMode = false;
-                    jQuery('#video-form').modal('hide');
-                }
-            },
-            updateVideoFromActivePlaylist: function(videoIndex) {
-                if (typeof streamWrite === 'function' && event.isTrusted) {
-                    const call = {
-                        method: 'updateVideoFromActivePlaylist',
-                        args: {
-                            channel: this.$root._route.params.channel.toLowerCase(),
-                            video: this.activePlaylist.videos[videoIndex],
-                            videoIndex: videoIndex
-                        },
-                        env: 'node'
-                    };
-
-                    streamWrite(call);
-                    this.btnAnimation(event.target, 'success');
-                    this.updateDataTableRow(videoIndex, 'playlistTable');
+                    if (typeof video === 'undefined') {
+                        this.videoIndex = 0;
+                        this.updateMode = false;
+                        jQuery('#video-form').modal('hide');
+                    } else {
+                        this.btnAnimation(event.target, 'success');
+                        this.updateDataTableRow(videoIndex, 'playlistTable');
+                    }
                 }
             }
         }
@@ -815,10 +837,10 @@
                     <!-- eslint-disable-next-line vue/require-v-for-key -->
                     <tr v-for="(videoItem, index) in activePlaylist.videos" class="video">
                         <td class="index">
-                            <div v-if="index > 0" class="move move-up" @click="moveVideo(activePlaylist, video, -1)">
+                            <div v-if="index > 0" class="move move-up" @click="moveVideo(videoItem, -1, activePlaylist)">
                                 <font-awesome-icon :icon="['fas', 'chevron-right']" class="fa-fw" :transform="{rotate: -90}" />
                             </div>
-                            <div v-if="index + 1 < activePlaylist.videos.length" class="move move-down" @click="moveVideo(activePlaylist, video, 1)">
+                            <div v-if="index + 1 < activePlaylist.videos.length" class="move move-down" @click="moveVideo(videoItem, 1, activePlaylist)">
                                 <font-awesome-icon :icon="['fas', 'chevron-right']" class="fa-fw" :transform="{rotate: 90}" />
                             </div>
                             {{ index + 1 }}
@@ -843,15 +865,15 @@
                                 <label class="custom-control-label" :for="'video-skipped-' + index">&nbsp;</label>
                             </div>
                         </td>
-                        <td>
+                        <td :data-order="getVideoCommands(videoItem).length ? '1' : '0'">
                             <span v-if="videoItem.titleCmd === '' && videoItem.gameCmd === ''">-</span>
-                            <button v-if="videoItem.titleCmd !== '' || videoItem.gameCmd !== ''" type="button" class="btn btn-sm btn-primary" data-toggle="popover" title="Commands" :data-content="getVideoCommands(index)"><font-awesome-icon :icon="['fas', 'terminal']" class="fa-fw" /></button>
+                            <button v-if="videoItem.titleCmd !== '' || videoItem.gameCmd !== ''" type="button" class="btn btn-sm btn-primary" data-toggle="popover" title="Commands" :data-content="getVideoCommands(videoItem)"><font-awesome-icon :icon="['fas', 'terminal']" class="fa-fw" /></button>
                         </td>
                         <td class="text-center">
                             <span class="text-nowrap">
-                                <button type="button" class="btn btn-sm btn-primary btn-animation mr-2" data-animation-success="success" data-animation-error="error" data-toggle="tooltip" data-placement="top" title="Save" @click="updateVideoFromActivePlaylist(index)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-primary btn-animation mr-2" data-animation-success="success" data-animation-error="error" data-toggle="tooltip" data-placement="top" title="Save" @click="updateVideo(videoItem, index, activePlaylist)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
                                 <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Update" @click="showVideoForm(videoItem, index)"><font-awesome-icon :icon="['fas', 'edit']" class="fa-fw" /></button>
-                                <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(videoItem, index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(videoItem, index, activePlaylist)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                             </span>
                         </td>
                     </tr>
@@ -908,6 +930,7 @@
                                                 <th scope="col">Videos</th>
                                                 <th scope="col">Updated at</th>
                                                 <th scope="col">Created at</th>
+                                                <th scope="col"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -920,6 +943,10 @@
                                                 <td>{{ playlistItem.videoQuantity }}</td>
                                                 <td>{{ playlistItem.updatedAt|formatDateTime($t('datetime')) }}</td>
                                                 <td>{{ playlistItem.createdAt|formatDateTime($t('datetime')) }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Switch to Playlist" @click="switchPlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" /></button>
+                                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove Playlist" :disabled="playlistItem.name.toLowerCase() === 'general'" @click="removePlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -1005,10 +1032,10 @@
                                             <!-- eslint-disable-next-line vue/require-v-for-key -->
                                             <tr v-for="(videoItem, index) in playlist.videos" class="video">
                                                 <td class="index">
-                                                    <div v-if="index > 0" class="move move-up" @click="moveVideo(playlist, video, -1)">
+                                                    <div v-if="index > 0" class="move move-up" @click="moveVideo(videoItem, -1, playlist)">
                                                         <font-awesome-icon :icon="['fas', 'chevron-right']" class="fa-fw" :transform="{rotate: -90}" />
                                                     </div>
-                                                    <div v-if="index + 1 < playlist.videos.length" class="move move-down" @click="moveVideo(playlist, video, 1)">
+                                                    <div v-if="index + 1 < playlist.videos.length" class="move move-down" @click="moveVideo(videoItem, 1, playlist)">
                                                         <font-awesome-icon :icon="['fas', 'chevron-right']" class="fa-fw" :transform="{rotate: 90}" />
                                                     </div>
                                                     {{ index + 1 }}
@@ -1017,7 +1044,7 @@
                                                 <td><span class="text-nowrap">{{ videoItem.duration|formatDuration() }}</span></td>
                                                 <td class="text-center">
                                                     <span class="text-nowrap">
-                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(videoItem, index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(videoItem, index, playlist)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                                                     </span>
                                                 </td>
                                             </tr>
