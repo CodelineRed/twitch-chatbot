@@ -37,6 +37,7 @@ import {
     faStepForward as fasStepForward,
     faSync as fasSync,
     faTerminal as fasTerminal,
+    faTh as fasTh,
     faTicketAlt as fasTicketAlt,
     faTrain as fasTrain,
     faTrashAlt as fasTrashAlt,
@@ -53,7 +54,7 @@ library.add(
     fasAward, fasBolt, fasCheckCircle, fasChevronRight, fasCogs, fasCrown, fasEdit, 
     fasExternalLinkAlt, fasGavel, fasGem, fasGift, fasGlobe, fasHammer, fasHdd, fasHome, 
     fasMoneyBill, fasPlay, fasRobot, fasSave, fasSnowflake, fasStar, fasStepForward, 
-    fasSync, fasTerminal, fasTicketAlt, fasTrain, fasTrashAlt, fasTrophy, fasVideo, fasWrench
+    fasSync, fasTerminal, fasTh, fasTicketAlt, fasTrain, fasTrashAlt, fasTrophy, fasVideo, fasWrench
 );
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);

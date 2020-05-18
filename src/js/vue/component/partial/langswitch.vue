@@ -15,7 +15,7 @@
         },
         watch: {
             currentLocale(newLocale) {
-                localStorage.currentLocale = newLocale;
+                window.localStorage.currentLocale = newLocale;
             }
         },
         mounted: function() {

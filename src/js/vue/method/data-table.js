@@ -32,7 +32,7 @@ const dataTable = {
                     // restore table to last table state
                     $('.data-table').on('init.dt', function(e, settings, json) {
                         let id = $(e.target).attr('id');
-                        let tableState = JSON.parse(localStorage.getItem(id));
+                        let tableState = JSON.parse(window.localStorage.getItem(id));
 
                         if (typeof dataTables[id] === 'object') {
                             if (typeof tableState === 'object' && tableState !== null) {
@@ -91,7 +91,7 @@ const dataTable = {
          * @returns {undefined}
          */
         setDataTableState: function(table) {
-            let tableState = JSON.parse(localStorage.getItem(table));
+            let tableState = JSON.parse(window.localStorage.getItem(table));
 
             if (typeof tableState === 'object' 
                     && dataTables[table]['init'] === true) {
@@ -108,7 +108,7 @@ const dataTable = {
                     'search': search
                 };
 
-                localStorage.setItem(table, JSON.stringify(tableState));
+                window.localStorage.setItem(table, JSON.stringify(tableState));
             }
         },
 

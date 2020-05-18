@@ -177,14 +177,14 @@ const chat = {
         subSelect += 'ch.purge, ch.user_id, ch.user, ch.updated_at, ch.created_at ';
         let subFrom = 'FROM channel AS c ';
         let subJoin = 'JOIN chat AS ch ON ch.channel_id = c.id ';
-        let subWhere = 'WHERE c.name = \'' + args.channel + '\' ';
+        let subWhere = 'WHERE c.name = ? ';
         let subOrder = 'ORDER BY ch.created_at DESC ';
         let subLimit = 'LIMIT 100';
         let from = '(' + subSelect + subFrom + subJoin + subWhere + subOrder + subLimit + ')';
         let order = 'created_at ASC';
 
         // get the latest 100 messages
-        database.find(select, from, '', [], '', order, 0, [], function(rows) {
+        database.find(select, from, '', [], '', order, 0, [args.channel], function(rows) {
             chatbot.messages[args.channel] = [];
 
             rows.forEach(function(row) {
@@ -316,6 +316,7 @@ const chat = {
 
             // if message timeout / ban
             if (typeof args.userstate['target-user-id'] === 'string') {
+                let from = 'chat';
                 let set = {
                     updatedAt: moment().unix(),
                     purge: JSON.stringify(args.purge)
@@ -325,20 +326,20 @@ const chat = {
                     'purge LIKE \'%"showMessage":false%\''
                 ];
 
-                database.update('chat', set, where, function(update) {
-                    let from = 'chat';
-                    let where = ['user_id = ?'];
+                database.update(from, set, where, function(update) {
+                    where = ['user_id = ?'];
                     let order = 'created_at DESC';
                     let prepare = [args.userstate['target-user-id']];
 
                     database.find('*', from, '', where, '', order, 1, prepare, function(rows) {
                         if (rows.length) {
+                            where = [`uuid = '${rows[0].uuid}'`];
                             set.purge = JSON.parse(set.purge);
                             set.purge.showMessage = true;
                             set.purge = JSON.stringify(set.purge);
 
                             // add showMessage = true to latest message
-                            database.update('chat', set, [`uuid = '${rows[0].uuid}'`], function(updateSingle) {
+                            database.update(from, set, where, function(updateSingle) {
                                 chat.getMessages(chatbot, args);
                             });
                         } else {

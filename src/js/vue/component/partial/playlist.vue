@@ -936,9 +936,7 @@
                                         <tbody>
                                             <!-- eslint-disable-next-line vue/require-v-for-key -->
                                             <tr v-for="(playlistItem, index) in playlists" class="video">
-                                                <td>
-                                                    {{ index + 1 }}
-                                                </td>
+                                                <td>{{ index + 1 }}</td>
                                                 <td>{{ playlistItem.name }}</td>
                                                 <td>{{ playlistItem.videoQuantity }}</td>
                                                 <td>{{ playlistItem.updatedAt|formatDateTime($t('datetime')) }}</td>
