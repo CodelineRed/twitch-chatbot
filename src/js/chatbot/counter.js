@@ -29,7 +29,7 @@ const counter = {
                 }
             }
         });
-        
+
     },
     updateCounter: function(chatbot, args) {
         args.counter.streak = 0;

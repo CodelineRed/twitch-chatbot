@@ -5,6 +5,7 @@ const counter  = require('./counter');
 const database = require('./database');
 const locales  = require('./locales');
 const playlist = require('./playlist');
+const poll     = require('./poll');
 
 /**
  * Chatbot Object
@@ -20,6 +21,7 @@ const chatbot = {
     currentVideoStart: {}, // unix timestamp (seconds)
     messages: {},
     activePlaylists: {},
+    activePolls: {},
     playlists: {},
     polls: {},
     raffles: {},
@@ -31,18 +33,24 @@ const chatbot = {
     socketCounter: null, // skateboard socket
     t: {}, // translation
     addPlaylist: playlist.addPlaylist,
+    addPoll: poll.addPoll,
+    addUserChoice: poll.addUserChoice,
     addVideo: playlist.addVideo,
+    announcePollToChat: poll.announcePollToChat,
     clearActivePlaylist: playlist.clearActivePlaylist,
+    closePoll: poll.closePoll,
     getChannels: channel.getChannels,
     getCommands: command.getCommands,
     getCounter: counter.getCounter,
     getActivePlaylist: playlist.getActivePlaylist,
+    getActivePoll: poll.getActivePoll,
     getLocalVideoMeta: playlist.getLocalVideoMeta,
     getMessages: chat.getMessages,
     getPlaylist: playlist.getPlaylist,
     getPlaylistConfig: playlist.getPlaylistConfig,
     getPlaylists: playlist.getPlaylists,
     getPlaylistSearchResults: playlist.getPlaylistSearchResults,
+    getPolls: poll.getPolls,
     getTwitchClipMeta: playlist.getTwitchClipMeta,
     getTwitchVideoMeta: playlist.getTwitchVideoMeta,
     getVideo: playlist.getVideo,
@@ -50,8 +58,10 @@ const chatbot = {
     getYoutubeVideoMeta: playlist.getYoutubeVideoMeta,
     mergePlaylists: playlist.mergePlaylists,
     moveVideo: playlist.moveVideo,
+    pollResultToChat: poll.pollResultToChat,
     resetActivePlaylist: playlist.resetActivePlaylist,
     removePlaylist: playlist.removePlaylist,
+    removePoll: poll.removePoll,
     removeVideo: playlist.removeVideo,
     removeVideosByFlagFromActivePlaylist: playlist.removeVideosByFlagFromActivePlaylist,
     setTranslation: function() {
@@ -61,6 +71,7 @@ const chatbot = {
             chatbot.t = locales[chatbot.config.locale];
         }
     },
+    startPoll: poll.startPoll,
     switchPlaylist: playlist.switchPlaylist,
     updateCommand: command.updateCommand,
     updateCommandLastExec: command.updateCommandLastExec,

@@ -129,6 +129,18 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 
 <sup>1</sup> `example_video-2020.mp4` parsed to `Example Video - 2020`
 
+### Poll
+* Start Poll
+* Close Poll
+* Remove Poll
+* All Polls
+* Anounce to Chat (Button)
+* Result to Chat (Button)
+* Multiple Choice Yes/No
+* Start Datetime
+* End Datetime
+* Datime Picker
+
 ### Commands
 * Cooldown
 * Active State

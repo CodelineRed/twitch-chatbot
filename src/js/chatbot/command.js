@@ -1,4 +1,5 @@
 const database = require('./database');
+const poll     = require('./poll');
 const moment   = require('moment');
 
 const command = {
@@ -14,7 +15,7 @@ const command = {
 
         database.find(select, from, join, where, '', order, 0, prepare, function(rows) {
             chatbot.commands[args.channel] = [];
-            
+
             if (rows.length) {
                 chatbot.commands[args.channel] = rows;
             }
@@ -172,6 +173,24 @@ const command = {
 
                 command.logCommand(args);
                 command.updateCommandLastExec(chatbot, args);
+            }
+        },
+        poll: function(chatbot, args) {
+            if (/^!poll ([0-99])$/i.test(args.message) && typeof chatbot.activePolls[args.channel].id !== 'undefined') {
+                args.choice = parseInt(args.message.toLowerCase().match(/^!poll ([0-99])$/)[1]);
+
+                // if poll is active
+                if (moment().unix() >= chatbot.activePolls[args.channel].start
+                    && moment().unix() <= chatbot.activePolls[args.channel].end 
+                    || !chatbot.activePolls[args.channel].end) {
+                    poll.addUserChoice(chatbot, args);
+                }
+                command.updateCommandLastExec(chatbot, args);
+            }
+        },
+        raffle: function(chatbot, args) {
+            if (/^!raffle/i.test(args.message)) {
+                // TODO add code
             }
         },
         rollDice: function(chatbot, args) {

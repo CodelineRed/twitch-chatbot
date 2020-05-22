@@ -4,8 +4,8 @@
 </script>
 
 <template>
-    <div class="row raffle">
-        <div class="col-12">
+    <div class="raffle p-2">
+        <div class="h4 text-center">
             Raffle
         </div>
     </div>

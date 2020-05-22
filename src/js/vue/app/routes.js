@@ -3,6 +3,7 @@ import Channel from '../component/page/channel';
 import Chat from '../component/partial/chat';
 import Counter from '../component/partial/counter';
 import Player from '../component/partial/player';
+import Poll from '../component/partial/poll';
 import About from '../component/page/about';
 import ErrorPage from '../component/page/error-page';
 
@@ -48,7 +49,16 @@ const routes = [
         name: 'player',
         path: '/channel/:channel/player',
         meta: {
-            title: 'Player',
+            title: 'router.param-channel - i18n.player',
+            layout: 'empty'
+        }
+    },
+    {
+        component: Poll,
+        name: 'poll',
+        path: '/channel/:channel/poll',
+        meta: {
+            title: 'router.param-channel - i18n.poll',
             layout: 'empty'
         }
     },

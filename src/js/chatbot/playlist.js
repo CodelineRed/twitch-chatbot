@@ -597,16 +597,16 @@ const playlist = {
             chatbot.socketVideo.write(JSON.stringify(call));
 
             if (matchUuid.length) {
-                let select = 'playlist_video_join';
+                let from = 'playlist_video_join';
                 let set = {played: true, start: 0, end: 0};
                 let where = [`uuid = '${matchUuid}'`];
 
-                database.update(select, set, where, function(update) {
+                database.update(from, set, where, function(update) {
                     if (uuidArray.length) {
                         set = {played: false, start: 0, end: 0};
                         where = [`uuid IN ('${uuidArray.join('\', \'')}')`];
 
-                        database.update(select, set, where, function(updateNotPlayed) {
+                        database.update(from, set, where, function(updateNotPlayed) {
                             playlist.getActivePlaylist(chatbot, args);
                         });
                     } else {
@@ -872,19 +872,19 @@ const playlist = {
 
                 if (args.playlist.active) {
                     let playlistId = chatbot.playlists[args.channel][0].id;
-                    
+
                     if (chatbot.playlists[args.channel][0].id === args.playlist.id) {
                         playlistId = chatbot.playlists[args.channel][1].id;
                     }
-                    
-                    let select = 'playlist';
+
+                    let from = 'playlist';
                     let set = {
                         active: 1,
                         updatedAt: moment().unix()
                     };
                     let where = ['id = ' + playlistId];
 
-                    database.update(select, set, where, function(update) {
+                    database.update(from, set, where, function(update) {
                         playlist.getActivePlaylist(chatbot, args);
                         console.log(`* Removed playlist "${args.playlist.name}"`);
                     });

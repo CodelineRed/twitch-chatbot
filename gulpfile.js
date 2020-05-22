@@ -78,6 +78,7 @@ function jsRequire() {
         'vue': 'node_modules/vue/dist/vue.min.js',
         'vue-router': 'node_modules/vue-router/dist/vue-router.min.js',
         'vue-i18n': 'node_modules/vue-i18n/dist/vue-i18n.js',
+        'vue-ctk-date-time-picker': 'node_modules/vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.umd.js',
         'fontawesome-svg-core': 'node_modules/@fortawesome/fontawesome-svg-core/index.js',
         'free-brands-svg-icons': 'node_modules/@fortawesome/free-brands-svg-icons/index.js',
         'free-regular-svg-icons': 'node_modules/@fortawesome/free-regular-svg-icons/index.js',

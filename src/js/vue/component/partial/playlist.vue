@@ -561,7 +561,7 @@
             popoutPlayer: function() {
                 const url = this.$router.resolve({name: 'player', params: {channel: this.$root._route.params.channel}}).href;
                 const params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1280,height=800';
-                window.open(url, 'Video', params);
+                window.open(url, 'Player', params);
             },
             removeVideo: function(video, index, playlist) {
                 if (typeof streamWrite === 'function' && confirm('Are you sure to remove video "' + video.name + '"?')) {
@@ -812,10 +812,10 @@
 
 <template>
     <div class="playlist p-2">
-        <div v-if="activePlaylist.videos.length > 0" class="h4 text-center">
+        <div v-if="activePlaylist.videos.length" class="h4 text-center">
             <a href="#" onclick="javascript:return false;" @click="popoutPlayer()">{{ activePlaylist.name }} <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
         </div>
-        <div v-if="activePlaylist.videos.length == 0" class="h4 text-center">
+        <div v-if="!activePlaylist.videos.length" class="h4 text-center">
             {{ activePlaylist.name }}
         </div>
         <div class="table-responsive">
@@ -942,8 +942,10 @@
                                                 <td>{{ playlistItem.updatedAt|formatDateTime($t('datetime')) }}</td>
                                                 <td>{{ playlistItem.createdAt|formatDateTime($t('datetime')) }}</td>
                                                 <td>
-                                                    <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Switch to Playlist" @click="switchPlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" /></button>
-                                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove Playlist" :disabled="playlistItem.name.toLowerCase() === 'general'" @click="removePlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                                    <span class="text-nowrap">
+                                                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Switch to Playlist" @click="switchPlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove Playlist" :disabled="playlistItem.name.toLowerCase() === 'general'" @click="removePlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                                    </span>
                                                 </td>
                                             </tr>
                                         </tbody>

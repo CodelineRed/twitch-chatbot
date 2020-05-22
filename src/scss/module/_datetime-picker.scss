@@ -1,0 +1,30 @@
+.field {
+    &.is-dark {
+        &[data-v-74507c40] {
+            ::placeholder {
+                color: $black;
+            }
+        }
+
+        .field-input {
+            &[data-v-74507c40] {
+                background-color: $white;
+                height: 38px;
+                min-height: 38px;
+
+                &.is-invalid {
+                    + button {
+                        right: 30px;
+                    }
+                }
+            }
+        }
+
+        .field-input,
+        .field-label {
+            &[data-v-74507c40] {
+                color: $black;
+            }
+        }
+    }
+}
