@@ -127,7 +127,7 @@
                                                     <td>{{ component }}</td>
                                                     <td v-for="(width, breakpoint) in breakpoints" :key="breakpoint">
                                                         <select class="custom-select" @change="updateComponent(component, breakpoint, $event)">
-                                                            <option value="0">none</option>
+                                                            <option value="0">None</option>
                                                             <option v-for="bpWidth in 12" :key="bpWidth" :value="bpWidth" :selected="bpWidth === width">{{ breakpoint }} {{ bpWidth }}</option>
                                                         </select>
                                                     </td>

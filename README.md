@@ -134,8 +134,11 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Close Poll
 * Remove Poll
 * All Polls
-* Anounce to Chat (Button)
+* Announce to Chat (Button)
 * Result to Chat (Button)
+* Animate Winner (If multiple options are equal than a random winner will be picked)
+* Play Audio for Winner (Audio is only played in popout window)
+* Announce Winner to Chat
 * Multiple Choice Yes/No
 * Start Datetime
 * End Datetime
@@ -207,3 +210,13 @@ The Script only imports videos which are not in the database.
 * [Vue SFC](https://github.com/nfplee/gulp-vue-single-file-component)
 * [Path to RegExp](https://github.com/pillarjs/path-to-regexp/tree/v1.7.0#parameters)
 * [Moment Parsing (Date Format)](https://momentjs.com/docs/#/parsing/)
+
+## Freesound
+* [Big Clap](https://freesound.org/people/kellieskitchen/sounds/209991/)
+* [Cheering and Clapping](https://freesound.org/people/AlaskaRobotics/sounds/221568/)
+* [Fan Fare 1](https://freesound.org/people/Suburbanwizard/sounds/423293/)
+* [Fan Fare 2](https://freesound.org/people/humanoide9000/sounds/466133/)
+* [Fan Fare 3](https://freesound.org/people/plasterbrain/sounds/397355/)
+* [Winner Deep Voice](https://freesound.org/people/dersuperanton/sounds/435878/)
+* [Winner Female Voice](https://freesound.org/people/tim.kahn/sounds/80618/)
+* [Winner Robot Voice](https://freesound.org/people/Ionicsmusic/sounds/196892/)

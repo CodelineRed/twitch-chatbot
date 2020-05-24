@@ -6,4 +6,19 @@
     &.popout {
         background-color: transparent;
     }
+
+    .winner {
+        margin-bottom: 10px;
+        min-height: 400px;
+        position: relative;
+
+        .option {
+            font-size: 3rem;
+            left: 0;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+        }
+    }
 }

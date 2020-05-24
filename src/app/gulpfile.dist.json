@@ -1,7 +1,22 @@
 {
-    "localServer": "http://127.0.0.1:3050/",
+    "browserSyncDev": {
+        "port": 3000,
+        "server": {
+            "baseDir": "public",
+            "index": "index.html"
+        },
+        "ui": {
+            "port": 3001
+        }
+    },
+    "browserSyncDocker": {
+        "port": 3000,
+        "ui": false,
+        "server": false,
+        "proxy": "http://127.0.0.1:3050/"
+    },
+    "browserSyncConfig": "browserSyncDev",
     "sourcePath": "src/",
     "publicPath": "public/",
-    "systemPath": "path/to/system/",
     "env": "dev"
 }

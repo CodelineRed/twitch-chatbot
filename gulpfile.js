@@ -20,23 +20,33 @@ const config      = require('./src/app/gulpfile.json');
 const isEnv       = require('./src/app/is-env');
 const lint        = require('./src/app/lint');
 
-// processing scss to css and minify result
-function scss() {
-    return gulp.src(config.sourcePath + 'scss/styles.scss')
-        .pipe(sourcemaps.init())
-        .pipe(sass())
-        .pipe(prefixer({
-            overrideBrowserslist: ['last 2 versions'],
-            cascade: false
-        }))
-        .pipe(gulpIf(isEnv(['test', 'prod'], config.env), minifyCss({compatibility: 'ie8'})))
-        .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest(config.publicPath + 'css/'));
+// copy audio files
+function audio() {
+    return gulp.src([
+            config.sourcePath + 'audio/**'
+        ])
+        .pipe(gulp.dest(config.publicPath + 'audio/'));
 }
 
-// lint scss files
-function scssLint() {
-    return lint(gulp, sassLint, [config.sourcePath + 'scss/**/*.scss'], 'scss');
+// copy font files
+function font() {
+    return gulp.src([
+//            'node_modules/@fortawesome/fontawesome-free/webfonts/**',
+            'node_modules/slick-carousel/slick/fonts/**',
+            config.sourcePath + 'font/**'
+        ])
+        .pipe(gulp.dest(config.publicPath + 'font/'));
+}
+
+// compress images
+function img() {
+    return gulp.src(config.sourcePath + 'img/**/*.{png,gif,jpg,jpeg,ico,xml,json,svg}')
+        .pipe(minifyImg([
+            minifyImg.gifsicle({interlaced: true}),
+            minifyImg.mozjpeg({progressive: true}),
+            minifyImg.optipng({optimizationLevel: 5})
+        ]))
+        .pipe(gulp.dest(config.publicPath + 'img/'));
 }
 
 // concatenate and uglify js files
@@ -111,25 +121,23 @@ function json() {
         .pipe(gulp.dest(config.publicPath + 'json/'));
 }
 
-// compress images
-function img() {
-    return gulp.src(config.sourcePath + 'img/**/*.{png,gif,jpg,jpeg,ico,xml,json,svg}')
-        .pipe(minifyImg([
-            minifyImg.gifsicle({interlaced: true}),
-            minifyImg.mozjpeg({progressive: true}),
-            minifyImg.optipng({optimizationLevel: 5})
-        ]))
-        .pipe(gulp.dest(config.publicPath + 'img/'));
+// processing scss to css and minify result
+function scss() {
+    return gulp.src(config.sourcePath + 'scss/styles.scss')
+        .pipe(sourcemaps.init())
+        .pipe(sass())
+        .pipe(prefixer({
+            overrideBrowserslist: ['last 2 versions'],
+            cascade: false
+        }))
+        .pipe(gulpIf(isEnv(['test', 'prod'], config.env), minifyCss({compatibility: 'ie8'})))
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest(config.publicPath + 'css/'));
 }
 
-// copy font files
-function font() {
-    return gulp.src([
-//            'node_modules/@fortawesome/fontawesome-free/webfonts/**',
-            'node_modules/slick-carousel/slick/fonts/**',
-            config.sourcePath + 'font/**'
-        ])
-        .pipe(gulp.dest(config.publicPath + 'font/'));
+// lint scss files
+function scssLint() {
+    return lint(gulp, sassLint, [config.sourcePath + 'scss/**/*.scss'], 'scss');
 }
 
 // compress and copy svg files
@@ -186,30 +194,19 @@ function chatbotLint() {
 // clean up folders
 function cleanUp() {
     return del([
+            config.publicPath + 'audio/**/*',
             config.publicPath + 'css/**/*',
-            config.publicPath + 'js/**/*',
-            config.publicPath + 'img/**/*',
-            config.publicPath + 'json/**/*',
             config.publicPath + 'font/**/*',
+            config.publicPath + 'img/**/*',
+            config.publicPath + 'js/**/*',
+            config.publicPath + 'json/**/*',
             config.publicPath + 'svg/**/*'
         ]);
 }
 
 // initialize BrowserSync
 function browserSyncInit(done) {
-    browserSync.init({
-        port: 3000,
-        server: {
-            baseDir: "public",
-            index: "index.html"
-        },
-        ui: {
-            port: 3001
-        }
-//        ui: false, // enable in production
-//        server: false, // enable if you use Docker
-//        proxy: config.localServer // enable if you use Docker
-    });
+    browserSync.init(config[config.browserSyncConfig]);
     done();
 }
 
@@ -221,13 +218,25 @@ function browserSyncReload(done) {
 
 // watch files
 function watch() {
-    // watch scss files
-    gulp.watch(config.sourcePath + 'scss/**', gulp.series(scss, scssLint));
+    // watch audios
+    gulp.watch(config.sourcePath + 'audio/**', audio);
+    // watch fonts
+    gulp.watch(config.sourcePath + 'font/**', font);
+    // watch images
+    gulp.watch(config.sourcePath + 'img/**', img);
     // watch js files
     gulp.watch([
         config.sourcePath + 'js/{lib,module,plugin}/*.js',
         config.sourcePath + 'js/scripts.js'
     ], gulp.series(js, jsLint));
+    // watch require js files
+    gulp.watch(config.sourcePath + 'js/module/require-config.js', jsRequire);
+    // watch json files
+    gulp.watch(config.sourcePath + 'json/**', json);
+    // watch scss files
+    gulp.watch(config.sourcePath + 'scss/**', gulp.series(scss, scssLint));
+    // watch svg
+    gulp.watch(config.sourcePath + 'svg/**', svg);
     // watch vue files
     gulp.watch(config.sourcePath + 'js/vue/**', gulp.series(vue, vueJs, vueJsLint, vueLint));
     // watch chatbot files
@@ -235,14 +244,6 @@ function watch() {
         config.sourcePath + 'js/chatbot/**/*.js', 
         'chatbot.js'
     ], gulp.series(chatbotLint));
-    // watch images
-    gulp.watch(config.sourcePath + 'img/**', img);
-    // watch json files
-    gulp.watch(config.sourcePath + 'json/**', json);
-    // watch fonts
-    gulp.watch(config.sourcePath + 'font/**', font);
-    // watch svg
-    gulp.watch(config.sourcePath + 'svg/**', svg);
 }
 
 // watch files and reload browser on file change
@@ -252,14 +253,15 @@ function watchAndReload() {
     gulp.watch(config.publicPath + '**/*.{css,eot,ico,js,json,jpg,otf,png,svg,ttf,woff,woff2}', browserSyncReload);
 }
 
-exports.scss = scss;
-exports.scssLint = scssLint;
+exports.audio = audio;
+exports.font = font;
+exports.img = img;
 exports.js = js;
 exports.jsLint = jsLint;
 exports.jsRequire = jsRequire;
 exports.json = json;
-exports.img = img;
-exports.font = font;
+exports.scss = scss;
+exports.scssLint = scssLint;
 exports.svg = svg;
 exports.vue = vue;
 exports.vueJs = vueJs;
@@ -276,7 +278,7 @@ exports.browserSyncReload = browserSyncReload;
 gulp.task('lintAll', gulp.series(scssLint, jsLint, vueJsLint, vueLint, chatbotLint));
 
 // build task
-gulp.task('build', gulp.series(cleanUp, scss, scssLint, js, jsLint, jsRequire, json, img, font, svg, vue, vueJs, vueJsLint, vueLint, chatbotLint));
+gulp.task('build', gulp.series(cleanUp, audio, font, img, js, jsLint, jsRequire, json, scss, scssLint, svg, vue, vueJs, vueJsLint, vueLint, chatbotLint));
 
 // default task if you just call "gulp"
 gulp.task('default', gulp.parallel(watchAndReload, browserSyncInit));
