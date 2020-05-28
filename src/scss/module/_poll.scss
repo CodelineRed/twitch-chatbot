@@ -5,6 +5,16 @@
 
     &.popout {
         background-color: transparent;
+
+        .winner {
+            .option {
+                font-size: 5rem;
+            }
+        }
+    }
+
+    label {
+        color: $white;
     }
 
     .winner {

@@ -93,6 +93,15 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Twitch Emotes
 * BetterTTV Emotes
 * FrankerFaceZ Emotes
+* Popout URL `/channel/[channel]/chat` to use browser source in OBS (No pixel recommendation)
+
+### Commands
+* Cooldown
+* Active State
+* Last Execution Time
+
+### Counter
+* Popout URL `/channel/[channel]/counter` to use browser source in OBS (Pixel recommendation: 400x400px)
 
 ### Playlist
 * Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.local-videos.yml`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/docker-compose.local-videos.yml))
@@ -114,7 +123,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Reset Playlist
 * Clear Playlist
 * playlistInfo Command
-* Video url `/channel/[channel]/video` to use browser source in OBS
+* Popout URL `/channel/[channel]/player` to use browser source in OBS (Pixel recommendation: 1920x1080px)
 * Video name overlay in player
 * Autofill video name, sub name and duration (Depence on `videosFolder`, `youtubeToken` and `clientIdToken` settings)
 * Change stream title and / or game dynamic over [Nightbot](https://nightbot.tv/) (or some similar Bot)
@@ -133,21 +142,19 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Start Poll
 * Close Poll
 * Remove Poll
-* All Polls
-* Announce to Chat (Button)
-* Result to Chat (Button)
+* Copy Poll to Form
+* All Polls Modal
+* Announce Poll to Chat Button
+* Result to Chat Button
 * Animate Winner (If multiple options are equal than a random winner will be picked)
 * Play Audio for Winner (Audio is only played in popout window)
+* Play Audio loop for Poll (Audio is only played in popout window)
 * Announce Winner to Chat
 * Multiple Choice Yes/No
 * Start Datetime
 * End Datetime
 * Datime Picker
-
-### Commands
-* Cooldown
-* Active State
-* Last Execution Time
+* Popout URL `/channel/[channel]/poll` to use browser source in OBS (Pixel recommendation: 1000x563px by max. 6 options)
 
 ### Bots
 * Own [badge](https://fontawesome.com/icons/robot?style=solid) in Chat
@@ -210,6 +217,7 @@ The Script only imports videos which are not in the database.
 * [Vue SFC](https://github.com/nfplee/gulp-vue-single-file-component)
 * [Path to RegExp](https://github.com/pillarjs/path-to-regexp/tree/v1.7.0#parameters)
 * [Moment Parsing (Date Format)](https://momentjs.com/docs/#/parsing/)
+* [SCSS Confetti](https://codepen.io/Event_Horizon/pen/wBKVQN)
 
 ## Freesound
 * [Big Clap](https://freesound.org/people/kellieskitchen/sounds/209991/)

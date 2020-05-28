@@ -6,4 +6,10 @@
             min-width: 90px;
         }
     }
+    
+    .modal-xxl {
+        @include media-breakpoint-up(xxl) {
+            max-width: 1540px;
+        }
+    }
 }

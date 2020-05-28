@@ -8,11 +8,13 @@ const poll = {
             let time = moment().unix();
             let values = {
                 channelId: chatbot.channels[args.channel].id,
+                audioId: typeof args.poll.audio.id === 'number' && args.poll.audio.id > 0 ? args.poll.audio.id : null,
                 name: args.poll.name,
                 active: true,
                 multipleChoice: args.poll.multipleChoice,
                 start: args.poll.start,
                 end: args.poll.end,
+                audioVolume: typeof args.poll.audio.volume === 'number' ? args.poll.audio.volume : 50,
                 updatedAt: time,
                 createdAt: time
             };
@@ -88,8 +90,12 @@ const poll = {
     closePoll: function(chatbot, args) {
         if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
             let from = 'poll';
-            let set = {active: false, end: moment().unix(), updatedAt: moment().unix()};
-            let where = [`id = '${chatbot.activePolls[args.channel].id}'`];
+            let set = {
+                active: false,
+                end: moment().unix(),
+                updatedAt: moment().unix()
+            };
+            let where = [`id = ${chatbot.activePolls[args.channel].id}`];
 
             database.update(from, set, where, function(update) {
                 poll.getActivePoll(chatbot, args);
@@ -98,14 +104,18 @@ const poll = {
         }
     },
     getActivePoll: function(chatbot, args) {
-        let select = 'p.id, p.name, active, multiple_choice, start, end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, COUNT(uc.option_id) AS o_votes,';
+        let select = 'p.id, p.name, active, multiple_choice, start, end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, winner, COUNT(uc.option_id) AS o_votes, ';
+        select += 'pa.id AS pa_id, pa.name AS pa_name, pa.file AS pa_file, pa.duration AS pa_duration, p.audio_volume AS pa_volume, ';
+        //select += 'oa.id AS oa_id, oa.name AS oa_name, oa.file AS oa_file, oa.duration AS oa_duration, o.audio_volume AS oa_volume, ';
         select += '(SELECT COUNT(*) FROM (SELECT uc.user_id FROM user_choice AS uc WHERE uc.poll_id = p.id)) AS uc_votes, ';
         select += '(SELECT COUNT(*) FROM (SELECT DISTINCT uc.user_id FROM user_choice AS uc WHERE uc.poll_id = p.id)) AS uc_attendees, ';
         select += 'CASE WHEN COUNT(uc.option_id) > 0 THEN ROUND((COUNT(uc.option_id) + 0.0) / (SELECT COUNT(uc.poll_id) AS uc_amount '; // case first line
         select += 'FROM user_choice AS uc WHERE uc.poll_id = p.id GROUP BY uc.poll_id) * 100, 0) ELSE 0.0 END AS o_avg'; // case last line
         let from = 'poll AS p';
         let join = 'JOIN option AS o ON p.id = o.poll_id ';
-        join += 'LEFT JOIN user_choice AS uc ON o.id = uc.option_id';
+        join += 'LEFT JOIN user_choice AS uc ON o.id = uc.option_id ';
+        join += 'LEFT JOIN audio AS pa ON p.audio_id = pa.id ';
+        //join += 'LEFT JOIN audio AS oa ON o.audio_id = oa.id';
         let where = ['active = ?', 'channel_id = ?'];
         let group = 'o.name';
         let order = 'p.created_at DESC, o.id';
@@ -127,13 +137,22 @@ const poll = {
                     attendees: rows[0].uc_attendees,
                     updatedAt: rows[0].updated_at,
                     createdAt: rows[0].created_at,
-                    options: []
+                    options: [],
+                    audio: {
+                        id: rows[0].pa_id,
+                        name: rows[0].pa_name,
+                        file: rows[0].pa_file,
+                        type: rows[0].pa_type,
+                        duration: rows[0].pa_duration,
+                        volume: rows[0].pa_volume
+                    }
                 };
 
                 for (let i = 0; i < rows.length; i++) {
                     chatbot.activePolls[args.channel].options.push({
                         id: rows[i].o_id,
                         name: rows[i].o_name,
+                        winner: !!rows[i].winner,
                         votes: rows[i].o_votes,
                         average: rows[i].o_avg
                     });
@@ -160,14 +179,18 @@ const poll = {
         });
     },
     getPolls: function(chatbot, args) {
-        let select = 'p.id, p.name, active, multiple_choice, start, end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, COUNT(uc.option_id) AS o_votes,';
+        let select = 'p.id, p.name, active, multiple_choice, start, end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, winner, COUNT(uc.option_id) AS o_votes, ';
+        select += 'pa.id AS pa_id, pa.name AS pa_name, pa.file AS pa_file, pa.duration AS pa_duration, p.audio_volume AS pa_volume, ';
+        select += 'oa.id AS oa_id, oa.name AS oa_name, oa.file AS oa_file, oa.duration AS oa_duration, o.audio_volume AS oa_volume, ';
         select += '(SELECT COUNT(*) FROM (SELECT uc.user_id FROM user_choice AS uc WHERE uc.poll_id = p.id)) AS uc_votes, ';
         select += '(SELECT COUNT(*) FROM (SELECT DISTINCT uc.user_id FROM user_choice AS uc WHERE uc.poll_id = p.id)) AS uc_attendees, ';
         select += 'CASE WHEN COUNT(uc.option_id) > 0 THEN ROUND((COUNT(uc.option_id) + 0.0) / (SELECT COUNT(uc.poll_id) AS uc_amount '; // case first line
         select += 'FROM user_choice AS uc WHERE uc.poll_id = p.id GROUP BY uc.poll_id) * 100, 0) ELSE 0.0 END AS o_avg'; // case last line
         let from = 'poll AS p';
         let join = 'JOIN option AS o ON p.id = o.poll_id ';
-        join += 'LEFT JOIN user_choice AS uc ON o.id = uc.option_id';
+        join += 'LEFT JOIN user_choice AS uc ON o.id = uc.option_id ';
+        join += 'LEFT JOIN audio AS pa ON p.audio_id = pa.id ';
+        join += 'LEFT JOIN audio AS oa ON o.audio_id = oa.id';
         let where = ['channel_id = ?'];
         let group = 'o.name';
         let order = 'p.created_at DESC, o.id';
@@ -193,7 +216,15 @@ const poll = {
                             attendees: rows[i].uc_attendees,
                             updatedAt: rows[i].updated_at,
                             createdAt: rows[i].created_at,
-                            options: []
+                            options: [],
+                            audio: {
+                                id: rows[i].pa_id,
+                                name: rows[i].pa_name,
+                                file: rows[i].pa_file,
+                                type: rows[i].pa_type,
+                                duration: rows[i].pa_duration,
+                                volume: rows[i].pa_volume
+                            }
                         };
 
                         for (let j = i; j < rows.length; j++) {
@@ -202,8 +233,17 @@ const poll = {
                                 polls[index].options.push({
                                     id: rows[j].o_id,
                                     name: rows[j].o_name,
+                                    winner: !!rows[j].winner,
                                     votes: rows[j].o_votes,
-                                    average: rows[j].o_avg
+                                    average: rows[j].o_avg,
+                                    audio: {
+                                        id: rows[j].oa_id,
+                                        name: rows[j].oa_name,
+                                        file: rows[j].oa_file,
+                                        type: rows[j].oa_type,
+                                        duration: rows[j].oa_duration,
+                                        volume: rows[j].oa_volume
+                                    }
                                 });
                             }
                         }
@@ -264,6 +304,28 @@ const poll = {
                 if (winner.chat) {
                     chatbot.client.say('#' + args.channel, `Poll Winner: ${winner.name} ${winner.average}% (${winner.votes} Votes)`);
                 }
+
+                let from = 'option';
+                let set = {
+                    audioId: null,
+                    audioVolume: 50,
+                    winner: 0,
+                    updatedAt: moment().unix()
+                };
+                let where = [`poll_id = ${chatbot.activePolls[args.channel].id}`];
+
+                database.update(from, set, where, function(updateAll) {
+                    set = {
+                        audioId: typeof args.audio.id === 'number' && args.audio.id > 0 ? args.audio.id : null,
+                        audioVolume: typeof args.audio.volume === 'number' ? args.audio.volume : 50,
+                        winner: 1
+                    };
+                    where = [`id = ${winner.id}`];
+
+                    database.update(from, set, where, function(updateWinner) {
+                        poll.getPolls(chatbot, args);
+                    });
+                });
             }
 
             const call = {
@@ -311,8 +373,11 @@ const poll = {
     startPoll: function(chatbot, args) {
         if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
             let from = 'poll';
-            let set = {start: moment().unix(), updatedAt: moment().unix()};
-            let where = [`id = '${chatbot.activePolls[args.channel].id}'`];
+            let set = {
+                start: moment().unix(),
+                updatedAt: moment().unix()
+            };
+            let where = [`id = ${chatbot.activePolls[args.channel].id}`];
 
             database.update(from, set, where, function(update) {
                 poll.getActivePoll(chatbot, args);

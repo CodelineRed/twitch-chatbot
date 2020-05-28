@@ -1,3 +1,4 @@
+const audio    = require('./audio');
 const chat     = require('./chat');
 const channel  = require('./channel');
 const command  = require('./command');
@@ -44,6 +45,7 @@ const chatbot = {
     getCounter: counter.getCounter,
     getActivePlaylist: playlist.getActivePlaylist,
     getActivePoll: poll.getActivePoll,
+    getAudios: audio.getAudios,
     getLocalVideoMeta: playlist.getLocalVideoMeta,
     getMessages: chat.getMessages,
     getPlaylist: playlist.getPlaylist,

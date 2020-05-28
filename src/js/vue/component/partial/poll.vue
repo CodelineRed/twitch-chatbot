@@ -1,12 +1,13 @@
 <script>
     import Datetime from 'vue-ctk-date-time-picker';
+    import audio from '../../method/audio';
     import bsComponent from '../../method/bs-component';
 
     export default {
         components: {
             'c-datetime': Datetime
         },
-        mixins: [bsComponent],
+        mixins: [audio, bsComponent],
         data: function() {
             return {
                 activePoll: {},
@@ -17,6 +18,7 @@
                 },
                 endCountdown: 0,
                 endCountdownInterval: 0,
+                hasBackgroundAudio: false,
                 isPopout: false,
                 maxDate: moment().add(1, 'd').format('YYYY-MM-DDTHH:00'),
                 minDate: moment().format('YYYY-MM-DDTHH:mm'),
@@ -28,6 +30,11 @@
                     multipleChoice: false,
                     start: moment().unix(),
                     end: 0,
+                    audio: {
+                        id: 0,
+                        file: '',
+                        volume: 50
+                    },
                     options: []
                 },
                 polls: [],
@@ -38,8 +45,9 @@
                     name: '',
                     chat: 0,
                     audio: {
+                        id: 0,
                         file: '',
-                        volume: .5
+                        volume: 50
                     }
                 }
             };
@@ -53,6 +61,22 @@
                 this.poll.end = isNaN(moment(this.datetimePicker.end).unix()) ? 0 : moment(this.datetimePicker.end).unix();
                 this.checkDatetimeRange();
             },
+            'hasBackgroundAudio': function() {
+                if (!this.hasBackgroundAudio) {
+                    this.stopAudio('background');
+                    this.poll.audio = {
+                        id: 0,
+                        file: '',
+                        volume: 50
+                    };
+                }
+            },
+            'poll.audio.id': function() {
+                this.poll.audio.file = this.getAudioFileById(this.poll.audio.id);
+            },
+            'winner.audio.id': function() {
+                this.winner.audio.file = this.getAudioFileById(this.winner.audio.id);
+            },
             'winner.id': function() {
                 let $this = this;
                 setTimeout(function() {
@@ -61,15 +85,22 @@
             }
         },
         mounted: function() {
+            let $this = this;
             this.getActivePoll();
+            this.getAudios('poll');
 
             if (/^#\/channel\/(.*)\/poll\/?/.test(window.location.hash)) {
                 this.isPopout = true;
+                jQuery('body').css('overflow', 'hidden');
             }
 
             if (!this.isPopout) {
                 this.getPolls();
             }
+
+            jQuery('#animate-winner').on('hidden.bs.modal', function() {
+                $this.stopAudio('test');
+            });
         },
         methods: {
             addOption: function() {
@@ -139,6 +170,10 @@
                     options.push(poll.options[i].name);
                 }
 
+                if (poll.audio.id) {
+                    this.hasBackgroundAudio = true;
+                }
+
                 this.poll = {
                     id: 0,
                     name: poll.name,
@@ -146,7 +181,12 @@
                     multipleChoice: poll.multipleChoice,
                     start: moment().unix(),
                     end: 0,
-                    options: options
+                    options: options,
+                    audio: {
+                        id: poll.audio.id ? poll.audio.id : 0,
+                        file: poll.audio.file ? poll.audio.file : '',
+                        volume: poll.audio.volume ? poll.audio.volume : 50
+                    }
                 };
                 jQuery('#all-polls').modal('hide');
             },
@@ -182,7 +222,7 @@
                         method: 'getPollWinner',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            audio: this.winner.audio,
+                            audio: close ? {id: 0, file: '', volume: 50} : this.winner.audio,
                             chat: this.winner.chat,
                             close: close
                         },
@@ -241,7 +281,12 @@
                     multipleChoice: false,
                     start: moment().unix(),
                     end: 0,
-                    options: []
+                    options: [],
+                    audio: {
+                        id: 0,
+                        file: '',
+                        volume: 50
+                    }
                 };
             },
             setActivePoll: function(args) {
@@ -251,6 +296,12 @@
                     this.setCountdown();
                     this.resetPoll();
                     this.initTooltip();
+
+                    if (this.isPopout && this.activePoll.id && typeof this.audioNodes.background === 'undefined') {
+                        this.playAudio('background', this.activePoll.audio.file, this.activePoll.audio.volume / 100, true);
+                    } else if (!this.activePoll.id) {
+                        this.stopAudio('background');
+                    }
                 }
             },
             setCountdown: function() {
@@ -293,10 +344,16 @@
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.winner = args.winner;
 
-                    if (this.isPopout && this.winner.id && this.winner.audio.file.length) {
-                        let audio = new Audio('/audio/' + this.winner.audio.file);
-                        audio.volume = this.winner.audio.volume;
-                        audio.play();
+                    if (this.isPopout) {
+                        setTimeout(function() {
+                            jQuery('.poll .winner').height(jQuery(window).height());
+                        }, 100);
+
+                        if (this.winner.audio.id) {
+                            this.playAudio('winner', this.winner.audio.file, this.winner.audio.volume / 100);
+                        } else {
+                            this.stopAudio('winner');
+                        }
                     }
                 }
             },
@@ -312,13 +369,6 @@
                     };
 
                     streamWrite(call);
-                }
-            },
-            testWinnerAudio: function(args) {
-                if (this.winner.audio.file.length) {
-                    let audio = new Audio('/audio/' + this.winner.audio.file);
-                    audio.volume = this.winner.audio.volume;
-                    audio.play();
                 }
             }
         }
@@ -399,33 +449,65 @@
         <div class="row" :class="{'d-none': activePoll.id || isPopout}">
             <div class="col-12">
                 <div class="form-group">
-                    <label for="poll-name" class="text-white">Question:</label>
+                    <label for="poll-name">Question:</label>
                     <input id="poll-name" v-model="poll.name" type="text" class="form-control" placeholder="" :class="{'is-invalid': poll.name === ''}">
                 </div>
                 <div class="form-group">
-                    <label for="poll-options" class="text-white">Options:</label>
+                    <label for="poll-options">Options:</label>
                     <input id="poll-options" v-model="newOption" type="text" class="form-control" placeholder="New Option" :class="{'is-invalid': !poll.options.length}" @keyup.enter="addOption()">
                     <div v-if="poll.options.length" class="list-group pt-2">
-                        <button v-for="(option, index) in poll.options" :key="option" type="button" class="list-group-item list-group-item-action" @click="removeOption(index)">{{ option }}</button>
+                        <button v-for="(option, index) in poll.options" :key="option.id" type="button" class="list-group-item list-group-item-action" @click="removeOption(index)">{{ option }}</button>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
-                            <label for="poll-start" class="text-white">Start:</label>
+                            <label for="poll-start">Start:</label>
                             <c-datetime id="poll-start" v-model="datetimePicker.start" class="pommes" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
                         </div>
                     </div>
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
-                            <label for="poll-end" class="text-white">End:</label>
+                            <label for="poll-end">End:</label>
                             <c-datetime id="poll-end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="form-group custom-control custom-switch">
+                        <div class="form-group custom-control custom-switch float-left mr-3">
                             <input id="poll-multiple-choice" v-model="poll.multipleChoice" type="checkbox" class="custom-control-input">
-                            <label for="poll-multiple-choice" class="custom-control-label text-white">Multiple Choice</label>
+                            <label for="poll-multiple-choice" class="custom-control-label">Multiple Choice</label>
+                        </div>
+                        <div class="form-group custom-control custom-switch float-left">
+                            <input id="poll-background-audio" v-model="hasBackgroundAudio" type="checkbox" class="custom-control-input">
+                            <label for="poll-background-audio" class="custom-control-label">Background Audio</label>
+                        </div>
+                    </div>
+                    <div v-if="hasBackgroundAudio" class="col-12">
+                        <div class="form-row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label for="poll-audio-file" class="col-form-label">
+                                        Audio File:&nbsp;
+                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Audio is only played in popout window">
+                                            <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
+                                        </span>
+                                    </label>
+                                    <select id="poll-audio-file" v-model.number="poll.audio.id" class="custom-select">
+                                        <option value="0">None</option>
+                                        <option v-for="audio in audioLoops" :key="audio.id" :value="audio.id">{{ audio.name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label for="poll-audio-volume">Volume ({{ poll.audio.volume }}%)</label>
+                                    <input id="poll-audio-volume" v-model.number="poll.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('background', poll.audio.volume / 100)">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="button" class="btn btn-light mr-2" :disabled="!poll.audio.file.length" @click="playAudio('background', poll.audio.file, poll.audio.volume / 100, true)">Play Audio</button>
+                                <button type="button" class="btn btn-light" @click="stopAudio('background')">Stop Audio</button>
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 text-right">
@@ -437,7 +519,7 @@
         </div>
 
         <div id="all-polls" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="all-polls-modal-title" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg modal-xl" role="document">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-xl modal-xxl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="all-polls-modal-title" class="modal-title">
@@ -460,6 +542,7 @@
                                                 <th scope="col">Multiple Choice</th>
                                                 <th scope="col">Attendees</th>
                                                 <th scope="col">Votes</th>
+                                                <th scope="col">Audio</th>
                                                 <th scope="col">Created at</th>
                                                 <th scope="col"></th>
                                             </tr>
@@ -470,7 +553,7 @@
                                                 <td>{{ pollItem.name }}</td>
                                                 <td>
                                                     <span v-for="option in pollItem.options" :key="option.id" class="text-nowrap">
-                                                        {{ option.name }} - {{ option.average }}% ({{ option.votes }} Votes)<br>
+                                                        {{ option.name }} - {{ option.average }}% ({{ option.votes }} Votes)<span v-if="option.winner">&nbsp;<font-awesome-icon :icon="['fas', 'award']"></font-awesome-icon></span><br>
                                                     </span>
                                                 </td>
                                                 <td>
@@ -479,6 +562,12 @@
                                                 </td>
                                                 <td>{{ pollItem.attendees }}</td>
                                                 <td>{{ pollItem.votes }}</td>
+                                                <td>
+                                                    <span v-if="pollItem.audio.id" class="text-nowrap">Poll: {{ pollItem.audio.name }}<br></span>
+                                                    <span v-for="option in pollItem.options" :key="option.id" class="text-nowrap">
+                                                        <span v-if="option.winner && option.audio.id">Option: {{ option.audio.name }}</span>
+                                                    </span>
+                                                </td>
                                                 <td>{{ pollItem.createdAt|formatDateTime($t('datetime')) }}</td>
                                                 <td>
                                                     <span class="text-nowrap">
@@ -521,27 +610,16 @@
                                             <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                         </span>
                                     </label>
-                                    <select id="animate-winner-file" v-model="winner.audio.file" class="custom-select">
-                                        <option value="">None</option>
-                                        <option value="ambi-ep.mp3">Ambi EP</option>
-                                        <option value="big-clap.mp3">Big Clap</option>
-                                        <option value="brassy.mp3">Brassy</option>
-                                        <option value="c-space.mp3">C-Space</option>
-                                        <option value="cheering-and-clapping.mp3">Cheering and Clapping</option>
-                                        <option value="ensemble.mp3">Ensemble</option>
-                                        <option value="fan-fare-1.mp3">Fan Fare 1</option>
-                                        <option value="fan-fare-2.mp3">Fan Fare 2</option>
-                                        <option value="fan-fare-3.mp3">Fan Fare 3</option>
-                                        <option value="winner-deep-voice.mp3">Winner Deep Voice</option>
-                                        <option value="winner-female-voice.mp3">Winner Female Voice</option>
-                                        <option value="winner-robot-voice.mp3">Winner Robot Voice</option>
+                                    <select id="animate-winner-file" v-model.number="winner.audio.id" class="custom-select">
+                                        <option value="0">None</option>
+                                        <option v-for="audio in audioJingles" :key="audio.id" :value="audio.id">{{ audio.name }}</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="form-group">
-                                    <label for="animate-winner-volume">Volume ({{ (winner.audio.volume * 100).toFixed(0) }}%)</label>
-                                    <input id="animate-winner-volume" v-model="winner.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="1" step="0.05">
+                                    <label for="animate-winner-volume">Volume ({{ winner.audio.volume }}%)</label>
+                                    <input id="animate-winner-volume" v-model.number="winner.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('winner', winner.audio.volume / 100)">
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
@@ -553,7 +631,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" @click="testWinnerAudio()">Test Audio</button>
+                        <button type="button" class="btn btn-light" :disabled="!winner.audio.file.length" @click="playAudio('winner', winner.audio.file, winner.audio.volume / 100)">Play Audio</button>
+                        <button type="button" class="btn btn-light" @click="stopAudio('winner')">Stop Audio</button>
                         <button type="button" class="btn btn-primary" @click="animatePollWinner()">Ok</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>

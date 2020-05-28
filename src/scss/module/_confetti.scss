@@ -22,6 +22,10 @@
         position: absolute;
         width: 12px;
 
+        &:nth-child(even) {
+            border-radius: 0;
+        }
+
         @for $i from 1 through 160 {
             &:nth-child(#{$i}) {
                 animation-delay: (4 / 20) * $i + s;
