@@ -194,7 +194,7 @@ The Script only imports videos which are not in the database.
 * `$ npm i`
 * `$ gulp build`
 * `$ docker-compose up -d`
-* Open [localhost:3050](http://localhost:3050) for website
+* Open [localhost:3050](http://localhost:3050) for website or [localhost:3050/adminer.php](http://localhost:3050/adminer.php) for database gui
 * If you want to remove the container `$ docker rm twitch-chatbot -f`
 * If you want to remove the volume `$ docker volume rm DIRNAME_logs` (first remove matching container)
 

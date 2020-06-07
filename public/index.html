@@ -2,29 +2,10 @@
 <html lang="en" class="no-js">
     <head>
         <script>
-            function setCookie(e,t,n){let o=new Date;o.setTime(o.getTime()+24*n*60*60*1e3);let i="expires="+o.toUTCString();document.cookie=e+"="+t+";"+i+";path=/"}function getCookie(e){for(var t=e+"=",n=decodeURIComponent(document.cookie).split(";"),o=0;o<n.length;o++){for(var i=n[o];" "==i.charAt(0);)i=i.substring(1);if(0==i.indexOf(t))return i.substring(t.length,i.length)}return""}
-            let cookiesAllowed = getCookie('cookieconsent_status') !== 'deny';
-            let cookieLayer = {};
             let dataTables = {};
-            
-            // if cookies allowed - load tracking code
-            if (cookiesAllowed) {
-                // Google Analaytics, Google Tag Manager, ...
-//                let s = document.createElement('script');
-//                s.type = 'text/javascript';
-//                s.async = true;
-//                s.src = 'https://www.googletagmanager.com/gtag/js?id=UA-NUMBER-X';
-//                let h = document.getElementsByTagName('head')[0];
-//                h.appendChild(s, h);
-//            
-//                window.dataLayer = window.dataLayer || [];
-//                function gtag(){dataLayer.push(arguments);}
-//                gtag('js', new Date());
-//                gtag('config', 'UA-NUMBER-X', {'anonymize_ip': true});
-            }
         </script>
-        
-        <title>Vue Skeleton</title>
+
+        <title>Twitch Chatbot</title>
         <base href="/">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -41,7 +22,7 @@
         <meta name="msapplication-config" content="img/favicons/browserconfig.xml">
         <meta name="theme-color" content="#212121">
         <link rel="shortcut icon" href="img/favicons/favicon.ico">
-        
+
         <link rel="stylesheet" href="css/styles.css?v=1.0.0-dev">
     </head>
     <body>

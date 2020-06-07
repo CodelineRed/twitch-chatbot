@@ -14,7 +14,7 @@
         },
         methods: {
             getCommands: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getCommands',
                         args: {
@@ -23,7 +23,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             setCommands: function(args) {
@@ -33,7 +33,7 @@
                 }
             },
             updateCommand: function(commandIndex) {
-                if (typeof streamWrite === 'function' 
+                if (typeof socketWrite === 'function' 
                     && (this.commands[commandIndex].cooldown >= 0 && this.commands[commandIndex].cooldown <= 3600)) {
                     const call = {
                         method: 'updateCommand',
@@ -45,7 +45,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                     this.btnAnimation(event.target, 'success');
                     this.updateDataTableRow(commandIndex, 'commandsTable');
                 } else {

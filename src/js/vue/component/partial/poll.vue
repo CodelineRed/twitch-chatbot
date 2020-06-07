@@ -110,7 +110,7 @@
                 }
             },
             addPoll: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'addPoll',
                         args: {
@@ -119,7 +119,7 @@
                         },
                         env: 'node'
                     };
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             animatePollWinner: function() {
@@ -127,7 +127,7 @@
                 jQuery('#animate-winner').modal('hide');
             },
             announcePollToChat: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'announcePollToChat',
                         args: {
@@ -136,7 +136,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             checkDatetimeRange: function() {
@@ -150,7 +150,7 @@
                 this.getPollWinner(true);
             },
             closePoll: function() {
-                if (typeof streamWrite === 'function' && confirm('Are you sure to close "' + this.activePoll.name + '"?')) {
+                if (typeof socketWrite === 'function' && confirm('Are you sure to close "' + this.activePoll.name + '"?')) {
                     this.endCountdown = 0;
                     const call = {
                         method: 'closePoll',
@@ -160,7 +160,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             copyToForm: function(poll) {
@@ -191,7 +191,7 @@
                 jQuery('#all-polls').modal('hide');
             },
             getActivePoll: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getActivePoll',
                         args: {
@@ -200,11 +200,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getPolls: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getPolls',
                         args: {
@@ -213,11 +213,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getPollWinner: function(close) {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getPollWinner',
                         args: {
@@ -229,11 +229,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             pollResultToChat: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     this.startCountdown = 0;
                     const call = {
                         method: 'pollResultToChat',
@@ -243,7 +243,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             popoutPoll: function() {
@@ -255,7 +255,7 @@
                 this.poll.options.splice(index, 1);
             },
             removePoll: function(poll) {
-                if (typeof streamWrite === 'function' && poll.id > 0  
+                if (typeof socketWrite === 'function' && poll.id > 0  
                     && confirm('Are you sure to remove poll "' + poll.name + '"?')) {
                     const call = {
                         method: 'removePoll',
@@ -270,7 +270,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             resetPoll: function() {
@@ -358,7 +358,7 @@
                 }
             },
             startPoll: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     this.startCountdown = 0;
                     const call = {
                         method: 'startPoll',
@@ -368,7 +368,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             }
         }

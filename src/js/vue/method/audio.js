@@ -19,7 +19,7 @@ const audio = {
     },
     methods: {
         getAudios: function(ref) {
-            if (typeof streamWrite === 'function') {
+            if (typeof socketWrite === 'function') {
                 const call = {
                     method: 'getAudios',
                     args: {
@@ -28,7 +28,7 @@ const audio = {
                     env: 'node'
                 };
 
-                streamWrite(call);
+                socketWrite(call);
             }
         },
         getAudioFileById: function(id) {

@@ -13,13 +13,13 @@
                 this.channels = args.channels.split(';');
             },
             getChannels: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getChannels',
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             }
         }

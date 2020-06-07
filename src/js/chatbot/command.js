@@ -93,9 +93,11 @@ const command = {
         about: function(chatbot, args) {
             if (/^!(about|chatbot|cb|bugs?|help)/i.test(args.message)) {
                 const version = require('../../../package.json')['version'];
+                const date = require('../../../package.json')['commitDate'];
+                const formatDate = moment(date).format('YYYY-MM-DD');
                 const bugs = require('../../../package.json')['bugs']['url'];
 
-                chatbot.client.say('#' + args.channel, `Software made by InsanityMeetsHH. Version: ${version} - Bug report: ${bugs}`);
+                chatbot.client.say('#' + args.channel, `Software made by InsanityMeetsHH. Version: ${version} (${formatDate}) - Bug report: ${bugs}`);
                 command.logCommand(args);
                 command.updateCommandLastExec(chatbot, args);
             }

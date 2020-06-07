@@ -104,6 +104,6 @@
         "space-before-function-paren": ["error", {"anonymous": "never", "named": "never", "asyncArrow": "never"}],
         "strict": 1
     },
-    "globals": ["$", "jQuery", "moment", "streamWrite"],
+    "globals": ["$", "jQuery", "moment", "socketWrite"],
     "envs": ["node", "browser", "es6"]
 }

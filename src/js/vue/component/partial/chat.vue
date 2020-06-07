@@ -93,7 +93,7 @@
                 return cssClass.join(' ');
             },
             getMessages: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getMessages',
                         args: {
@@ -102,7 +102,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getMessageClass: function(index, message) {

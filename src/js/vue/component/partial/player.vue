@@ -52,7 +52,7 @@
                 }
             },
             getVideo: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getVideo',
                         args: {
@@ -61,7 +61,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             }
         }

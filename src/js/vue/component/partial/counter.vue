@@ -28,7 +28,7 @@
         },
         methods: {
             getCounter: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getCounter',
                         args: {
@@ -37,7 +37,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             popoutCounter: function() {
@@ -51,7 +51,7 @@
                 }
             },
             updateCounter: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'updateCounter',
                         args: {
@@ -61,7 +61,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             }
         }

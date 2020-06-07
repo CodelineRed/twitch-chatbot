@@ -255,7 +255,7 @@
         },
         methods: {
             addPlaylist: function() {
-                if (typeof streamWrite === 'function' && jQuery('#playlist-form .is-invalid').length === 0) {
+                if (typeof socketWrite === 'function' && jQuery('#playlist-form .is-invalid').length === 0) {
                     const call = {
                         method: 'addPlaylist',
                         args: {
@@ -265,12 +265,12 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                     jQuery('#playlist-form').modal('hide');
                 }
             },
             addVideo: function() {
-                if (typeof streamWrite === 'function' && jQuery('#video-form .is-invalid').length === 0) {
+                if (typeof socketWrite === 'function' && jQuery('#video-form .is-invalid').length === 0) {
                     const call = {
                         method: 'addVideo',
                         args: {
@@ -280,7 +280,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                     jQuery('#video-form').modal('hide');
                 }
             },
@@ -292,7 +292,7 @@
                 this.video.duration =(durationHours * 60 * 60) + (durationMin * 60) + durationSec;
             },
             clearActivePlaylist: function() {
-                if (typeof streamWrite === 'function' && confirm('Are you sure to clear playlist?')) {
+                if (typeof socketWrite === 'function' && confirm('Are you sure to clear playlist?')) {
                     const call = {
                         method: 'clearActivePlaylist',
                         args: {
@@ -301,11 +301,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getActivePlaylist: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getActivePlaylist',
                         args: {
@@ -314,7 +314,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getFilePlaceholder: function() {
@@ -335,7 +335,7 @@
                 }
             },
             getLocalVideoMeta: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getLocalVideoMeta',
                         args: {
@@ -345,11 +345,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getPlaylist: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getPlaylist',
                         args: {
@@ -359,11 +359,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getPlaylistConfig: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getPlaylistConfig',
                         args: {
@@ -372,14 +372,14 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getPlaylistLabel: function(playlist) {
                 return playlist.name + ' (' + (playlist.active ? 'active, ' : '') + playlist.videoQuantity + ' Videos)';
             },
             getPlaylists: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getPlaylists',
                         args: {
@@ -388,11 +388,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getPlaylistSearchResults: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getPlaylistSearchResults',
                         args: {
@@ -402,11 +402,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getTwitchClipMeta: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getTwitchClipMeta',
                         args: {
@@ -416,11 +416,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getTwitchVideoMeta: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getTwitchVideoMeta',
                         args: {
@@ -430,7 +430,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getVideoCommands: function(video) {
@@ -463,7 +463,7 @@
                 return icon;
             },
             getVideoSearchResults: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getVideoSearchResults',
                         args: {
@@ -473,11 +473,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             getYoutubeVideoMeta: function() {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getYoutubeVideoMeta',
                         args: {
@@ -487,7 +487,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             isDisabledAutofill: function() {
@@ -523,7 +523,7 @@
                 return (sec < 0 || sec > 59 || (hours + min + sec === 0));
             },
             mergePlaylists: function() {
-                if (typeof streamWrite === 'function' && typeof this.merge.target.id === 'number' 
+                if (typeof socketWrite === 'function' && typeof this.merge.target.id === 'number' 
                     && typeof this.merge.source.id === 'number' && jQuery('#merge-playlists .is-invalid').length === 0) {
                     jQuery('#merge-playlists').modal('hide');
 
@@ -536,11 +536,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             moveVideo: function(video, direction, playlist) {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'moveVideo',
                         args: {
@@ -555,7 +555,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             popoutPlayer: function() {
@@ -564,7 +564,7 @@
                 window.open(url, 'Player', params);
             },
             removeVideo: function(video, index, playlist) {
-                if (typeof streamWrite === 'function' && confirm('Are you sure to remove video "' + video.name + '"?')) {
+                if (typeof socketWrite === 'function' && confirm('Are you sure to remove video "' + video.name + '"?')) {
                     const call = {
                         method: 'removeVideo',
                         args: {
@@ -579,11 +579,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             removeVideosByFlagFromActivePlaylist: function(flag, value) {
-                if (typeof streamWrite === 'function' && confirm('Are you sure to remove ' + flag + ' videos?')) {
+                if (typeof socketWrite === 'function' && confirm('Are you sure to remove ' + flag + ' videos?')) {
                     const call = {
                         method: 'removeVideosByFlagFromActivePlaylist',
                         args: {
@@ -594,11 +594,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             resetActivePlaylist: function() {
-                if (typeof streamWrite === 'function' && confirm('Are you sure to reset playlist?')) {
+                if (typeof socketWrite === 'function' && confirm('Are you sure to reset playlist?')) {
                     const call = {
                         method: 'resetActivePlaylist',
                         args: {
@@ -607,7 +607,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             removePlaylist: function(playlist) {
@@ -615,7 +615,7 @@
                     playlist = this.playlist;
                 }
 
-                if (typeof streamWrite === 'function' && playlist.id > 0 && this.playlists.length > 1 
+                if (typeof socketWrite === 'function' && playlist.id > 0 && this.playlists.length > 1 
                     && confirm('Are you sure to remove playlist "' + playlist.name + '"?')) {
                     const call = {
                         method: 'removePlaylist',
@@ -630,7 +630,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                     jQuery('#remove-playlist').modal('hide');
                 }
             },
@@ -746,7 +746,7 @@
                 jQuery('#video-form').modal('show');
             },
             switchPlaylist: function(playlist) {
-                if (typeof streamWrite === 'function') {
+                if (typeof socketWrite === 'function') {
 
                     const call = {
                         method: 'switchPlaylist',
@@ -757,7 +757,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                     if (typeof playlist === 'undefined') {
                         jQuery('#switch-playlist').modal('hide');
                     } else {
@@ -766,7 +766,7 @@
                 }
             },
             updatePlaylist: function() {
-                if (typeof streamWrite === 'function' && jQuery('#playlist-form .is-invalid').length === 0) {
+                if (typeof socketWrite === 'function' && jQuery('#playlist-form .is-invalid').length === 0) {
                     const call = {
                         method: 'updatePlaylist',
                         args: {
@@ -776,11 +776,11 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                 }
             },
             updateVideo: function(video, videoIndex, playlist) {
-                if (typeof streamWrite === 'function' 
+                if (typeof socketWrite === 'function' 
                     && (jQuery('#video-form .is-invalid').length === 0 || typeof video !== 'undefined')) {
                     const call = {
                         method: 'updateVideo',
@@ -795,7 +795,7 @@
                         env: 'node'
                     };
 
-                    streamWrite(call);
+                    socketWrite(call);
                     if (typeof video === 'undefined') {
                         this.videoIndex = 0;
                         this.updateMode = false;

@@ -28,6 +28,36 @@ function audio() {
         .pipe(gulp.dest(config.publicPath + 'audio/'));
 }
 
+// initialize BrowserSync
+function browserSyncInit(done) {
+    browserSync.init(config[config.browserSyncConfig]);
+    done();
+}
+
+// reload browser
+function browserSyncReload(done) {
+    browserSync.reload();
+    done();
+}
+
+// lint chatbot js files
+function chatbotLint() {
+    return lint(gulp, eslint, [config.sourcePath + 'js/chatbot/**/*.js', 'chatbot.js', 'import-videos-folder.js'], 'import');
+}
+
+// clean up folders
+function cleanUp() {
+    return del([
+            config.publicPath + 'audio/**/*',
+            config.publicPath + 'css/styles.*',
+            config.publicPath + 'font/**/*',
+            config.publicPath + 'img/**/*',
+            config.publicPath + 'js/scripts.*',
+            config.publicPath + 'json/**/*',
+            config.publicPath + 'svg/**/*'
+        ]);
+}
+
 // copy font files
 function font() {
     return gulp.src([
@@ -100,9 +130,9 @@ function jsRequire() {
         modules['vue'] = 'node_modules/vue/dist/vue.js';
         modules['vue-router'] = 'node_modules/vue-router/dist/vue-router.js';
     }
-    
+
     const moduleKeys = Object.keys(modules);
-    
+
     for (const key of moduleKeys) {
         returnValue = gulp.src(modules[key])
             .pipe(rename({ basename: key }))
@@ -186,36 +216,6 @@ function vueLint() {
     return lint(gulp, eslint, [config.sourcePath + 'js/vue/**/*.vue'], 'vue');
 }
 
-// lint chatbot js files
-function chatbotLint() {
-    return lint(gulp, eslint, [config.sourcePath + 'js/chatbot/**/*.js', 'chatbot.js', 'import-videos-folder.js'], 'import');
-}
-
-// clean up folders
-function cleanUp() {
-    return del([
-            config.publicPath + 'audio/**/*',
-            config.publicPath + 'css/**/*',
-            config.publicPath + 'font/**/*',
-            config.publicPath + 'img/**/*',
-            config.publicPath + 'js/**/*',
-            config.publicPath + 'json/**/*',
-            config.publicPath + 'svg/**/*'
-        ]);
-}
-
-// initialize BrowserSync
-function browserSyncInit(done) {
-    browserSync.init(config[config.browserSyncConfig]);
-    done();
-}
-
-// reload browser
-function browserSyncReload(done) {
-    browserSync.reload();
-    done();
-}
-
 // watch files
 function watch() {
     // watch audios
@@ -254,6 +254,10 @@ function watchAndReload() {
 }
 
 exports.audio = audio;
+exports.browserSyncInit = browserSyncInit;
+exports.browserSyncReload = browserSyncReload;
+exports.chatbotLint = chatbotLint;
+exports.cleanUp = cleanUp;
 exports.font = font;
 exports.img = img;
 exports.js = js;
@@ -267,12 +271,8 @@ exports.vue = vue;
 exports.vueJs = vueJs;
 exports.vueJsLint = vueJsLint;
 exports.vueLint = vueLint;
-exports.chatbotLint = chatbotLint;
-exports.cleanUp = cleanUp;
 exports.watch = watch;
 exports.watchAndReload = watchAndReload;
-exports.browserSyncInit = browserSyncInit;
-exports.browserSyncReload = browserSyncReload;
 
 // lintAll task
 gulp.task('lintAll', gulp.series(scssLint, jsLint, vueJsLint, vueLint, chatbotLint));

@@ -80,7 +80,7 @@ function onBan(channel, username, reason, userstate) {
 //  username: 'kingnothing2802' }
 function onCheer(channel, userstate, message) {
     userstate['message-type'] = 'cheer';
-    
+
     const args = {
         channel: channel.replace(/#/g, ''),
         notification: userstate['display-name'] + ' cheered with ' + userstate.bits + ' bits!',
@@ -95,29 +95,31 @@ function onCheer(channel, userstate, message) {
 function onConnected(url, port) {
     console.log(`* Connected to ${url}:${port}`);
     let ports = [3100, 3110, 3120, 3130, 3140, 3150];
-    
+
     if (chatbot.socket === null) {
         for (let i = 0; i < ports.length; i++) {
-            skateboard({port: ports[i]}, (stream) => {
+            skateboard({port: ports[i]}, (socket) => {
                 if (ports[i] === 3100) {
-                    chatbot.socket = stream;
+                    chatbot.socket = socket;
                 } else if (ports[i] === 3110) {
-                    chatbot.socketChat = stream;
+                    chatbot.socketChat = socket;
                 } else if (ports[i] === 3120) {
-                    chatbot.socketVideo = stream;
+                    chatbot.socketVideo = socket;
                 } else if (ports[i] === 3130) {
-                    chatbot.socketRaffle = stream;
+                    chatbot.socketRaffle = socket;
                 } else if (ports[i] === 3140) {
-                    chatbot.socketPoll = stream;
+                    chatbot.socketPoll = socket;
                 } else if (ports[i] === 3150) {
-                    chatbot.socketCounter = stream;
+                    chatbot.socketCounter = socket;
                 }
 
-                stream.on('data', function(data) {
+                socket.on('data', function(data) {
                     let dataJson = JSON.parse(data);
 
+                    // if method is function and env is "node"
                     if (typeof dataJson.method === 'string' && typeof chatbot[dataJson.method] === 'function' 
                             && typeof dataJson.env === 'string' && dataJson.env === 'node') {
+                        // if args defined
                         if (typeof dataJson.args === 'object' && dataJson.args !== null) {
                             chatbot[dataJson.method](chatbot, dataJson.args);
                         } else {
@@ -219,7 +221,7 @@ function onMessage(channel, userstate, message, self) {
                     break;
                 }
             }
-            
+
             if (commandActive) {
                 chatbot.commandList[commands[i]](chatbot, args);
             }
@@ -412,7 +414,7 @@ function onSubMysteryGift(channel, username, numbOfSubs, methods, userstate) {
         user: username,
         userstate: userstate
     };
-    
+
     chat.getNotification(chatbot, args);
 }
 
@@ -470,7 +472,7 @@ function onSubscription(channel, username, method, message, userstate) {
 //  'tmi-sent-ts': '1585062484900' }
 function onTimeout(channel, username, reason, duration, userstate) {
     let unit = 's';
-    
+
     if (duration >= 60 && duration < 60 * 60) {
         // minutes
         duration = (duration / 60).toFixed(0);
@@ -488,7 +490,7 @@ function onTimeout(channel, username, reason, duration, userstate) {
         duration = (duration / 60 * 60 * 24 * 365).toFixed(0);
         unit = 'a';
     }
-    
+
     const args = {
         channel: channel.replace(/#/g, ''),
         purge: {message: duration + unit, showMessage: false, hasPurge: true, reason: reason},
