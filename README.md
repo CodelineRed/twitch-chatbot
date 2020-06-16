@@ -17,6 +17,7 @@ $ (optional) rm -rf .git (unix) / rmdir .git /s (windows)
 $ npm i
 $ gulp build
 $ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ node migration.js
 $ node chatbot.js
 $ gulp (in development)
 ```
@@ -193,6 +194,9 @@ The Script only imports videos which are not in the database.
 * `$ git checkout develop`
 * `$ npm i`
 * `$ gulp build`
+* `$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+* `$ node migration.js
+* `$ node chatbot.js
 * `$ docker-compose up -d`
 * Open [localhost:3050](http://localhost:3050) for website or [localhost:3050/adminer.php](http://localhost:3050/adminer.php) for database gui
 * If you want to remove the container `$ docker rm twitch-chatbot -f`

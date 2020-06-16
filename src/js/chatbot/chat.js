@@ -171,7 +171,6 @@ const chat = {
     getMessages: function(chatbot, args) {
         chat.prepareMessages(chatbot, args, false);
 
-        let select = '*';
         let subSelect = 'SELECT ch.uuid, ch.channel_id, c.room_id, ch.badges, ch.badge_info, ';
         subSelect += 'ch.color, ch.emotes, ch.flags, ch.message, ch.notification, ch.type, ';
         subSelect += 'ch.purge, ch.user_id, ch.user, ch.updated_at, ch.created_at ';
@@ -180,6 +179,7 @@ const chat = {
         let subWhere = 'WHERE c.name = ? ';
         let subOrder = 'ORDER BY ch.created_at DESC ';
         let subLimit = 'LIMIT 100';
+        let select = '*';
         let from = '(' + subSelect + subFrom + subJoin + subWhere + subOrder + subLimit + ')';
         let order = 'created_at ASC';
 

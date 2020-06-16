@@ -138,11 +138,11 @@ const playlist = {
     },
     clearActivePlaylist: function(chatbot, args) {
         if (chatbot.socket !== null) {
-            let select = 'playlist_video_join';
+            let from = 'playlist_video_join';
             let where = ['playlist_id = ?'];
             let prepare = [chatbot.activePlaylists[args.channel].id];
 
-            database.remove(select, where, prepare, function(remove) {
+            database.remove(from, where, prepare, function(remove) {
                 playlist.getActivePlaylist(chatbot, args);
                 console.log(`* Cleared playlist "${chatbot.activePlaylists[args.channel].name}"`);
             });

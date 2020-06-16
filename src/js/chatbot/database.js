@@ -137,74 +137,44 @@ const database = {
     },
     prepareBotTable: function(chatbot, channel) {
         if (database.connection !== null) {
-            database.connection.serialize(() => {
-                database.connection.all('SELECT name FROM bot', (errAll, rows) => {
-                    if (errAll) {
-                        console.error(errAll.message);
+            database.connection.all('SELECT name FROM bot', (errAll, rows) => {
+                if (errAll) {
+                    console.error(errAll.message);
+                }
+
+                rows.forEach(function(row) {
+                    chatbot.bots.push(row.name);
+                });
+
+                // get channel bots from BTTV
+                request('https://api.betterttv.net/2/channels/' + channel, { json: true }, (err, res, body) => {
+                    if (err) {
+                        return console.log(err);
                     }
-
-                    rows.forEach(function(row) {
-                        chatbot.bots.push(row.name);
-                    });
-
                     let values = [];
-                    let bots = [
-                        'mod4youbot', 'moobot', 'nightbot', 
-                        'streamelements', 'streamlabs'
-                    ];
 
-                    for (let i = 0; i < bots.length; i++) {
-                        // if not found
-                        if (chatbot.bots.indexOf(bots[i]) === -1) {
-                            chatbot.bots.push(bots[i]);
-                            values.push({
-                                name: bots[i],
-                                updatedAt: moment().unix(),
-                                createdAt: moment().unix()
-                            });
+                    if (typeof body.bots !== 'undefined') {
+                        for (let i = 0; i < body.bots.length; i++) {
+                            // if not found
+                            if (chatbot.bots.indexOf(body.bots[i]) === -1) {
+                                chatbot.bots.push(body.bots[i]);
+                                values.push({
+                                    name: body.bots[i],
+                                    updatedAt: moment().unix(),
+                                    createdAt: moment().unix()
+                                });
+                            }
                         }
                     }
 
-                    database.insert('bot', values, function(insert) {
+                    database.insert('bot', values, function(insertRequest) {
                         if (values.length) {
                             let botsString = values.map(function(elem) {
                                 return elem.name;
                             }).join(', ');
 
-                            console.log(`* Added "${botsString}" bots to database.`);
+                            console.log(`* Added "${botsString}" bot from BTTV to database.`);
                         }
-
-                        // get channel bots from BTTV
-                        request('https://api.betterttv.net/2/channels/' + channel, { json: true }, (err, res, body) => {
-                            if (err) {
-                                return console.log(err);
-                            }
-                            values = [];
-
-                            if (typeof body.bots !== 'undefined') {
-                                for (let i = 0; i < body.bots.length; i++) {
-                                    // if not found
-                                    if (chatbot.bots.indexOf(body.bots[i]) === -1) {
-                                        chatbot.bots.push(body.bots[i]);
-                                        values.push({
-                                            name: body.bots[i],
-                                            updatedAt: moment().unix(),
-                                            createdAt: moment().unix()
-                                        });
-                                    }
-                                }
-                            }
-
-                            database.insert('bot', values, function(insertRequest) {
-                                if (values.length) {
-                                    let botsString = values.map(function(elem) {
-                                        return elem.name;
-                                    }).join(', ');
-
-                                    console.log(`* Added "${botsString}" bots from BTTV to database.`);
-                                }
-                            });
-                        });
                     });
                 });
             });
@@ -371,6 +341,14 @@ const database = {
             });
         }
     },
+    /**
+     * @param {string} table
+     * @param {array} where
+     * @param {array} prepare
+     * @param {function} callback
+     * @param {mixed} callbackArgs
+     * @returns {undefined}
+     */
     remove: function(table, where, prepare, callback, callbackArgs) {
         if (database.connection !== null) {
             this.backup();
@@ -397,6 +375,13 @@ const database = {
             });
         }
     },
+    /**
+     * @param {string} table
+     * @param {array} values (array of objects)
+     * @param {function} callback
+     * @param {mixed} callbackArgs
+     * @returns {undefined}
+     */
     insert: function(table, values, callback, callbackArgs) {
         if (database.connection !== null) {
             this.backup();
@@ -451,6 +436,15 @@ const database = {
             });
         }
     },
+    /**
+     * 
+     * @param {string} table
+     * @param {object} set
+     * @param {array} where
+     * @param {function} callback
+     * @param {mixed} callbackArgs
+     * @returns {undefined}
+     */
     update: function(table, set, where, callback, callbackArgs) {
         if (database.connection !== null) {
             this.backup();

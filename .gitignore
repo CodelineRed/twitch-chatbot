@@ -1,6 +1,5 @@
-/data/
 /data/backup/*.*
-!/data/chatbot.dist.sqlite3
+/data/chatbot.sqlite3
 /public/audio/
 /public/css/styles.css
 /public/css/styles.css.map

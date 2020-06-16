@@ -42,7 +42,13 @@ function browserSyncReload(done) {
 
 // lint chatbot js files
 function chatbotLint() {
-    return lint(gulp, eslint, [config.sourcePath + 'js/chatbot/**/*.js', 'chatbot.js', 'import-videos-folder.js'], 'import');
+    return lint(gulp, eslint, [
+        config.sourcePath + 'js/chatbot/**/*.js',
+        'chatbot.js',
+        'import-videos-folder.js',
+        './data/migration/*.js',
+        'migration.js'
+    ], 'import');
 }
 
 // clean up folders
@@ -242,7 +248,10 @@ function watch() {
     // watch chatbot files
     gulp.watch([
         config.sourcePath + 'js/chatbot/**/*.js', 
-        'chatbot.js'
+        'chatbot.js',
+        'import-videos-folder.js',
+        './data/migration/*.js',
+        'migration.js'
     ], gulp.series(chatbotLint));
 }
 
