@@ -1,12 +1,673 @@
 <script>
+    import Datetime from 'vue-ctk-date-time-picker';
+    import audio from '../../method/audio';
+    import bsComponent from '../../method/bs-component';
+
     export default {
+        components: {
+            'c-datetime': Datetime
+        },
+        mixins: [audio, bsComponent],
+        data: function() {
+            return {
+                activeRaffle: {},
+                currentTime: 0,
+                datetimePicker: {
+                    start: '',
+                    end: ''
+                },
+                endCountdown: 0,
+                endCountdownInterval: 0,
+                hasBackgroundAudio: false,
+                hasMultiplicators: false,
+                isPopout: false,
+                maxDate: moment().add(1, 'd').format('YYYY-MM-DDTHH:00'),
+                minDate: moment().format('YYYY-MM-DDTHH:mm'),
+                newOption: '',
+                raffle: {
+                    id: 0,
+                    name: '',
+                    keyword: '!raffle',
+                    active: false,
+                    start: moment().unix(),
+                    end: 0,
+                    audio: {
+                        id: 0,
+                        file: '',
+                        volume: 50
+                    },
+                    multiplicators: {
+                        partner: 1,
+                        moderator: 1,
+                        subscriber: 1,
+                        vip: 1,
+                        turbo: 1,
+                        prime: 1,
+                        follower: 1,
+                        guest: 1
+                    }
+                },
+                raffles: [],
+                startCountdown: 0,
+                startCountdownInterval: 0,
+                winner: {
+                    id: 0,
+                    name: '',
+                    chat: 0,
+                    audio: {
+                        id: 0,
+                        file: '',
+                        volume: 50
+                    }
+                }
+            };
+        },
+        watch: {
+            'datetimePicker.start': function() {
+                this.raffle.start = isNaN(moment(this.datetimePicker.start).unix()) ? moment().unix() : moment(this.datetimePicker.start).unix();
+                this.checkDatetimeRange();
+            },
+            'datetimePicker.end': function() {
+                this.raffle.end = isNaN(moment(this.datetimePicker.end).unix()) ? 0 : moment(this.datetimePicker.end).unix();
+                this.checkDatetimeRange();
+            },
+            'hasBackgroundAudio': function() {
+                if (!this.hasBackgroundAudio) {
+                    this.stopAudio('background');
+                    this.raffle.audio = {
+                        id: 0,
+                        file: '',
+                        volume: 50
+                    };
+                }
+            },
+            'hasMultiplicators': function() {
+                if (this.hasMultiplicators) {
+                    let $this = this;
+                    setTimeout(function() {
+                        $this.initPopover();
+                    }, 100);
+                } else {
+                    this.raffle.multiplicators = {
+                        partner: 1,
+                        moderator: 1,
+                        subscriber: 1,
+                        vip: 1,
+                        turbo: 1,
+                        prime: 1,
+                        follower: 1,
+                        guest: 1
+                    };
+                }
+            },
+            'raffle.audio.id': function() {
+                this.raffle.audio.file = this.getAudioFileById(this.raffle.audio.id);
+            },
+            'winner.audio.id': function() {
+                this.winner.audio.file = this.getAudioFileById(this.winner.audio.id);
+            },
+            'winner.id': function() {
+                let $this = this;
+                setTimeout(function() {
+                    $this.initTooltip();
+                }, 100);
+            }
+        },
+        mounted: function() {
+            let $this = this;
+            this.getActiveRaffle();
+            this.getAudios('raffle');
+
+            if (/^#\/channel\/(.*)\/raffle\/?/.test(window.location.hash)) {
+                this.isPopout = true;
+                jQuery('body').css('overflow', 'hidden');
+            }
+
+            if (!this.isPopout) {
+                this.getRaffles();
+            }
+
+            jQuery('#animate-raffle-winner').on('hidden.bs.modal', function() {
+                $this.stopAudio('test');
+            });
+        },
+        methods: {
+            addRaffle: function() {
+                if (typeof socketWrite === 'function') {
+                    const call = {
+                        method: 'addRaffle',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            raffle: this.raffle
+                        },
+                        env: 'node'
+                    };
+                    socketWrite(call);
+                }
+            },
+            animateRaffleWinner: function() {
+                this.getRaffleWinner(false);
+                jQuery('#animate-raffle-winner').modal('hide');
+            },
+            announceRaffleToChat: function() {
+                if (typeof socketWrite === 'function') {
+                    const call = {
+                        method: 'announceRaffleToChat',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase()
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
+            checkDatetimeRange: function() {
+                if (this.raffle.end > 0 && this.raffle.end < this.raffle.start) {
+                    jQuery('#raffle-end-input').addClass('form-control is-invalid');
+                } else {
+                    jQuery('#raffle-end-input').removeClass('form-control is-invalid');
+                }
+            },
+            closeRaffleAnimation: function() {
+                this.getRaffleWinner(true);
+            },
+            closeRaffle: function() {
+                if (typeof socketWrite === 'function' && confirm('Are you sure to close "' + this.activeRaffle.name + '"?')) {
+                    this.endCountdown = 0;
+                    const call = {
+                        method: 'closeRaffle',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase()
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
+            copyToForm: function(raffle) {
+                let mltpctrKeys = Object.keys(raffle.multiplicators);
+                
+                if (raffle.audio.id) {
+                    this.hasBackgroundAudio = true;
+                }
+                
+                for (let i = 0; i < mltpctrKeys.length; i++) {
+                    if (!this.hasMultiplicators && raffle.multiplicators[mltpctrKeys[i]] !== 1) {
+                        this.hasMultiplicators = true;
+                    }
+                }
+
+                this.raffle = {
+                    id: 0,
+                    name: raffle.name,
+                    keyword: raffle.keyword,
+                    active: false,
+                    start: moment().unix(),
+                    end: 0,
+                    audio: {
+                        id: raffle.audio.id ? raffle.audio.id : 0,
+                        file: raffle.audio.file ? raffle.audio.file : '',
+                        volume: raffle.audio.volume ? raffle.audio.volume : 50
+                    },
+                    multiplicators: raffle.multiplicators
+                };
+                jQuery('#all-raffles').modal('hide');
+            },
+            getActiveRaffle: function() {
+                if (typeof socketWrite === 'function') {
+                    const call = {
+                        method: 'getActiveRaffle',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase()
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
+            getRaffles: function() {
+                if (typeof socketWrite === 'function') {
+                    const call = {
+                        method: 'getRaffles',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase()
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
+            getRaffleWinner: function(close) {
+                if (typeof socketWrite === 'function') {
+                    const call = {
+                        method: 'getRaffleWinner',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            audio: close ? {id: 0, file: '', volume: 50} : this.winner.audio,
+                            chat: this.winner.chat,
+                            close: close
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
+            raffleResultToChat: function() {
+                if (typeof socketWrite === 'function') {
+                    this.startCountdown = 0;
+                    const call = {
+                        method: 'raffleResultToChat',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase()
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
+            popoutRaffle: function() {
+                const url = this.$router.resolve({name: 'raffle', params: {channel: this.$root._route.params.channel}}).href;
+                const params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=750,height=500';
+                window.open(url, 'Raffle', params);
+            },
+            removeRaffle: function(raffle) {
+                if (typeof socketWrite === 'function' && raffle.id > 0  
+                    && confirm('Are you sure to remove raffle "' + raffle.name + '"?')) {
+                    const call = {
+                        method: 'removeRaffle',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            raffle: {
+                                id: raffle.id,
+                                name: raffle.name,
+                                active: raffle.active
+                            }
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
+            resetRaffle: function() {
+                this.raffle = {
+                    id: 0,
+                    name: '',
+                    keyword: '!raffle',
+                    active: false,
+                    start: moment().unix(),
+                    end: 0,
+                    audio: {
+                        id: 0,
+                        file: '',
+                        volume: 50
+                    },
+                    multiplicators: {
+                        partner: 1,
+                        moderator: 1,
+                        subscriber: 1,
+                        vip: 1,
+                        turbo: 1,
+                        prime: 1,
+                        follower: 1,
+                        guest: 1
+                    }
+                };
+            },
+            setActiveRaffle: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.activeRaffle = args.raffle;
+                    this.currentTime = moment().unix();
+                    this.setCountdown();
+                    this.resetRaffle();
+                    this.initTooltip();
+
+                    if (this.isPopout && this.activeRaffle.id && typeof this.audioNodes.background === 'undefined') {
+                        this.playAudio('background', this.activeRaffle.audio.file, this.activeRaffle.audio.volume / 100, true);
+                    } else if (!this.activeRaffle.id) {
+                        this.stopAudio('background');
+                    }
+                }
+            },
+            setCountdown: function() {
+                let $this = this;
+                clearInterval(this.startCountdownInterval);
+                clearInterval(this.endCountdownInterval);
+                this.startCountdown = 0;
+                this.endCountdown = 0;
+
+                // if start countdown exists and not currently running
+                if (this.activeRaffle.start > 0 && this.currentTime < this.activeRaffle.start && !this.startCountdown) {
+                    this.startCountdown = this.activeRaffle.start - this.currentTime;
+                    this.startCountdownInterval = setInterval(function() {
+                        if ($this.startCountdown) {
+                            $this.startCountdown--;
+                        } else {
+                            clearInterval($this.startCountdownInterval);
+                        }
+                    }, 1000);
+                }
+
+                // if end countdown exists and not currently running
+                if (this.activeRaffle.end > 0 && this.currentTime < this.activeRaffle.end && !this.endCountdown) {
+                    this.endCountdown = this.activeRaffle.end - this.currentTime;
+                    this.endCountdownInterval = setInterval(function() {
+                        if ($this.endCountdown) {
+                            $this.endCountdown--;
+                        } else {
+                            clearInterval($this.endCountdownInterval);
+                        }
+                    }, 1000);
+                }
+            },
+            setRaffles: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.raffles = args.raffles;
+                }
+            },
+            setRaffleWinner: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.winner = args.winner;
+
+                    if (this.isPopout) {
+                        setTimeout(function() {
+                            jQuery('.raffle .winner').height(jQuery(window).height());
+                        }, 100);
+
+                        if (this.winner.audio.id) {
+                            this.playAudio('winner', this.winner.audio.file, this.winner.audio.volume / 100);
+                        } else {
+                            this.stopAudio('winner');
+                        }
+                    }
+                }
+            },
+            startRaffle: function() {
+                if (typeof socketWrite === 'function') {
+                    this.startCountdown = 0;
+                    const call = {
+                        method: 'startRaffle',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase()
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            }
+        }
     };
 </script>
 
 <template>
-    <div class="raffle p-2">
-        <div class="h4 text-center">
+    <div class="raffle p-2" :class="{popout: isPopout}">
+        <div v-if="activeRaffle.id && !isPopout" class="h4 text-center">
+            <a href="#" onclick="javascript:return false;" @click="popoutRaffle()">Raffle <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
+        </div>
+        <div v-if="!activeRaffle.id && !isPopout" class="h4 text-center">
             Raffle
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div v-if="activeRaffle.id && startCountdown > 0" class="text-white">
+                    <div class="h5">
+                        {{ activeRaffle.name }}
+                    </div>
+                    <p>Raffle starts in {{ startCountdown|formatDuration() }}</p>
+                    <button v-if="!isPopout" type="button" class="btn btn-sm btn-primary" @click="startRaffle()">Start Raffle</button>
+                </div>
+                <div v-if="!activeRaffle.id && isPopout" class="text-center h2">
+                    No Raffle is currently active!
+                </div>
+                <div v-if="activeRaffle.id && startCountdown === 0" class="text-white">
+                    <div v-if="!winner.name" class="overview">
+                        <div class="h5">
+                            {{ activeRaffle.name }}
+                        </div>
+                        <p>
+                            Keyword: <span v-if="activeRaffle.keyword.length">{{ activeRaffle.keyword }}</span><span v-else>!raffle</span>   |&nbsp;
+                            Attendees: {{ activeRaffle.attendeeCount }} |&nbsp;
+                            Entries: {{ activeRaffle.entries }}
+                        </p>
+                        <p>
+                            Attendees: {{ activeRaffle.attendees }}
+                        </p>
+                        <p v-if="activeRaffle.end && endCountdown">
+                            Raffle ends in {{ endCountdown|formatDuration() }}
+                        </p>
+                        <p v-if="activeRaffle.end && !endCountdown">
+                            Raffle has ended
+                        </p>
+                    </div>
+                    <div v-if="winner.name" class="winner">
+                        <div class="option text-primary text-center">
+                            {{ winner.name }}
+                        </div>
+
+                        <div class="confetti-wrapper">
+                            <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
+                            <div v-for="index in 160" :key="index" class="confetti"></div>
+                        </div>
+                    </div>
+                    <div v-if="!isPopout" class="text-right">
+                        <span v-if="winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Close Animation"><button v-if="winner.id" type="button" class="btn btn-sm btn-warning" @click="closeRaffleAnimation()"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
+                        <span v-if="!winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Animate Winner"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#animate-raffle-winner"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
+                        <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Announce to Chat"><button type="button" class="btn btn-sm btn-primary" @click="announceRaffleToChat()"><font-awesome-icon :icon="['fas', 'comment-dots']" class="fa-fw" /></button></span>
+                        <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Result to Chat"><button type="button" class="btn btn-sm btn-primary" @click="raffleResultToChat()"><font-awesome-icon :icon="['fas', 'chart-pie']" class="fa-fw" /></button></span>
+                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Close Raffle"><button type="button" class="btn btn-sm btn-danger" @click="closeRaffle()"><font-awesome-icon :icon="['fas', 'times']" class="fa-fw" /></button></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" :class="{'d-none': activeRaffle.id || isPopout}">
+            <div class="col-12">
+                <div class="form-group">
+                    <label for="raffle-name">Annoucement:</label>
+                    <input id="raffle-name" v-model="raffle.name" type="text" class="form-control" placeholder="" :class="{'is-invalid': raffle.name === ''}">
+                </div>
+                <div class="form-group">
+                    <label for="raffle-keyword">Keyword:</label>
+                    <input id="raffle-keyword" v-model="raffle.keyword" type="text" class="form-control" placeholder="" :class="{'is-invalid': raffle.keyword === ''}">
+                </div>
+                <div class="form-row">
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label for="raffle-start">Start:</label>
+                            <c-datetime id="raffle-start" v-model="datetimePicker.start" class="pommes" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label for="raffle-end">End:</label>
+                            <c-datetime id="raffle-end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
+                        </div>
+                    </div>
+                    <div v-if="hasMultiplicators" class="col-12">
+                        <label for="raffle-multiplicators-partner" class="col-form-label">
+                            Multiplicators&nbsp;
+                            <span class="d-inline-block" data-toggle="popover" title="Description" data-content="The higher the multiplicator, the higher the chance of winning<br>The user is automatically assigned to the highest group. Partner is highest and guest is lowest.">
+                                <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
+                            </span>
+                        </label>
+                    </div>
+                    <div v-for="(multiplicator, name) in raffle.multiplicators" :key="name" class="col-12 col-md-6 col-lg-4 col-xl-3">
+                        <div v-if="hasMultiplicators" class="form-group">
+                            <label :for="'raffle-multiplicators-' + name">{{ name }}:</label>
+                            <select :id="'raffle-multiplicators-' + name" v-model.number="raffle.multiplicators[name]" class="custom-select">
+                                <option value="0">None</option>
+                                <option v-for="index in 10" :key="index" :value="index">{{ index }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group custom-control custom-switch float-left mr-3">
+                            <input id="raffle-multiplicators" v-model="hasMultiplicators" type="checkbox" class="custom-control-input">
+                            <label for="raffle-multiplicators" class="custom-control-label">Multiplicators</label>
+                        </div>
+                        <div class="form-group custom-control custom-switch float-left">
+                            <input id="raffle-background-audio" v-model="hasBackgroundAudio" type="checkbox" class="custom-control-input">
+                            <label for="raffle-background-audio" class="custom-control-label">Background Audio</label>
+                        </div>
+                    </div>
+                    <div v-if="hasBackgroundAudio" class="col-12">
+                        <div class="form-row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label for="raffle-audio-file" class="col-form-label">
+                                        Audio File:&nbsp;
+                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Audio is only played in popout window">
+                                            <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
+                                        </span>
+                                    </label>
+                                    <select id="raffle-audio-file" v-model.number="raffle.audio.id" class="custom-select">
+                                        <option value="0">None</option>
+                                        <option v-for="audio in audioLoops" :key="audio.id" :value="audio.id">{{ audio.name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label for="raffle-audio-volume">Volume ({{ raffle.audio.volume }}%)</label>
+                                    <input id="raffle-audio-volume" v-model.number="raffle.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('background', raffle.audio.volume / 100)">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="button" class="btn btn-light mr-2" :disabled="!raffle.audio.file.length" @click="playAudio('background', raffle.audio.file, raffle.audio.volume / 100, true)">Play Audio</button>
+                                <button type="button" class="btn btn-light" @click="stopAudio('background')">Stop Audio</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 text-right">
+                        <button v-if="raffles.length" type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#all-raffles">All Raffles</button>
+                        <button type="button" class="btn btn-sm btn-primary" :disabled="raffle.name === '' || (raffle.end > 0 && raffle.end < raffle.start)" @click="addRaffle()">Activate Raffle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="all-raffles" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="all-raffles-modal-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-xl modal-xxl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="all-raffles-modal-title" class="modal-title">
+                            All Raffles
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div v-if="raffles.length" class="col-12 pt-3">
+                                <div class="table-responsive">
+                                    <table id="rafflesTable" class="table table-striped table-hover table-dark">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Multiplicators</th>
+                                                <th scope="col">Summary</th>
+                                                <th scope="col">Created at</th>
+                                                <th scope="col"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(raffleItem, index) in raffles" :key="raffleItem.id" class="video">
+                                                <td>{{ index + 1 }}</td>
+                                                <td>
+                                                    <span class="text-nowrap">{{ raffleItem.name }}</span><br>
+                                                    <span v-if="raffleItem.keyword.length" class="text-nowrap">Keyword: {{ raffleItem.keyword }}</span>
+                                                    <span v-else class="text-nowrap">Keyword: !raffle</span>
+                                                </td>
+                                                <td>
+                                                    <span v-for="(multiplicator, name) in raffleItem.multiplicators" :key="name" class="text-nowrap">
+                                                        {{ name }}: {{ multiplicator }}<br>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span v-if="raffleItem.audio.id" class="text-nowrap">Raffle Audio: {{ raffleItem.audio.name }}<br></span>
+                                                    <span class="text-nowrap">Attendees: {{ raffleItem.attendeeCount }}<br></span>
+                                                    <span class="text-nowrap">Entries: {{ raffleItem.entries }}<br></span>
+                                                    <span class="text-nowrap">Winner: {{ raffleItem.winner }}<br></span>
+                                                    <span v-if="raffleItem.winnerAudio" class="text-nowrap">Winner Audio: {{ raffleItem.winnerAudio }}</span>
+                                                </td>
+                                                <td>{{ raffleItem.createdAt|formatDateTime($t('datetime')) }}</td>
+                                                <td>
+                                                    <span class="text-nowrap">
+                                                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Copy to Form" @click="copyToForm(raffleItem)"><font-awesome-icon :icon="['fas', 'copy']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove Raffle" :disabled="raffleItem.active" @click="removeRaffle(raffleItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="animate-raffle-winner" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="animate-raffle-winner-modal-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="animate-raffle-winner-modal-title" class="modal-title">
+                            Animate Winner
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                    <label for="animate-raffle-winner-file" class="col-form-label">
+                                        Audio File:&nbsp;
+                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Audio is only played in popout window">
+                                            <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
+                                        </span>
+                                    </label>
+                                    <select id="animate-raffle-winner-file" v-model.number="winner.audio.id" class="custom-select">
+                                        <option value="0">None</option>
+                                        <option v-for="audio in audioJingles" :key="audio.id" :value="audio.id">{{ audio.name }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                    <label for="animate-raffle-winner-volume">Volume ({{ winner.audio.volume }}%)</label>
+                                    <input id="animate-raffle-winner-volume" v-model.number="winner.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('winner', winner.audio.volume / 100)">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="custom-control custom-switch">
+                                    <input id="animate-raffle-winner-Announce" v-model.number="winner.chat" type="checkbox" value="1" class="custom-control-input">
+                                    <label class="custom-control-label" for="animate-raffle-winner-Announce">Announce Winner to Chat</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" :disabled="!winner.audio.file.length" @click="playAudio('winner', winner.audio.file, winner.audio.volume / 100)">Play Audio</button>
+                        <button type="button" class="btn btn-light" @click="stopAudio('winner')">Stop Audio</button>
+                        <button type="button" class="btn btn-primary" @click="animateRaffleWinner()">Ok</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>

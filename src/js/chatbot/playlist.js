@@ -451,6 +451,7 @@ const playlist = {
                     'Accept': 'application/vnd.twitchtv.v5+json'
                 }
             };
+
             // get single twitch video
             request(options, (err, res, body) => {
                 if (err) {
@@ -505,6 +506,7 @@ const playlist = {
                     'Accept': 'application/vnd.twitchtv.v5+json'
                 }
             };
+
             // get single twitch video
             request(options, (err, res, body) => {
                 if (err) {

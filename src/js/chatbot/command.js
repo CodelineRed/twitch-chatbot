@@ -1,5 +1,6 @@
 const database = require('./database');
 const poll     = require('./poll');
+const raffle   = require('./raffle');
 const moment   = require('moment');
 
 const command = {
@@ -178,8 +179,8 @@ const command = {
             }
         },
         poll: function(chatbot, args) {
-            if (/^!poll ([0-99])$/i.test(args.message) && typeof chatbot.activePolls[args.channel].id !== 'undefined') {
-                args.choice = parseInt(args.message.toLowerCase().match(/^!poll ([0-99])$/)[1]);
+            if (typeof chatbot.activePolls[args.channel].id !== 'undefined' && /^!vote ([0-99])$/i.test(args.message)) {
+                args.choice = parseInt(args.message.toLowerCase().match(/^!vote ([0-99])$/)[1]);
 
                 // if poll is active
                 if (moment().unix() >= chatbot.activePolls[args.channel].start
@@ -191,8 +192,15 @@ const command = {
             }
         },
         raffle: function(chatbot, args) {
-            if (/^!raffle/i.test(args.message)) {
-                // TODO add code
+            if (typeof chatbot.activeRaffles[args.channel].id !== 'undefined' 
+                && chatbot.activeRaffles[args.channel].keyword === args.message) {
+                // if raffle is active
+                if (moment().unix() >= chatbot.activeRaffles[args.channel].start
+                    && moment().unix() <= chatbot.activeRaffles[args.channel].end 
+                    || !chatbot.activeRaffles[args.channel].end) {
+                    raffle.addAttendee(chatbot, args);
+                }
+                command.updateCommandLastExec(chatbot, args);
             }
         },
         rollDice: function(chatbot, args) {

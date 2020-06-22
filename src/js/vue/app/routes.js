@@ -4,6 +4,7 @@ import Chat from '../component/partial/chat';
 import Counter from '../component/partial/counter';
 import Player from '../component/partial/player';
 import Poll from '../component/partial/poll';
+import Raffle from '../component/partial/raffle';
 import About from '../component/page/about';
 import ErrorPage from '../component/page/error-page';
 
@@ -59,6 +60,15 @@ const routes = [
         path: '/channel/:channel/poll',
         meta: {
             title: 'router.param-channel - i18n.poll',
+            layout: 'empty'
+        }
+    },
+    {
+        component: Raffle,
+        name: 'raffle',
+        path: '/channel/:channel/raffle',
+        meta: {
+            title: 'router.param-channel - i18n.raffle',
             layout: 'empty'
         }
     },

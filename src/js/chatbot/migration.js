@@ -15,10 +15,10 @@ const migration = {
     /**
      * Executes one sql row and calls them self recursive
      * 
-     * @param {type} queries (array of query strings)
-     * @param {type} version
-     * @param {type} index
-     * @param {type} callback
+     * @param {array} queries (array of query strings)
+     * @param {string} version
+     * @param {number} index
+     * @param {function|undefined} callback
      * @returns {undefined}
      */
     executeRow: function(queries, version, index, callback) {

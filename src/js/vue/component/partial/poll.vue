@@ -98,7 +98,7 @@
                 this.getPolls();
             }
 
-            jQuery('#animate-winner').on('hidden.bs.modal', function() {
+            jQuery('#animate-poll-winner').on('hidden.bs.modal', function() {
                 $this.stopAudio('test');
             });
         },
@@ -124,7 +124,7 @@
             },
             animatePollWinner: function() {
                 this.getPollWinner(false);
-                jQuery('#animate-winner').modal('hide');
+                jQuery('#animate-poll-winner').modal('hide');
             },
             announcePollToChat: function() {
                 if (typeof socketWrite === 'function') {
@@ -409,7 +409,7 @@
                         <div v-for="(option, index) in activePoll.options" :key="option.id" class="mb-3">
                             <div class="form-row">
                                 <div class="col">
-                                    !poll {{ index + 1 }} - {{ option.name }}
+                                    !vote {{ index + 1 }} - {{ option.name }}
                                 </div>
                                 <div class="col text-right">
                                     {{ option.average }}% ({{ option.votes }} Votes)
@@ -438,7 +438,7 @@
                     </div>
                     <div v-if="!isPopout" class="text-right">
                         <span v-if="winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Close Animation"><button v-if="winner.id" type="button" class="btn btn-sm btn-warning" @click="closePollAnimation()"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
-                        <span v-if="!winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Animate Winner"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#animate-winner"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
+                        <span v-if="!winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Animate Winner"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#animate-poll-winner"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
                         <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Announce to Chat"><button type="button" class="btn btn-sm btn-primary" @click="announcePollToChat()"><font-awesome-icon :icon="['fas', 'comment-dots']" class="fa-fw" /></button></span>
                         <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Result to Chat"><button type="button" class="btn btn-sm btn-primary" @click="pollResultToChat()"><font-awesome-icon :icon="['fas', 'chart-pie']" class="fa-fw" /></button></span>
                         <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Close Poll"><button type="button" class="btn btn-sm btn-danger" @click="closePoll()"><font-awesome-icon :icon="['fas', 'times']" class="fa-fw" /></button></span>
@@ -589,11 +589,11 @@
             </div>
         </div>
 
-        <div id="animate-winner" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="animate-winner-modal-title" aria-hidden="true">
+        <div id="animate-poll-winner" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="animate-poll-winner-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 id="animate-winner-modal-title" class="modal-title">
+                        <h5 id="animate-poll-winner-modal-title" class="modal-title">
                             Animate Winner
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -604,13 +604,13 @@
                         <div class="row">
                             <div class="col-12 col-md-6">
                                 <div class="form-group">
-                                    <label for="animate-winner-file" class="col-form-label">
+                                    <label for="animate-poll-winner-file" class="col-form-label">
                                         Audio File:&nbsp;
                                         <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Audio is only played in popout window">
                                             <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                         </span>
                                     </label>
-                                    <select id="animate-winner-file" v-model.number="winner.audio.id" class="custom-select">
+                                    <select id="animate-poll-winner-file" v-model.number="winner.audio.id" class="custom-select">
                                         <option value="0">None</option>
                                         <option v-for="audio in audioJingles" :key="audio.id" :value="audio.id">{{ audio.name }}</option>
                                     </select>
@@ -618,14 +618,14 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="form-group">
-                                    <label for="animate-winner-volume">Volume ({{ winner.audio.volume }}%)</label>
-                                    <input id="animate-winner-volume" v-model.number="winner.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('winner', winner.audio.volume / 100)">
+                                    <label for="animate-poll-winner-volume">Volume ({{ winner.audio.volume }}%)</label>
+                                    <input id="animate-poll-winner-volume" v-model.number="winner.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('winner', winner.audio.volume / 100)">
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="custom-control custom-switch">
-                                    <input id="animate-winner-Announce" v-model.number="winner.chat" type="checkbox" value="1" class="custom-control-input">
-                                    <label class="custom-control-label" for="animate-winner-Announce">Announce Winner to Chat</label>
+                                    <input id="animate-poll-winner-Announce" v-model.number="winner.chat" type="checkbox" value="1" class="custom-control-input">
+                                    <label class="custom-control-label" for="animate-poll-winner-Announce">Announce Winner to Chat</label>
                                 </div>
                             </div>
                         </div>

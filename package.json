@@ -1,7 +1,7 @@
 {
     "name": "twitch-chatbot",
     "version": "1.0.0-dev",
-    "commitDate": "2020-06-16T13:30:00+02:00",
+    "commitDate": "2020-06-22T20:30:00+02:00",
     "description": "Twitch Chatbot made with Vue Skeleton",
     "keywords": [
         "gulp",
@@ -31,12 +31,12 @@
         "url": "git://github.com/InsanityMeetsHH/twitch-chatbot.git"
     },
     "devDependencies": {
-        "@babel/core": "^7.10.2",
+        "@babel/core": "^7.10.3",
         "@babel/plugin-transform-modules-amd": "^7.10.1",
         "babel-eslint": "^10.1.0",
         "browser-sync": "^2.26.7",
         "del": "^5.1.0",
-        "eslint-plugin-import": "^2.20.2",
+        "eslint-plugin-import": "^2.21.2",
         "eslint-plugin-vue": "^6.2.2",
         "gulp": "^4.0.2",
         "gulp-autoprefixer": "^7.0.1",
@@ -55,12 +55,12 @@
         "gulp-vue-single-file-component": "^1.0.12"
     },
     "dependencies": {
-        "@fortawesome/fontawesome-free": "^5.13.0",
-        "@fortawesome/fontawesome-svg-core": "^1.2.28",
-        "@fortawesome/free-brands-svg-icons": "^5.13.0",
-        "@fortawesome/free-regular-svg-icons": "^5.13.0",
-        "@fortawesome/free-solid-svg-icons": "^5.13.0",
-        "@fortawesome/vue-fontawesome": "^0.1.9",
+        "@fortawesome/fontawesome-free": "^5.13.1",
+        "@fortawesome/fontawesome-svg-core": "^1.2.29",
+        "@fortawesome/free-brands-svg-icons": "^5.13.1",
+        "@fortawesome/free-regular-svg-icons": "^5.13.1",
+        "@fortawesome/free-solid-svg-icons": "^5.13.1",
+        "@fortawesome/vue-fontawesome": "^0.1.10",
         "bootstrap": "^4.5.0",
         "cssuseragent": "^2.1.31",
         "datatables.net": "^1.10.21",
@@ -70,7 +70,7 @@
         "latinize": "^0.4.1",
         "linkifyjs": "^2.1.9",
         "mediainfo-wrapper": "^1.2.0",
-        "moment": "^2.26.0",
+        "moment": "^2.27.0",
         "request": "^2.88.2",
         "requirejs": "^2.3.6",
         "skateboard": "^2.0.1",
@@ -81,9 +81,9 @@
         "uuid": "^8.1.0",
         "vanilla-lazyload": "^16.1.0",
         "vue": "^2.6.11",
-        "vue-ctk-date-time-picker": "^2.4.0",
-        "vue-i18n": "^8.18.1",
-        "vue-router": "^3.3.2",
+        "vue-ctk-date-time-picker": "2.5.0",
+        "vue-i18n": "^8.18.2",
+        "vue-router": "^3.3.4",
         "yargs": "^15.3.1"
     },
     "scripts": {

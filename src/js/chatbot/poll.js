@@ -81,7 +81,7 @@ const poll = {
             let results =  '';
 
             for (var i = 0; i < options.length; i++) {
-                results += ` !poll ${i + 1} - ${options[i].name} |`;
+                results += ` !vote ${i + 1} - ${options[i].name} |`;
             }
 
             chatbot.client.say('#' + args.channel, `Poll: ${name} |${results} Multiple Choice: ${multipleChoice}`);

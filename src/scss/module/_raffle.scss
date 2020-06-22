@@ -2,4 +2,33 @@
     background-color: $theme-color-4;
     border-radius: 5px;
     position: relative;
+
+    &.popout {
+        background-color: transparent;
+
+        .winner {
+            .option {
+                font-size: 5rem;
+            }
+        }
+    }
+
+    label {
+        color: $white;
+    }
+
+    .winner {
+        margin-bottom: 10px;
+        min-height: 400px;
+        position: relative;
+
+        .option {
+            font-size: 3rem;
+            left: 0;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+        }
+    }
 }

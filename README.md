@@ -157,6 +157,25 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Datime Picker
 * Popout URL `/channel/[channel]/poll` to use browser source in OBS (Pixel recommendation: 1000x563px by max. 6 options)
 
+### Raffle
+* Start Raffle
+* Close Raffle
+* Remove Raffle
+* Copy Raffle to Form
+* All Raffles Modal
+* Announce Raffle to Chat Button
+* Result to Chat Button
+* Animate Winner
+* Play Audio for Winner (Audio is only played in popout window)
+* Play Audio loop for Poll (Audio is only played in popout window)
+* Announce Winner to Chat
+* Custom Keyword
+* Multiplicators
+* Start Datetime
+* End Datetime
+* Datime Picker
+* Popout URL `/channel/[channel]/raffle` to use browser source in OBS (Pixel recommendation: 1000x563px)
+
 ### Bots
 * Own [badge](https://fontawesome.com/icons/robot?style=solid) in Chat
 * Preset of 5 Bots (Mod4YouBot, Moobot, Nightbot, StreamElements, Streamlabs)

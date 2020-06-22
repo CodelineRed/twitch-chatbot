@@ -31,8 +31,8 @@ const migrationFile = {
     down: function(callback) {
         /* eslint-disable quotes */
         let queries = [];
-        queries.push("DELETE FROM audio;");
-        queries.push("DELETE FROM bot;");
+        queries.push("DELETE FROM audio WHERE id IN (1,2,3,4,5,6,7,8,9,10,11,12,13);");
+        queries.push("DELETE FROM bot WHERE id IN (1,2,3,4,5);");
         /* eslint-enable quotes */
         migration.execute(queries, this.version, callback);
     }
