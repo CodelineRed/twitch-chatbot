@@ -23,32 +23,54 @@
         mounted: function() {
             if (this.componentsOrder === null) {
                 this.componentsOrder = {
-                    chat: {xs: 12, sm: 0, md: 0, lg: 0, xl: 0, xxl: 0},
-                    poll: {xs: 12, sm: 0,  md: 6, lg: 0, xl: 0, xxl: 0},
-                    raffle: {xs: 12, sm: 0, md: 6, lg: 0, xl: 0, xxl: 0},
-                    commands: {xs: 12, sm: 0, md: 0, lg: 9, xl: 0, xxl: 7},
-                    counter: {xs: 12, sm: 6, md: 4, lg: 3, xl: 0, xxl: 0},
-                    playlist: {xs: 12, sm: 0,  md: 0, lg: 0, xl: 0, xxl: 0}
+                    chat: {
+                        show: true,
+                        cols: {xs: 12, sm: 0, md: 0, lg: 0, xl: 0, xxl: 0}
+                    },
+                    poll: {
+                        show: true,
+                        cols: {xs: 12, sm: 0,  md: 6, lg: 0, xl: 0, xxl: 0}
+                    },
+                    raffle: {
+                        show: true,
+                        cols: {xs: 12, sm: 0, md: 6, lg: 0, xl: 0, xxl: 0}
+                    },
+                    commands: {
+                        show: true,
+                        cols: {xs: 12, sm: 0, md: 0, lg: 9, xl: 0, xxl: 7}
+                    },
+                    counter: {
+                        show: true,
+                        cols: {xs: 12, sm: 6, md: 4, lg: 3, xl: 0, xxl: 0}
+                    },
+                    playlist: {
+                        show: true,
+                        cols: {xs: 12, sm: 0,  md: 0, lg: 0, xl: 0, xxl: 0}
+                    }
                 };
-                window.localStorage.setItem('componentsOrder', JSON.stringify(this.componentsOrder));
+                this.saveComponentsOrder();
             }
         },
         methods: {
-            getComponentClass: function(breakpoints, index) {
-                let bp = Object.keys(breakpoints);
+            getComponentClass: function(properties, index) {
+                let bp = Object.keys(properties.cols);
                 let cssClasses = '';
 
                 for (let i = 0; i < bp.length; i++) {
-                    if (breakpoints[bp[i]]) {
+                    if (properties.cols[bp[i]]) {
                         if (bp[i] === 'xs') {
-                            cssClasses += `col-${breakpoints[bp[i]]} `;
+                            cssClasses += `col-${properties.cols[bp[i]]} `;
                         } else {
-                            cssClasses += `col-${bp[i]}-${breakpoints[bp[i]]} `;
+                            cssClasses += `col-${bp[i]}-${properties.cols[bp[i]]} `;
                         }
                     }
                 }
 
-                if (bp.length -1 !== index) {
+                if (!properties.show) {
+                    cssClasses += 'd-none ';
+                }
+
+                if (Object.keys(this.componentsOrder).length - 1 !== index) {
                     cssClasses += 'pb-3';
                 }
 
@@ -65,10 +87,9 @@
                 }
 
                 this.componentsOrder = componentsOrder;
-                window.localStorage.setItem('componentsOrder', JSON.stringify(this.componentsOrder));
+                this.saveComponentsOrder();
             },
-            updateComponent: function(component, breakpoint, event) {
-                this.componentsOrder[component][breakpoint] = parseInt(event.target.value);
+            saveComponentsOrder: function() {
                 window.localStorage.setItem('componentsOrder', JSON.stringify(this.componentsOrder));
             }
         }
@@ -83,7 +104,7 @@
             </h3>
         </div>
         <!-- eslint-disable-next-line vue/require-v-for-key -->
-        <div v-for="(breakpoints, component, index) in componentsOrder" :class="getComponentClass(breakpoints, index)">
+        <div v-for="(properties, component, index) in componentsOrder" :class="getComponentClass(properties, index)">
             <component :is="('c-' + component)" :ref="component" />
         </div>
         <div class="col-12">
@@ -107,6 +128,7 @@
                                                 <tr>
                                                     <th scope="col">#</th>
                                                     <th scope="col">Component</th>
+                                                    <th scope="col">Show</th>
                                                     <th scope="col" colspan="2">Smartphone</th>
                                                     <th scope="col">Tablet</th>
                                                     <th scope="col" colspan="3">Computer</th>
@@ -114,7 +136,7 @@
                                             </thead>
                                             <tbody>
                                                 <!-- eslint-disable-next-line vue/require-v-for-key -->
-                                                <tr v-for="(breakpoints, component, index) in componentsOrder">
+                                                <tr v-for="(properties, component, index) in componentsOrder">
                                                     <td class="index">
                                                         <div v-if="index > 0" class="move move-up" @click="moveComponent(component, -1, index)">
                                                             <font-awesome-icon :icon="['fas', 'chevron-right']" class="fa-fw" :transform="{rotate: -90}" />
@@ -125,9 +147,15 @@
                                                         {{ index + 1 }}
                                                     </td>
                                                     <td>{{ component }}</td>
-                                                    <td v-for="(width, breakpoint) in breakpoints" :key="breakpoint">
-                                                        <select class="custom-select" @change="updateComponent(component, breakpoint, $event)">
-                                                            <option value="0">None</option>
+                                                    <td>
+                                                        <div class="custom-control custom-switch">
+                                                            <input id="components-order-show" v-model="componentsOrder[component].show" type="checkbox" class="custom-control-input" @change="saveComponentsOrder()">
+                                                            <label for="components-order-show" class="custom-control-label">&nbsp;</label>
+                                                        </div>
+                                                    </td>
+                                                    <td v-for="(width, breakpoint) in properties.cols" :key="breakpoint">
+                                                        <select v-model.number="componentsOrder[component].cols[breakpoint]" class="custom-select" @change="saveComponentsOrder()">
+                                                            <option value="0">Default</option>
                                                             <option v-for="bpWidth in 12" :key="bpWidth" :value="bpWidth" :selected="bpWidth === width">{{ breakpoint }} {{ bpWidth }}</option>
                                                         </select>
                                                     </td>

@@ -13,7 +13,7 @@
                 messages: [],
                 showBadges: window.localStorage.getItem('showMessageBadges') === 'true' ? true : false,
                 showScrollBottom: false,
-                showTime: window.localStorage.getItem('showMessageTime') === 'true' ? true : false,
+                showTimestamp: window.localStorage.getItem('showMessageTimestamp') === 'true' ? true : false,
                 showUserColor: window.localStorage.getItem('showMessageUserColor') === 'true' ? true : false
             };
         },
@@ -41,9 +41,9 @@
             showBadges: function() {
                 window.localStorage.setItem('showMessageBadges', this.showBadges);
             },
-            showTime: function() {
+            showTimestamp: function() {
                 let $this = this;
-                window.localStorage.setItem('showMessageTime', this.showTime);
+                window.localStorage.setItem('showMessageTimestamp', this.showTimestamp);
                 setTimeout(function() {
                     $this.initTooltip();
                 }, 100);
@@ -156,8 +156,8 @@
             <div class="chat p-2" :class="getChatClass()">
                 <div class="controls pb-2">
                     <div class="custom-control custom-switch float-left mr-3">
-                        <input id="message-time" v-model="showTime" type="checkbox" class="custom-control-input">
-                        <label class="custom-control-label" for="message-time">Time</label>
+                        <input id="message-time" v-model="showTimestamp" type="checkbox" class="custom-control-input">
+                        <label class="custom-control-label" for="message-time">Timestamp</label>
                     </div>
                     <div class="custom-control custom-switch float-left mr-3">
                         <input id="message-badges" v-model="showBadges" type="checkbox" class="custom-control-input">
@@ -180,7 +180,7 @@
                 <div class="messages" :class="{stop: isMessagesHover}" @mouseover="isMessagesHover = true" @mouseout="isMessagesHover = false">
                     <!-- eslint-disable-next-line vue/require-v-for-key -->
                     <div v-for="(message, index) in messages" :class="getMessageClass(index, message)" class="message">
-                        <span v-if="showTime" class="timestamp mr-2" data-toggle="tooltip" data-placement="top" :title="message.createdAt|formatDateTime($t('datetime'))">
+                        <span v-if="showTimestamp" class="timestamp mr-2" data-toggle="tooltip" data-placement="top" :title="message.createdAt|formatDateTime($t('datetime'))">
                             [{{ message.createdAt|formatDateTime($t("time")) }}]
                         </span>
                         <span v-if="showBadges">

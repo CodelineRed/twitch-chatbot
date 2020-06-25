@@ -103,6 +103,11 @@
             'raffle.audio.id': function() {
                 this.raffle.audio.file = this.getAudioFileById(this.raffle.audio.id);
             },
+            'raffle.keyword': function() {
+                if (/ /.test(this.raffle.keyword)) {
+                    this.raffle.keyword = this.raffle.keyword.replace(/ /, '');
+                }
+            },
             'winner.audio.id': function() {
                 this.winner.audio.file = this.getAudioFileById(this.winner.audio.id);
             },
@@ -500,10 +505,7 @@
                     <div v-for="(multiplicator, name) in raffle.multiplicators" :key="name" class="col-12 col-md-6 col-lg-4 col-xl-3">
                         <div v-if="hasMultiplicators" class="form-group">
                             <label :for="'raffle-multiplicators-' + name">{{ name }}:</label>
-                            <select :id="'raffle-multiplicators-' + name" v-model.number="raffle.multiplicators[name]" class="custom-select">
-                                <option value="0">None</option>
-                                <option v-for="index in 10" :key="index" :value="index">{{ index }}</option>
-                            </select>
+                            <input :id="'raffle-multiplicators-' + name" v-model.number="raffle.multiplicators[name]" type="number" min="0" max="100" class="form-control">
                         </div>
                     </div>
                     <div class="col-12">
