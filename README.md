@@ -152,6 +152,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Play Audio loop for Poll (Audio is only played in popout window)
 * Announce Winner to Chat
 * Multiple Choice Yes/No
+* Combine Poll with Raffle
 * Start Datetime
 * End Datetime
 * Datime Picker

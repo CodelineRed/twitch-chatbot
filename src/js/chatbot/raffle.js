@@ -27,7 +27,7 @@ const raffle = {
                     updatedAt: time,
                     createdAt: time
                 };
-                
+
                 var options = {
                     url: `https://api.twitch.tv/kraken/users/${args.userstate['user-id']}/follows/channels/${args.userstate['room-id']}`,
                     method: 'GET',
@@ -48,21 +48,21 @@ const raffle = {
                         badges.follower = 'yes';
                     }
 
-                    if (typeof badges.partner === 'string') {
+                    if (typeof badges.partner === 'string' && chatbot.activeRaffles[args.channel].multiplicators.partner >= 0) {
                         multiplicator = chatbot.activeRaffles[args.channel].multiplicators.partner;
-                    } else if (typeof badges.moderator === 'string') {
+                    } else if (typeof badges.moderator === 'string' && chatbot.activeRaffles[args.channel].multiplicators.moderator >= 0) {
                         multiplicator = chatbot.activeRaffles[args.channel].multiplicators.moderator;
-                    } else if (typeof badges.subscriber === 'string') {
-                        multiplicator = chatbot.activeRaffles[args.channel].multiplicators.subscriber;
-                    } else if (typeof badges.vip === 'string') {
+                    } else if (typeof badges.vip === 'string' && chatbot.activeRaffles[args.channel].multiplicators.vip >= 0) {
                         multiplicator = chatbot.activeRaffles[args.channel].multiplicators.vip;
-                    } else if (typeof badges.turbo === 'string') {
+                    } else if (typeof badges.subscriber === 'string' && chatbot.activeRaffles[args.channel].multiplicators.subscriber >= 0) {
+                        multiplicator = chatbot.activeRaffles[args.channel].multiplicators.subscriber;
+                    } else if (typeof badges.turbo === 'string' && chatbot.activeRaffles[args.channel].multiplicators.turbo >= 0) {
                         multiplicator = chatbot.activeRaffles[args.channel].multiplicators.turbo;
-                    } else if (typeof badges.premium === 'string') {
+                    } else if (typeof badges.premium === 'string' && chatbot.activeRaffles[args.channel].multiplicators.prime >= 0) {
                         multiplicator = chatbot.activeRaffles[args.channel].multiplicators.prime;
-                    } else if (typeof badges.follower === 'string') {
+                    } else if (typeof badges.follower === 'string' && chatbot.activeRaffles[args.channel].multiplicators.follower >= 0) {
                         multiplicator = chatbot.activeRaffles[args.channel].multiplicators.follower;
-                    } else {
+                    } else if (chatbot.activeRaffles[args.channel].multiplicators.guest >= 0) {
                         multiplicator = chatbot.activeRaffles[args.channel].multiplicators.guest;
                     }
 
@@ -95,8 +95,8 @@ const raffle = {
                 audioVolume: typeof args.raffle.audio.volume === 'number' ? args.raffle.audio.volume : 50,
                 multiplicatorPartner: args.raffle.multiplicators.partner,
                 multiplicatorModerator: args.raffle.multiplicators.moderator,
-                multiplicatorSubscriber: args.raffle.multiplicators.subscriber,
                 multiplicatorVip: args.raffle.multiplicators.vip,
+                multiplicatorSubscriber: args.raffle.multiplicators.subscriber,
                 multiplicatorTurbo: args.raffle.multiplicators.turbo,
                 multiplicatorPrime: args.raffle.multiplicators.prime,
                 multiplicatorFollower: args.raffle.multiplicators.follower,
@@ -141,7 +141,7 @@ const raffle = {
     },
     getActiveRaffle: function(chatbot, args) {
         let select = 'r.id, r.name, keyword, active, start, end, r.updated_at, r.created_at, ';
-        select += 'multiplicator_partner, multiplicator_moderator, multiplicator_subscriber, multiplicator_vip, ';
+        select += 'multiplicator_partner, multiplicator_moderator, multiplicator_vip, multiplicator_subscriber, ';
         select += 'multiplicator_turbo, multiplicator_prime, multiplicator_follower, multiplicator_guest, ';
         select += 'ra.id AS ra_id, ra.name AS ra_name, ra.file AS ra_file, ra.duration AS ra_duration, r.audio_volume AS ra_volume, ';
         select += '(SELECT GROUP_CONCAT(user, \', \') FROM (SELECT DISTINCT user FROM attendee WHERE raffle_id = r.id ORDER BY user COLLATE NOCASE ASC)) AS attendees, ';
@@ -183,8 +183,8 @@ const raffle = {
                     multiplicators: {
                         partner: rows[0].multiplicator_partner,
                         moderator: rows[0].multiplicator_moderator,
-                        subscriber: rows[0].multiplicator_subscriber,
                         vip: rows[0].multiplicator_vip,
+                        subscriber: rows[0].multiplicator_subscriber,
                         turbo: rows[0].multiplicator_turbo,
                         prime: rows[0].multiplicator_prime,
                         follower: rows[0].multiplicator_follower,
@@ -194,7 +194,7 @@ const raffle = {
             }
 
             if (chatbot.socket !== null) {
-                const call = {
+                let call = {
                     args: {
                         channel: args.channel,
                         raffle: chatbot.activeRaffles[args.channel]
@@ -206,6 +206,9 @@ const raffle = {
 
                 chatbot.socket.write(JSON.stringify(call));
 
+                call.ref = 'poll';
+                chatbot.socket.write(JSON.stringify(call));
+
                 if (chatbot.socketRaffle !== null) {
                     chatbot.socketRaffle.write(JSON.stringify(call));
                 }
@@ -214,7 +217,7 @@ const raffle = {
     },
     getRaffles: function(chatbot, args) {
         let select = 'r.id, r.name, keyword, active, start, end, r.updated_at, r.created_at, ';
-        select += 'multiplicator_partner, multiplicator_moderator, multiplicator_subscriber, multiplicator_vip, ';
+        select += 'multiplicator_partner, multiplicator_moderator, multiplicator_vip, multiplicator_subscriber, ';
         select += 'multiplicator_turbo, multiplicator_prime, multiplicator_follower, multiplicator_guest, ';
         select += 'ra.id AS ra_id, ra.name AS ra_name, ra.file AS ra_file, ra.duration AS ra_duration, r.audio_volume AS ra_volume, ';
         select += '(SELECT GROUP_CONCAT(user, \', \') FROM (SELECT DISTINCT user FROM attendee WHERE raffle_id = r.id ORDER BY user COLLATE NOCASE ASC)) AS attendees, ';
@@ -258,8 +261,8 @@ const raffle = {
                         multiplicators: {
                             partner: rows[i].multiplicator_partner,
                             moderator: rows[i].multiplicator_moderator,
-                            subscriber: rows[i].multiplicator_subscriber,
                             vip: rows[i].multiplicator_vip,
+                            subscriber: rows[i].multiplicator_subscriber,
                             turbo: rows[i].multiplicator_turbo,
                             prime: rows[i].multiplicator_prime,
                             follower: rows[i].multiplicator_follower,

@@ -11,6 +11,7 @@
         data: function() {
             return {
                 activePoll: {},
+                activeRaffle: {},
                 currentTime: 0,
                 datetimePicker: {
                     start: '',
@@ -19,12 +20,14 @@
                 endCountdown: 0,
                 endCountdownInterval: 0,
                 hasBackgroundAudio: false,
+                hasRaffle: false,
                 isPopout: false,
                 maxDate: moment().add(1, 'd').format('YYYY-MM-DDTHH:00'),
                 minDate: moment().format('YYYY-MM-DDTHH:mm'),
                 newOption: '',
                 poll: {
                     id: 0,
+                    raffleId: null,
                     name: '',
                     active: false,
                     multipleChoice: false,
@@ -53,6 +56,13 @@
             };
         },
         watch: {
+            'activeRaffle.id': function() {
+                if (this.hasRaffle && typeof this.activeRaffle.id !== 'undefined') {
+                    this.poll.raffleId = this.activeRaffle.id;
+                } else {
+                    this.poll.raffleId = null;
+                }
+            },
             'datetimePicker.start': function() {
                 this.poll.start = isNaN(moment(this.datetimePicker.start).unix()) ? moment().unix() : moment(this.datetimePicker.start).unix();
                 this.checkDatetimeRange();
@@ -69,6 +79,13 @@
                         file: '',
                         volume: 50
                     };
+                }
+            },
+            'hasRaffle': function() {
+                if (this.hasRaffle && typeof this.activeRaffle.id !== 'undefined') {
+                    this.poll.raffleId = this.activeRaffle.id;
+                } else {
+                    this.poll.raffleId = null;
                 }
             },
             'poll.audio.id': function() {
@@ -176,6 +193,7 @@
 
                 this.poll = {
                     id: 0,
+                    raffleId: null,
                     name: poll.name,
                     active: false,
                     multipleChoice: poll.multipleChoice,
@@ -276,6 +294,7 @@
             resetPoll: function() {
                 this.poll = {
                     id: 0,
+                    raffleId: null,
                     name: '',
                     active: false,
                     multipleChoice: false,
@@ -302,6 +321,11 @@
                     } else if (!this.activePoll.id) {
                         this.stopAudio('background');
                     }
+                }
+            },
+            setActiveRaffle: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.activeRaffle = args.raffle;
                 }
             },
             setCountdown: function() {
@@ -402,9 +426,11 @@
                             {{ activePoll.name }}
                         </div>
                         <p>
+                            <span v-if="activePoll.raffleId">
+                                Raffle: {{ activePoll.raffleName }}<br>
+                            </span>
                             Multiple Choice: <span v-if="activePoll.multipleChoice">Yes</span><span v-if="!activePoll.multipleChoice">No</span><br>
-                            Attendees: {{ activePoll.attendees }}<br>
-                            Votes: {{ activePoll.votes }}
+                            Attendees: {{ activePoll.attendees }} | Votes: {{ activePoll.votes }}
                         </p>
                         <div v-for="(option, index) in activePoll.options" :key="option.id" class="mb-3">
                             <div class="form-row">
@@ -472,14 +498,26 @@
                             <c-datetime id="poll-end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
                         </div>
                     </div>
+                    <div v-if="hasRaffle" class="col-12 mb-3 text-white">
+                        <div v-if="activeRaffle.id">
+                            Raffle: {{ activeRaffle.name }}
+                        </div>
+                        <div v-else>
+                            Please activate a Raffle.
+                        </div>
+                    </div>
                     <div class="col-12">
                         <div class="form-group custom-control custom-switch float-left mr-3">
                             <input id="poll-multiple-choice" v-model="poll.multipleChoice" type="checkbox" class="custom-control-input">
                             <label for="poll-multiple-choice" class="custom-control-label">Multiple Choice</label>
                         </div>
-                        <div class="form-group custom-control custom-switch float-left">
+                        <div class="form-group custom-control custom-switch float-left mr-3">
                             <input id="poll-background-audio" v-model="hasBackgroundAudio" type="checkbox" class="custom-control-input">
                             <label for="poll-background-audio" class="custom-control-label">Background Audio</label>
+                        </div>
+                        <div class="form-group custom-control custom-switch float-left">
+                            <input id="poll-has-raffle" v-model="hasRaffle" type="checkbox" class="custom-control-input">
+                            <label for="poll-has-raffle" class="custom-control-label">Raffle</label>
                         </div>
                     </div>
                     <div v-if="hasBackgroundAudio" class="col-12">
@@ -504,7 +542,7 @@
                                     <input id="poll-audio-volume" v-model.number="poll.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('background', poll.audio.volume / 100)">
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-12 mb-3">
                                 <button type="button" class="btn btn-light mr-2" :disabled="!poll.audio.file.length" @click="playAudio('background', poll.audio.file, poll.audio.volume / 100, true)">Play Audio</button>
                                 <button type="button" class="btn btn-light" @click="stopAudio('background')">Stop Audio</button>
                             </div>

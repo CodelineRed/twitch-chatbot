@@ -8,6 +8,7 @@ const poll = {
             let time = moment().unix();
             let values = {
                 channelId: chatbot.channels[args.channel].id,
+                raffleId: args.poll.raffleId,
                 audioId: typeof args.poll.audio.id === 'number' && args.poll.audio.id > 0 ? args.poll.audio.id : null,
                 name: args.poll.name,
                 active: true,
@@ -31,6 +32,18 @@ const poll = {
                 }
                 database.insert('option', values, function(insertOption) {
                     poll.getActivePoll(chatbot, args);
+
+                    if (typeof args.poll.raffleId === 'number') {
+                        let from = 'raffle';
+                        let set = {
+                            keyword: null
+                        };
+                        let where = [`id = ${args.poll.raffleId}`];
+
+                        database.update(from, set, where, function(update) {
+                            chatbot.getActiveRaffle(chatbot, args);
+                        });
+                    }
                 });
                 console.log(`* Added poll "${args.poll.name}"`);
             });
@@ -50,6 +63,10 @@ const poll = {
             if (chatbot.activePolls[args.channel].multipleChoice) {
                 where.push('option_id = ?');
                 prepare.push(chatbot.activePolls[args.channel].options[args.choice - 1].id);
+            }
+
+            if (chatbot.activePolls[args.channel].raffleId) {
+                chatbot.addAttendee(chatbot, args);
             }
 
             database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
@@ -76,6 +93,7 @@ const poll = {
     announcePollToChat: function(chatbot, args) {
         if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
             let name = chatbot.activePolls[args.channel].name;
+            let raffle = chatbot.activePolls[args.channel].raffleId ? ' | Raffle: ' + chatbot.activePolls[args.channel].raffleName : '';
             let multipleChoice = chatbot.activePolls[args.channel].multipleChoice ? 'Yes' : 'No';
             let options = chatbot.activePolls[args.channel].options;
             let results =  '';
@@ -84,7 +102,7 @@ const poll = {
                 results += ` !vote ${i + 1} - ${options[i].name} |`;
             }
 
-            chatbot.client.say('#' + args.channel, `Poll: ${name} |${results} Multiple Choice: ${multipleChoice}`);
+            chatbot.client.say('#' + args.channel, `Poll: ${name} |${results} Multiple Choice: ${multipleChoice}${raffle}`);
         }
     },
     closePoll: function(chatbot, args) {
@@ -104,8 +122,9 @@ const poll = {
         }
     },
     getActivePoll: function(chatbot, args) {
-        let select = 'p.id, p.name, active, multiple_choice, start, end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, winner, COUNT(uc.option_id) AS o_votes, ';
+        let select = 'p.id, p.name, p.active, p.multiple_choice, p.start, p.end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, winner, COUNT(uc.option_id) AS o_votes, ';
         select += 'pa.id AS pa_id, pa.name AS pa_name, pa.file AS pa_file, pa.duration AS pa_duration, p.audio_volume AS pa_volume, ';
+        select += 'pr.id AS pr_id, pr.name AS pr_name, ';
         //select += 'oa.id AS oa_id, oa.name AS oa_name, oa.file AS oa_file, oa.duration AS oa_duration, o.audio_volume AS oa_volume, ';
         select += '(SELECT COUNT(*) FROM (SELECT uc.user_id FROM user_choice AS uc WHERE uc.poll_id = p.id)) AS uc_votes, ';
         select += '(SELECT COUNT(*) FROM (SELECT DISTINCT uc.user_id FROM user_choice AS uc WHERE uc.poll_id = p.id)) AS uc_attendees, ';
@@ -114,9 +133,10 @@ const poll = {
         let from = 'poll AS p';
         let join = 'JOIN option AS o ON p.id = o.poll_id ';
         join += 'LEFT JOIN user_choice AS uc ON o.id = uc.option_id ';
+        join += 'LEFT JOIN raffle AS pr ON p.raffle_id = pr.id ';
         join += 'LEFT JOIN audio AS pa ON p.audio_id = pa.id ';
         //join += 'LEFT JOIN audio AS oa ON o.audio_id = oa.id';
-        let where = ['active = ?', 'channel_id = ?'];
+        let where = ['p.active = ?', 'p.channel_id = ?'];
         let group = 'o.name';
         let order = 'p.created_at DESC, o.id';
         let prepare = [1, chatbot.channels[args.channel].id];
@@ -128,8 +148,10 @@ const poll = {
             if (rows.length) {
                 chatbot.activePolls[args.channel] = {
                     id: rows[0].id,
+                    raffleId: rows[0].pr_id,
+                    raffleName: rows[0].pr_name,
                     name: rows[0].name,
-                    active: !!rows[0].active,
+                    active: true,
                     multipleChoice: !!rows[0].multiple_choice,
                     start: rows[0].start,
                     end: rows[0].end,
@@ -179,9 +201,10 @@ const poll = {
         });
     },
     getPolls: function(chatbot, args) {
-        let select = 'p.id, p.name, active, multiple_choice, start, end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, winner, COUNT(uc.option_id) AS o_votes, ';
+        let select = 'p.id, p.name, p.active, p.multiple_choice, p.start, p.end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, winner, COUNT(uc.option_id) AS o_votes, ';
         select += 'pa.id AS pa_id, pa.name AS pa_name, pa.file AS pa_file, pa.duration AS pa_duration, p.audio_volume AS pa_volume, ';
         select += 'oa.id AS oa_id, oa.name AS oa_name, oa.file AS oa_file, oa.duration AS oa_duration, o.audio_volume AS oa_volume, ';
+        select += 'pr.id AS pr_id, pr.name AS pr_name, ';
         select += '(SELECT COUNT(*) FROM (SELECT uc.user_id FROM user_choice AS uc WHERE uc.poll_id = p.id)) AS uc_votes, ';
         select += '(SELECT COUNT(*) FROM (SELECT DISTINCT uc.user_id FROM user_choice AS uc WHERE uc.poll_id = p.id)) AS uc_attendees, ';
         select += 'CASE WHEN COUNT(uc.option_id) > 0 THEN ROUND((COUNT(uc.option_id) + 0.0) / (SELECT COUNT(uc.poll_id) AS uc_amount '; // case first line
@@ -189,9 +212,10 @@ const poll = {
         let from = 'poll AS p';
         let join = 'JOIN option AS o ON p.id = o.poll_id ';
         join += 'LEFT JOIN user_choice AS uc ON o.id = uc.option_id ';
+        join += 'LEFT JOIN raffle AS pr ON p.raffle_id = pr.id ';
         join += 'LEFT JOIN audio AS pa ON p.audio_id = pa.id ';
         join += 'LEFT JOIN audio AS oa ON o.audio_id = oa.id';
-        let where = ['channel_id = ?'];
+        let where = ['p.channel_id = ?'];
         let group = 'o.name';
         let order = 'p.created_at DESC, o.id';
         let prepare = [chatbot.channels[args.channel].id];
@@ -207,6 +231,8 @@ const poll = {
                     if (currentPollId !== rows[i].id) {
                         polls[index] = {
                             id: rows[i].id,
+                            raffleId: rows[i].pr_id,
+                            raffleName: rows[i].pr_name,
                             name: rows[i].name,
                             active: !!rows[i].active,
                             multipleChoice: !!rows[i].multiple_choice,

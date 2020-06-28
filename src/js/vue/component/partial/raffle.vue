@@ -39,8 +39,8 @@
                     multiplicators: {
                         partner: 1,
                         moderator: 1,
-                        subscriber: 1,
                         vip: 1,
+                        subscriber: 1,
                         turbo: 1,
                         prime: 1,
                         follower: 1,
@@ -91,8 +91,8 @@
                     this.raffle.multiplicators = {
                         partner: 1,
                         moderator: 1,
-                        subscriber: 1,
                         vip: 1,
+                        subscriber: 1,
                         turbo: 1,
                         prime: 1,
                         follower: 1,
@@ -193,11 +193,11 @@
             },
             copyToForm: function(raffle) {
                 let mltpctrKeys = Object.keys(raffle.multiplicators);
-                
+
                 if (raffle.audio.id) {
                     this.hasBackgroundAudio = true;
                 }
-                
+
                 for (let i = 0; i < mltpctrKeys.length; i++) {
                     if (!this.hasMultiplicators && raffle.multiplicators[mltpctrKeys[i]] !== 1) {
                         this.hasMultiplicators = true;
@@ -316,8 +316,8 @@
                     multiplicators: {
                         partner: 1,
                         moderator: 1,
-                        subscriber: 1,
                         vip: 1,
+                        subscriber: 1,
                         turbo: 1,
                         prime: 1,
                         follower: 1,
@@ -437,7 +437,8 @@
                             {{ activeRaffle.name }}
                         </div>
                         <p>
-                            Keyword: <span v-if="activeRaffle.keyword.length">{{ activeRaffle.keyword }}</span><span v-else>!raffle</span>   |&nbsp;
+                            <span v-if="activeRaffle.keyword === null" class="text-nowrap">Join via Poll |&nbsp;</span>
+                            <span v-else>Keyword: {{ activeRaffle.keyword }} |&nbsp;</span>
                             Attendees: {{ activeRaffle.attendeeCount }} |&nbsp;
                             Entries: {{ activeRaffle.entries }}
                         </p>
@@ -497,7 +498,7 @@
                     <div v-if="hasMultiplicators" class="col-12">
                         <label for="raffle-multiplicators-partner" class="col-form-label">
                             Multiplicators&nbsp;
-                            <span class="d-inline-block" data-toggle="popover" title="Description" data-content="The higher the multiplicator, the higher the chance of winning<br>The user is automatically assigned to the highest group. Partner is highest and guest is lowest.">
+                            <span class="d-inline-block" data-toggle="popover" title="Description" data-content="The higher the multiplicator, the higher the chance of winning.<br>The user is automatically assigned to the highest group. Partner is highest and guest is lowest.<br>-1 = skip Group">
                                 <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                             </span>
                         </label>
@@ -505,7 +506,7 @@
                     <div v-for="(multiplicator, name) in raffle.multiplicators" :key="name" class="col-12 col-md-6 col-lg-4 col-xl-3">
                         <div v-if="hasMultiplicators" class="form-group">
                             <label :for="'raffle-multiplicators-' + name">{{ name }}:</label>
-                            <input :id="'raffle-multiplicators-' + name" v-model.number="raffle.multiplicators[name]" type="number" min="0" max="100" class="form-control">
+                            <input :id="'raffle-multiplicators-' + name" v-model.number="raffle.multiplicators[name]" type="number" min="-1" max="100" class="form-control">
                         </div>
                     </div>
                     <div class="col-12">
@@ -540,7 +541,7 @@
                                     <input id="raffle-audio-volume" v-model.number="raffle.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('background', raffle.audio.volume / 100)">
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-12 mb-3">
                                 <button type="button" class="btn btn-light mr-2" :disabled="!raffle.audio.file.length" @click="playAudio('background', raffle.audio.file, raffle.audio.volume / 100, true)">Play Audio</button>
                                 <button type="button" class="btn btn-light" @click="stopAudio('background')">Stop Audio</button>
                             </div>
@@ -548,7 +549,7 @@
                     </div>
                     <div class="col-12 text-right">
                         <button v-if="raffles.length" type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#all-raffles">All Raffles</button>
-                        <button type="button" class="btn btn-sm btn-primary" :disabled="raffle.name === '' || (raffle.end > 0 && raffle.end < raffle.start)" @click="addRaffle()">Activate Raffle</button>
+                        <button type="button" class="btn btn-sm btn-primary" :disabled="raffle.name === '' || raffle.keyword === '' || (raffle.end > 0 && raffle.end < raffle.start)" @click="addRaffle()">Activate Raffle</button>
                     </div>
                 </div>
             </div>
@@ -585,8 +586,8 @@
                                                 <td>{{ index + 1 }}</td>
                                                 <td>
                                                     <span class="text-nowrap">{{ raffleItem.name }}</span><br>
-                                                    <span v-if="raffleItem.keyword.length" class="text-nowrap">Keyword: {{ raffleItem.keyword }}</span>
-                                                    <span v-else class="text-nowrap">Keyword: !raffle</span>
+                                                    <span v-if="raffleItem.keyword === null" class="text-nowrap">Join via Poll</span>
+                                                    <span v-else class="text-nowrap">Keyword: {{ raffleItem.keyword }}</span>
                                                 </td>
                                                 <td>
                                                     <span v-for="(multiplicator, name) in raffleItem.multiplicators" :key="name" class="text-nowrap">

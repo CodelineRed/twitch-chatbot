@@ -102,7 +102,7 @@ const chat = {
         return message;
     },
     generateEmoteImage: function(url, emote) {
-        return '<img class="emote img-fluid" src="img/empty-emote.png" data-src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + emote + '">';
+        return '<img class="emote lazy img-fluid" src="img/empty-emote.png" data-src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + emote + '">';
     },
     getMessage: function(chatbot, args) {
         if (chatbot.socket !== null) {
