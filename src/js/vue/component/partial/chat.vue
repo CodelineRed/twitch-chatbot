@@ -189,7 +189,7 @@
                                 <font-awesome-icon :icon="[badge.style, badge.icon]" class="fa-fw" :class="badge.cssClass == null ? badgeName : badge.cssClass" :transform="badge.transform" />
                             </span>
                         </span>
-                        <span class="user mr-1" :style="{color: showUserColor ? message.color : null}">
+                        <span v-if="message.user.length" class="user mr-1" :style="{color: showUserColor ? message.color : null}">
                             {{ message.user }}
                             <span v-if="message.type == 'chat'">:</span>
                         </span>

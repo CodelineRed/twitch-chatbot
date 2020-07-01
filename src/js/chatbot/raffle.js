@@ -5,15 +5,16 @@ const {v4: uuidv4} = require('uuid');
 
 const raffle = {
     addAttendee: function(chatbot, args) {
-        let select = 'DISTINCT a.user';
+        let select = 'DISTINCT u.name';
         let from = 'attendee AS a';
+        let join = 'JOIN user AS u ON a.user_id = u.id';
         let where = ['raffle_id = ?', 'user_id = ?'];
         let prepare = [
             chatbot.activeRaffles[args.channel].id,
             args.userstate['user-id']
         ];
 
-        database.find(select, from, '', where, '', '', 0, prepare, function(rows) {
+        database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
             // If the user has not yet attended the raffle
             if (!rows.length) {
                 let badges = args.userstate.badges === null ? {} : args.userstate.badges;
@@ -23,7 +24,6 @@ const raffle = {
                 let value = {
                     raffleId: chatbot.activeRaffles[args.channel].id,
                     userId: args.userstate['user-id'],
-                    user: args.userstate['display-name'],
                     updatedAt: time,
                     createdAt: time
                 };
@@ -144,10 +144,10 @@ const raffle = {
         select += 'multiplicator_partner, multiplicator_moderator, multiplicator_vip, multiplicator_subscriber, ';
         select += 'multiplicator_turbo, multiplicator_prime, multiplicator_follower, multiplicator_guest, ';
         select += 'ra.id AS ra_id, ra.name AS ra_name, ra.file AS ra_file, ra.duration AS ra_duration, r.audio_volume AS ra_volume, ';
-        select += '(SELECT GROUP_CONCAT(user, \', \') FROM (SELECT DISTINCT user FROM attendee WHERE raffle_id = r.id ORDER BY user COLLATE NOCASE ASC)) AS attendees, ';
-        select += '(SELECT COUNT(*) FROM (SELECT DISTINCT user FROM attendee WHERE raffle_id = r.id)) AS attendee_count, ';
-        select += '(SELECT COUNT(*) FROM (SELECT user FROM attendee WHERE raffle_id = r.id)) AS entries';
-        //select += '(SELECT DISTINCT user FROM attendee WHERE raffle_id = r.id AND winner = 1 LIMIT 1) AS winner';
+        select += '(SELECT GROUP_CONCAT(name, \', \') FROM (SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id ORDER BY u.name COLLATE NOCASE ASC)) AS attendees, ';
+        select += '(SELECT COUNT(*) FROM (SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id)) AS attendee_count, ';
+        select += '(SELECT COUNT(*) FROM (SELECT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id)) AS entries';
+        //select += '(SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id AND winner = 1 LIMIT 1) AS winner';
         let from = 'raffle AS r';
         let join = 'LEFT JOIN audio AS ra ON r.audio_id = ra.id';
         let where = ['active = ?', 'channel_id = ?'];
@@ -220,10 +220,10 @@ const raffle = {
         select += 'multiplicator_partner, multiplicator_moderator, multiplicator_vip, multiplicator_subscriber, ';
         select += 'multiplicator_turbo, multiplicator_prime, multiplicator_follower, multiplicator_guest, ';
         select += 'ra.id AS ra_id, ra.name AS ra_name, ra.file AS ra_file, ra.duration AS ra_duration, r.audio_volume AS ra_volume, ';
-        select += '(SELECT GROUP_CONCAT(user, \', \') FROM (SELECT DISTINCT user FROM attendee WHERE raffle_id = r.id ORDER BY user COLLATE NOCASE ASC)) AS attendees, ';
-        select += '(SELECT COUNT(*) FROM (SELECT DISTINCT user FROM attendee WHERE raffle_id = r.id)) AS attendee_count, ';
-        select += '(SELECT COUNT(*) FROM (SELECT user FROM attendee WHERE raffle_id = r.id)) AS entries, ';
-        select += '(SELECT DISTINCT user FROM attendee WHERE raffle_id = r.id AND winner = 1 LIMIT 1) AS winner, ';
+        select += '(SELECT GROUP_CONCAT(name, \', \') FROM (SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id ORDER BY u.name COLLATE NOCASE ASC)) AS attendees, ';
+        select += '(SELECT COUNT(*) FROM (SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id)) AS attendee_count, ';
+        select += '(SELECT COUNT(*) FROM (SELECT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id)) AS entries, ';
+        select += '(SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id AND winner = 1 LIMIT 1) AS winner, ';
         select += '(SELECT name FROM attendee LEFT JOIN audio ON audio_id = id WHERE raffle_id = r.id AND winner = 1) AS winner_audio';
         let from = 'raffle AS r';
         let join = 'LEFT JOIN audio AS ra ON r.audio_id = ra.id';

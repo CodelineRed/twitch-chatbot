@@ -154,6 +154,8 @@ const chat = {
             if (typeof chatbot.channels[args.channel] !== 'undefined') {
                 let values = Object.assign({}, call.args.message);
                 delete values.roomId;
+                delete values.color;
+                delete values.user;
                 values.badges = args.userstate.badges === null ? '' : JSON.stringify(args.userstate.badges);
                 values.badgeInfo = Object.keys(values.badgeInfo).length ? JSON.stringify(values.badgeInfo) : '';
                 values.channelId = chatbot.channels[args.channel].id;
@@ -171,11 +173,13 @@ const chat = {
     getMessages: function(chatbot, args) {
         chat.prepareMessages(chatbot, args, false);
 
-        let subSelect = 'SELECT ch.uuid, ch.channel_id, c.room_id, ch.badges, ch.badge_info, ';
-        subSelect += 'ch.color, ch.emotes, ch.flags, ch.message, ch.notification, ch.type, ';
-        subSelect += 'ch.purge, ch.user_id, ch.user, ch.updated_at, ch.created_at ';
+        let subSelect = 'SELECT ch.uuid, ch.channel_id, ch.badges, ch.badge_info, ';
+        subSelect += 'ch.emotes, ch.flags, ch.message, ch.notification, ch.type, ';
+        subSelect += 'ch.purge, ch.user_id, ch.updated_at, ch.created_at, ';
+        subSelect += 'u.name AS user_name, u.color ';
         let subFrom = 'FROM channel AS c ';
-        let subJoin = 'JOIN chat AS ch ON ch.channel_id = c.id ';
+        let subJoin = 'JOIN chat AS ch ON c.id = ch.channel_id ';
+        subJoin += 'JOIN user AS u ON ch.user_id = u.id ';
         let subWhere = 'WHERE c.name = ? ';
         let subOrder = 'ORDER BY ch.created_at DESC ';
         let subLimit = 'LIMIT 100';
@@ -189,7 +193,7 @@ const chat = {
 
             rows.forEach(function(row) {
                 let formatBadges = {
-                    user: row.user,
+                    user: row.user_name,
                     badges: row.badges.length ? JSON.parse(row.badges) : {},
                     badgeInfo: row.badge_info.length ? JSON.parse(row.badge_info) : {}
                 };
@@ -204,6 +208,7 @@ const chat = {
 
                 if (row.notification.length) {
                     message = row.notification + (row.message ? ' (' + chat.formatMessage(formatMessage) + ')' : '');
+                    row.user_name = ''; // eslint-disable-line camelcase
                 }
 
                 chatbot.messages[args.channel].push({
@@ -211,14 +216,13 @@ const chat = {
                     channelId: row.channel_id,
                     badges: chat.formatBadges(chatbot, formatBadges),
                     badgeInfo: formatBadges.badge_info,
-                    roomId: row.room_id,
                     color: row.color,
                     emotes: formatMessage.emotes,
                     flags: row.flags,
                     message: message,
                     type: row.type,
                     purge: row.purge.length ? JSON.parse(row.purge) : {},
-                    user: row.user,
+                    user: row.user_name,
                     userId: row.user_id,
                     createdAt: row.created_at // unix timestamp (seconds)
                 });
@@ -287,9 +291,11 @@ const chat = {
             if (typeof chatbot.channels[args.channel] !== 'undefined') {
                 let values = Object.assign({}, call.args.message);
                 delete values.roomId;
+                delete values.color;
+                delete values.user;
                 values.channelId = chatbot.channels[args.channel].id;
                 values.message = typeof args.message === 'string' ? args.message : '';
-                values.notification = args.notification;
+                values.notification = call.args.message.user + ' ' + args.notification;
                 values.purge = JSON.stringify(values.purge);
                 values.updatedAt = values.createdAt;
 

@@ -35,7 +35,7 @@ const counter = {
         args.counter.streak = 0;
         args.counter.updatedAt = moment().unix();
         chatbot.counters[args.channel] = args.counter;
-        database.update('counter', args.counter, ['channel_id = ' + chatbot.channels[args.channel].id]);
+        database.update('counter', args.counter, [`channel_id = '${chatbot.channels[args.channel].id}'`]);
     }
 };
 

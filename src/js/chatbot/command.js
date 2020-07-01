@@ -58,8 +58,8 @@ const command = {
             };
 
             const where = [
-                'channel_id = ' + chatbot.channels[args.channel].id,
-                'command_id = ' + args.command.id
+                `channel_id = '${chatbot.channels[args.channel].id}'`,
+                `command_id = ${args.command.id}`
             ];
 
             database.update('channel_command_join', set, where);
@@ -83,8 +83,8 @@ const command = {
             chatbot.socket.write(JSON.stringify(call));
 
             let where = [
-                'channel_id = ' + chatbot.channels[args.channel].id,
-                'command_id = ' + chatbot.commands[args.channel][args.commandIndex].id
+                `channel_id = '${chatbot.channels[args.channel].id}'`,
+                `command_id = ${chatbot.commands[args.channel][args.commandIndex].id}`
             ];
 
             database.update('channel_command_join', {lastExec: call.args.lastExec}, where);

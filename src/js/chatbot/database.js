@@ -194,7 +194,6 @@ const database = {
                     if (rows.length) {
                         chatbot.channels[channel] = {
                             id: rows[0].id,
-                            roomId: rows[0].room_id,
                             updatedAt: rows[0].updated_at, // unix timestamp (seconds)
                             createdAt: rows[0].created_at // unix timestamp (seconds)
                         };
@@ -203,16 +202,15 @@ const database = {
                         database.prepareActivePlaylists(chatbot, channel);
                     } else {
                         let values = {
+                            id: channelState['room-id'],
                             name: channel,
-                            roomId: channelState['room-id'],
                             updatedAt: moment().unix(),
                             createdAt: moment().unix()
                         };
 
                         database.insert('channel', [values], function(insert) {
                             chatbot.channels[channel] = {
-                                id: insert.lastID,
-                                roomId: channelState['room-id'],
+                                id: channelState['room-id'],
                                 updatedAt: values.updatedAt, // unix timestamp (seconds)
                                 createdAt: values.createdAt // unix timestamp (seconds)
                             };

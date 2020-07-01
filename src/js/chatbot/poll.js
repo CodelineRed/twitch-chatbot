@@ -78,7 +78,6 @@ const poll = {
                         pollId: chatbot.activePolls[args.channel].id,
                         optionId: chatbot.activePolls[args.channel].options[args.choice - 1].id,
                         userId: args.userstate['user-id'],
-                        user: args.userstate['display-name'],
                         updatedAt: time,
                         createdAt: time
                     };

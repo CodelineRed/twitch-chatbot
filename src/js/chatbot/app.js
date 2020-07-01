@@ -47,6 +47,7 @@ const chatbot = {
     closePoll: poll.closePoll,
     closeRaffle: raffle.closeRaffle,
     getChannels: channel.getChannels,
+    getChannelDisplayName: channel.getChannelDisplayName,
     getCommands: command.getCommands,
     getCounter: counter.getCounter,
     getActivePlaylist: playlist.getActivePlaylist,

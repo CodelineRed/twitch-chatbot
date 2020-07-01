@@ -6,6 +6,8 @@ const tmi         = require('tmi.js');
 const config      = require('./src/app/chatbot.json');
 const chatbot     = require('./src/js/chatbot/app');
 const chat        = require('./src/js/chatbot/chat');
+const database    = require('./src/js/chatbot/database');
+const user        = require('./src/js/chatbot/user');
 
 chatbot.config = config;
 chatbot.setTranslation();
@@ -35,7 +37,9 @@ function onAnonGiftPaidUpgrade(channel, username, userstate) {
         userstate: userstate
     };
 
-    chat.getNotification(chatbot, args);
+    user.addUser(chatbot, args, function() {
+        chat.getNotification(chatbot, args);
+    });
 }
 
 //onBan
@@ -88,7 +92,9 @@ function onCheer(channel, userstate, message) {
         userstate: userstate
     };
 
-    chat.getNotification(chatbot, args);
+    user.addUser(chatbot, args, function() {
+        chat.getNotification(chatbot, args);
+    });
 }
 
 // called every time the bot connects to Twitch chat
@@ -140,18 +146,32 @@ function onGiftPaidUpgrade(channel, username, sender, userstate) {
         userstate: userstate
     };
 
-    chat.getNotification(chatbot, args);
+    user.addUser(chatbot, args, function() {
+        chat.getNotification(chatbot, args);
+    });
 }
 
 function onHosted(channel, username, viewers, autohost) {
-    const args = {
-        channel: channel.replace(/#/g, ''),
-        notification: 'You are hosted by ' + username + ' with ' + viewers + ' viewers' + (autohost ? ' via autohost.' : '.'),
-        message: null,
-        userstate: {'message-type': 'info'}
-    };
+    let cname = channel.replace(/#/g, '');
+    database.find('id', 'channel', '', ['name = ?'], '', '', 1, [cname], function(rows) {
+        if (rows.length) {
+            const args = {
+                channel: cname,
+                notification: 'You are hosted by ' + username + ' with ' + viewers + ' viewers' + (autohost ? ' via autohost.' : '.'),
+                message: null,
+                userstate: {
+                    'room-id': rows[0].id,
+                    'user-id': rows[0].id,
+                    'display-name': chatbot.getChannelDisplayName(chatbot, cname),
+                    'message-type': 'info'
+                }
+            };
 
-    chat.getNotification(chatbot, args);
+            user.addUser(chatbot, args, function() {
+                chat.getNotification(chatbot, args);
+            });
+        }
+    });
 }
 
 //onHosting
@@ -159,14 +179,26 @@ function onHosted(channel, username, viewers, autohost) {
 //biberbros
 //0
 function onHosting(channel, target, viewers) {
-    const args = {
-        channel: channel.replace(/#/g, ''),
-        notification: 'Now hosting ' + target + '.',
-        message: null,
-        userstate: {'message-type': 'info'}
-    };
+    let cname = channel.replace(/#/g, '');
+    database.find('id', 'channel', '', ['name = ?'], '', '', 1, [cname], function(rows) {
+        if (rows.length) {
+            const args = {
+                channel: cname,
+                notification: `Now hosting ${target}.`,
+                message: null,
+                userstate: {
+                    'room-id': rows[0].id,
+                    'user-id': rows[0].id,
+                    'display-name': chatbot.getChannelDisplayName(chatbot, cname),
+                    'message-type': 'info'
+                }
+            };
 
-    chat.getNotification(chatbot, args);
+            user.addUser(chatbot, args, function() {
+                chat.getNotification(chatbot, args);
+            });
+        }
+    });
 }
 
 // onMessage
@@ -198,35 +230,37 @@ function onMessage(channel, userstate, message, self) {
         message: message.trim()
     };
 
-    chat.getMessage(chatbot, args);
+    user.addUser(chatbot, args, function() {
+        chat.getMessage(chatbot, args);
 
-    // ignore messages from the bot
-    if (self) {
-        return;
-    }
+        // ignore messages from the bot
+        if (self) {
+            return;
+        }
 
-    const commands = Object.keys(chatbot.commandList);
-    for (let i = 0; i < commands.length; i++) {
-        // if command is active for channel
-        if (typeof chatbot.commandList[commands[i]] === 'function') {
-            let channelCommands = typeof chatbot.commands[args.channel] === 'object' ? chatbot.commands[args.channel] : [];
-            let commandActive = false;
+        const commands = Object.keys(chatbot.commandList);
+        for (let i = 0; i < commands.length; i++) {
+            // if command is active for channel
+            if (typeof chatbot.commandList[commands[i]] === 'function') {
+                let channelCommands = typeof chatbot.commands[args.channel] === 'object' ? chatbot.commands[args.channel] : [];
+                let commandActive = false;
 
-            for (let j = 0; j < channelCommands.length; j++) {
-                if (channelCommands[j].name === commands[i]
-                        && channelCommands[j].active === true
-                        && channelCommands[j].lastExec + channelCommands[j].cooldown < moment().unix()) {
-                    commandActive = true;
-                    args.commandIndex = j;
-                    break;
+                for (let j = 0; j < channelCommands.length; j++) {
+                    if (channelCommands[j].name === commands[i]
+                            && channelCommands[j].active === true
+                            && channelCommands[j].lastExec + channelCommands[j].cooldown < moment().unix()) {
+                        commandActive = true;
+                        args.commandIndex = j;
+                        break;
+                    }
+                }
+
+                if (commandActive) {
+                    chatbot.commandList[commands[i]](chatbot, args);
                 }
             }
-
-            if (commandActive) {
-                chatbot.commandList[commands[i]](chatbot, args);
-            }
         }
-    }
+    });
 }
 
 //onMessagedeleted
@@ -255,14 +289,26 @@ function onMessageDeleted(channel, username, deletedMessage, userstate) {
 //p1onetv
 //8
 function onRaided(channel, username, viewers){
-    const args = {
-        channel: channel.replace(/#/g, ''),
-        notification: 'You are raided by ' + username + ' with ' + viewers + ' viewers!',
-        message: null,
-        userstate: {'message-type': 'info'}
-    };
+    let cname = channel.replace(/#/g, '');
+    database.find('id', 'channel', '', ['name = ?'], '', '', 1, [cname], function(rows) {
+        if (rows.length) {
+            const args = {
+                channel: cname,
+                notification: `You are raided by ${username} with ${viewers} viewers!`,
+                message: null,
+                userstate: {
+                    'room-id': rows[0].id,
+                    'user-id': rows[0].id,
+                    'display-name': chatbot.getChannelDisplayName(chatbot, cname),
+                    'message-type': 'info'
+                }
+            };
 
-    chat.getNotification(chatbot, args);
+            user.addUser(chatbot, args, function() {
+                chat.getNotification(chatbot, args);
+            });
+        }
+    });
 }
 
 //onResub
@@ -306,7 +352,9 @@ function onReSub(channel, username, months, message, userstate, methods) {
         userstate: userstate
     };
 
-    chat.getNotification(chatbot, args);
+    user.addUser(chatbot, args, function() {
+        chat.getNotification(chatbot, args);
+    });
 }
 
 //onRoomstate
@@ -372,7 +420,9 @@ function onSubGift(channel, username, streakMonths, recipient, methods, userstat
         userstate: userstate
     };
 
-    chat.getNotification(chatbot, args);
+    user.addUser(chatbot, args, function() {
+        chat.getNotification(chatbot, args);
+    });
 }
 
 //onSubmysterygift
@@ -415,7 +465,9 @@ function onSubMysteryGift(channel, username, numbOfSubs, methods, userstate) {
         userstate: userstate
     };
 
-    chat.getNotification(chatbot, args);
+    user.addUser(chatbot, args, function() {
+        chat.getNotification(chatbot, args);
+    });
 }
 
 //onSubscription
@@ -458,7 +510,9 @@ function onSubscription(channel, username, method, message, userstate) {
         userstate: userstate
     };
 
-    chat.getNotification(chatbot, args);
+    user.addUser(chatbot, args, function() {
+        chat.getNotification(chatbot, args);
+    });
 }
 
 //onTimeout
@@ -505,14 +559,26 @@ function onTimeout(channel, username, reason, duration, userstate) {
 //#insanitymeetshh
 //0
 function onUnhost(channel, viewers) {
-    const args = {
-        channel: channel.replace(/#/g, ''),
-        notification: 'Exiting host mode.',
-        message: null,
-        userstate: {'message-type': 'info'}
-    };
+    let cname = channel.replace(/#/g, '');
+    database.find('id', 'channel', '', ['name = ?'], '', '', 1, [cname], function(rows) {
+        if (rows.length) {
+            const args = {
+                channel: cname,
+                notification: 'Exiting host mode.',
+                message: null,
+                userstate: {
+                    'room-id': rows[0].id,
+                    'user-id': rows[0].id,
+                    'display-name': chatbot.getChannelDisplayName(chatbot, cname),
+                    'message-type': 'info'
+                }
+            };
 
-    chat.getNotification(chatbot, args);
+            user.addUser(chatbot, args, function() {
+                chat.getNotification(chatbot, args);
+            });
+        }
+    });
 }
 
 // register event handlers (defined below)

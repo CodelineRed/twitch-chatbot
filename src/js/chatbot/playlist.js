@@ -27,8 +27,8 @@ const playlist = {
                 // if new playlist is active playlist
                 if (args.playlist.active) {
                     let where = [
-                        'channel_id = ' + chatbot.channels[args.channel].id,
-                        'id != ' + insert.lastID
+                        `channel_id = '${chatbot.channels[args.channel].id}'`,
+                        `id != ${insert.lastID}`
                     ];
 
                     database.update('playlist', {active: 0, updatedAt: time}, where, function(update) {
@@ -859,7 +859,7 @@ const playlist = {
                 end: 0,
                 updatedAt: moment().unix()
             };
-            let where = ['playlist_id = ' + chatbot.activePlaylists[args.channel].id];
+            let where = [`playlist_id = ${chatbot.activePlaylists[args.channel].id}`];
 
             database.update('playlist_video_join', set, where, function(update) {
                 playlist.getActivePlaylist(chatbot, args);
@@ -884,7 +884,7 @@ const playlist = {
                         active: 1,
                         updatedAt: moment().unix()
                     };
-                    let where = ['id = ' + playlistId];
+                    let where = [`id = ${playlistId}`];
 
                     database.update(from, set, where, function(update) {
                         playlist.getActivePlaylist(chatbot, args);
@@ -934,9 +934,9 @@ const playlist = {
         let time = moment().unix();
 
         // reset playlists to active = 0
-        database.update('playlist', {active: 0, updatedAt: time}, ['channel_id = ' + chatbot.channels[args.channel].id], function(updateAll) {
+        database.update('playlist', {active: 0, updatedAt: time}, [`channel_id = '${chatbot.channels[args.channel].id}'`], function(updateAll) {
             // set playlist to active = 1
-            database.update('playlist', {active: 1, updatedAt: time}, ['id = ' + args.playlist.id], function(update) {
+            database.update('playlist', {active: 1, updatedAt: time}, [`id = ${args.playlist.id}`], function(update) {
                 playlist.getActivePlaylist(chatbot, args);
                 playlist.getPlaylists(chatbot, args);
                 console.log(`* Switched to playlist "${args.playlist.name}"`);
@@ -950,8 +950,8 @@ const playlist = {
                 updatedAt: moment().unix()
             };
             let where = [
-                'id = ' + args.playlist.id,
-                'channel_id = ' + chatbot.channels[args.channel].id
+                `id = ${args.playlist.id}`,
+                `channel_id = '${chatbot.channels[args.channel].id}'`
             ];
 
             database.update('playlist', set, where, function(update) {
@@ -987,7 +987,7 @@ const playlist = {
                 updatedAt: args.video.updatedAt
             };
 
-            database.update('video', set, ['id = ' + args.video.id], function() {
+            database.update('video', set, [`id = ${args.video.id}`], function() {
                 set = {
                     played: args.video.played,
                     skipped: args.video.skipped,
