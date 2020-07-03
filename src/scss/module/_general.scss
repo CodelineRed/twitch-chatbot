@@ -23,6 +23,10 @@ footer {
     margin-bottom: 25px;
 }
 
+header {
+    margin-top: 25px;
+}
+
 option {
     &[disabled] {
         color: #e0e0e0; // sass-lint:disable-line no-color-literals

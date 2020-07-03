@@ -45,12 +45,14 @@
 </script>
 
 <template>
-    <div class="btn-group dropup">
-        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <font-awesome-icon :icon="['fas', 'globe']" class="fa-fw" />
-        </button>
-        <div class="dropdown-menu">
-            <a v-for="locale in languages" :key="locale" class="dropdown-item" :class="{active: locale === currentLocale}" onclick="javascript:return false;" href="#" @click="changeLang(locale)">{{ $t("lang-" + locale) }}</a>
+    <div class="col-auto">
+        <div class="btn-group dropdown">
+            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <font-awesome-icon :icon="['fas', 'globe']" class="fa-fw" />
+            </button>
+            <div class="dropdown-menu">
+                <a v-for="locale in languages" :key="locale" class="dropdown-item" :class="{active: locale === currentLocale}" onclick="javascript:return false;" href="#" @click="changeLang(locale)">{{ $t("lang-" + locale) }}</a>
+            </div>
         </div>
     </div>
 </template>

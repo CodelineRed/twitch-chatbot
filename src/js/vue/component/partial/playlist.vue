@@ -9,9 +9,10 @@
             return {
                 activePlaylist: {videos: []},
                 config: {
-                    hasYoutubeToken: false,
+                    hasClientIdToken: false,
+                    hasOauthToken: false,
                     hasVideosFolder: false,
-                    hasTwitchClientIdToken: false
+                    hasYoutubeToken: false
                 },
                 currentVideoStart: 0, // seconds
                 dataTable: null,
@@ -114,7 +115,7 @@
                 this.video.autofill = true;
 
                 if ((this.video.player === 'local' && this.config.hasVideosFolder === false) 
-                    || (/twitch/.test(this.video.player) && this.config.hasTwitchClientIdToken === false) 
+                    || (/twitch/.test(this.video.player) && this.config.hasClientIdToken === false) 
                     || (this.video.player === 'youtube' && this.config.hasYoutubeToken === false)) {
                     this.video.autofill = false;
                 }
@@ -493,7 +494,7 @@
             isDisabledAutofill: function() {
                 return (!this.config.hasYoutubeToken && this.video.player === 'youtube') 
                     || (!this.config.hasVideosFolder && this.video.player === 'local') 
-                    || (!this.config.hasTwitchClientIdToken && /twitch/.test(this.video.player));
+                    || (!this.config.hasClientIdToken && /twitch/.test(this.video.player));
             },
             isInvalidFile: function() {
                 if (this.video.file === '') {
@@ -747,7 +748,6 @@
             },
             switchPlaylist: function(playlist) {
                 if (typeof socketWrite === 'function') {
-
                     const call = {
                         method: 'switchPlaylist',
                         args: {

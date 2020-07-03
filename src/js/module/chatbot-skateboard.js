@@ -25,7 +25,7 @@ function initChatbotPort(port) {
                 return false;
             }
 
-            // if popout window
+            // if popout window or page
             if (typeof window.app.$children[0].$refs.layout.$refs.view[dataJson.method] === 'function') {
                 viewRefsMethod = window.app.$children[0].$refs.layout.$refs.view[dataJson.method];
             } else if (typeof window.app.$children[0].$refs.layout.$refs.view.$refs[dataJson.ref][dataJson.method] === 'function') {

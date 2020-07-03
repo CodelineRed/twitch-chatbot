@@ -79,6 +79,7 @@ const chatbot = {
     removeRaffle: raffle.removeRaffle,
     removeVideo: playlist.removeVideo,
     removeVideosByFlagFromActivePlaylist: playlist.removeVideosByFlagFromActivePlaylist,
+    saveChannelToken: channel.saveChannelToken,
     setTranslation: function() {
         if (typeof locales[chatbot.config.locale] === 'undefined') {
             chatbot.t = locales.en;

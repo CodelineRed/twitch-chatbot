@@ -194,6 +194,7 @@ const database = {
                     if (rows.length) {
                         chatbot.channels[channel] = {
                             id: rows[0].id,
+                            oauthToken: rows[0].oauth_token,
                             updatedAt: rows[0].updated_at, // unix timestamp (seconds)
                             createdAt: rows[0].created_at // unix timestamp (seconds)
                         };

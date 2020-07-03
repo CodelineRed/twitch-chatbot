@@ -6,6 +6,7 @@ import Player from '../component/partial/player';
 import Poll from '../component/partial/poll';
 import Raffle from '../component/partial/raffle';
 import About from '../component/page/about';
+import Token from '../component/page/token';
 import ErrorPage from '../component/page/error-page';
 
 const routes = [
@@ -78,6 +79,15 @@ const routes = [
         path: '/about',
         meta: {
             title: 'i18n.nav-about - i18n.app',
+            layout: 'default'
+        }
+    },
+    {
+        component: Token,
+        name: 'token',
+        path: '/token/:token/:property',
+        meta: {
+            title: 'i18n.nav-token - i18n.app',
             layout: 'default'
         }
     },

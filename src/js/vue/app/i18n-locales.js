@@ -12,6 +12,7 @@ const en = {
     'nav-about': 'About us',
     'nav-error': 'Error page',
     'nav-home': 'All Channels',
+    'nav-token': 'Token',
 
     'dp': '.',
     'ts': ',',

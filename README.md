@@ -2,6 +2,21 @@
 
 This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-skeleton).
 
+## Included
+* [jQuery 3](http://jquery.com)
+* [Bootstrap 4](https://getbootstrap.com)
+* [Font Awesome 5](https://fontawesome.com)
+* [LazyLoad 17](https://www.andreaverlicchi.eu/lazyload/)
+* [CSS User Agent 2](https://www.npmjs.com/package/cssuseragent)
+* [Moment 2](https://momentjs.com/docs/)
+* [Datatables 1](https://datatables.net)
+* [Sqlite3 5](https://www.npmjs.com/package/sqlite3)
+* [Vue 2](https://vuejs.org/)
+* [Vue Router 3](https://router.vuejs.org/)
+* [Vue i18n 8](https://kazupon.github.io/vue-i18n/)
+* [Vue Datetime Picker 2](https://github.com/chronotruck/vue-ctk-date-time-picker)
+* [Vue SFC 1](https://github.com/nfplee/gulp-vue-single-file-component)
+
 ## Required
 * [Node.js](http://nodejs.org/en/download/)
 * [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
@@ -65,6 +80,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | username            | Required - Twitch User Name                                                                                                      |
 | tmiToken            | Required - [Twitch TMI Token](https://twitchapps.com/tmi/)                                                                       |
+| oauthToken          | Optional - Twitch OAuth Token (Button: Connect Channel with Chatbot)                                                             |
 | clientIdToken       | Optional - [Twitch Client ID Token](https://dev.twitch.tv/) (is presetted)                                                       |
 | youtubeToken        | Optional - [YouTube API Token](https://console.developers.google.com)                                                            |
 | videosFolder        | Optional - Absolute path to videos folder with trailing slash                                                                    |
@@ -72,12 +88,14 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 | channels            | Required - List of Channels to connect                                                                                           |
 
 ## Chatbot Commands
-|                     | Description                                                                                                                      |
+| Name                | Command                                                                                                                          |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | about               | !about, !chatbot, !cb, !bug, !bugs, !help                                                                                        |
 | commands            | !commands, !cc                                                                                                                   |
 | counter             | counter increased if users counts from 1 - 99 without interruption                                                               |
 | playlistInfo        | !info, !plan, !programm, !sendeplan                                                                                              |
+| poll                | !vote 1 - X                                                                                                                      |
+| raffle              | custom keyword (default: !raffle)                                                                                                |
 | rollDice            | e.g. !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                        |
 
 ## Web UI Features
@@ -202,6 +220,16 @@ Example execution: `$ node import-videos-folder.js -c InsanityMeetsHH`
 * only MP4 files are allowed
 
 The Script only imports videos which are not in the database.
+
+## [migration.js](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/migration.js)
+| Option              | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| --help, -h          | Shows list of options                                                                                                            |
+| --direction, -d     | Migration direction (default: up)                                                                                                |
+| --file, -f          | Execute one specific migration file (e.g.: -f version-1.0.0)                                                                     |
+| --version           | Show version number                                                                                                              |
+
+Example execution: `$ node migration.js -d up`
 
 ## Localization
 * Web UI: [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/app/i18n-locales.js)

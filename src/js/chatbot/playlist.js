@@ -1,15 +1,9 @@
 const database     = require('./database');
 const fs           = require('fs');
-const latinize     = require('latinize');
 const mediainfo    = require('mediainfo-wrapper');
 const moment       = require('moment');
 const request      = require('request');
 const {v4: uuidv4} = require('uuid');
-
-Object.assign(latinize.characters, {
-    'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue', 'ä': 'ae', 
-    'ö': 'oe', 'ü': 'ue', 'ẞ': 'S'
-});
 
 const playlist = {
     addPlaylist: function(chatbot, args) {
@@ -361,9 +355,10 @@ const playlist = {
                 args: {
                     channel: args.channel,
                     config: {
-                        hasYoutubeToken: !!chatbot.config.youtubeToken.length,
+                        hasClientIdToken: !!chatbot.config.clientIdToken.length,
+                        hasOauthToken: !!chatbot.channels[args.channel].oauthToken.length,
                         hasVideosFolder: fs.existsSync(chatbot.config.videosFolder),
-                        hasTwitchClientIdToken: !!chatbot.config.clientIdToken.length
+                        hasYoutubeToken: !!chatbot.config.youtubeToken.length
                     }
                 },
                 method: 'setPlaylistConfig',
@@ -443,7 +438,7 @@ const playlist = {
 
         // if file fits pattern and token is defined
         if (/^[A-Z][A-Za-z0-9]+$/.test(args.file) && chatbot.config.clientIdToken.length) {
-            var options = {
+            let options = {
                 url: `https://api.twitch.tv/kraken/clips/${args.file}`,
                 method: 'GET',
                 headers: {
@@ -498,7 +493,7 @@ const playlist = {
 
         // if file fits pattern and token is defined
         if (/^[0-9]+$/.test(args.file) && chatbot.config.clientIdToken.length) {
-            var options = {
+            let options = {
                 url: `https://api.twitch.tv/kraken/videos/${args.file}`,
                 method: 'GET',
                 headers: {
@@ -576,14 +571,61 @@ const playlist = {
                 }
             }
 
-            // if titleCmd is set, change stream titel
-            if (typeof video.titleCmd !== 'undefined' && video.titleCmd.length) {
-                chatbot.client.say('#' + args.channel, `!title ${video.titleCmd}`);
-            }
+            if (chatbot.channels[args.channel].oauthToken.length) {
+                let message = '';
+                let change = '';
+                let set = {'channel': {}};
 
-            // if gameCmd is set, change stream game
-            if (typeof video.gameCmd !== 'undefined' && video.gameCmd.length) {
-                chatbot.client.say('#' + args.channel, `!game ${video.gameCmd}`);
+                // if titleCmd is set, change stream titel
+                if (typeof video.titleCmd !== 'undefined' && video.titleCmd.length) {
+                    set.channel.status = video.titleCmd;
+                    message += 'Title';
+                    change += video.titleCmd;
+                }
+
+                // if gameCmd is set, change stream game
+                if (typeof video.gameCmd !== 'undefined' && video.gameCmd.length) {
+                    set.channel.game = video.gameCmd;
+                    message += message.length ? ' and Game' : 'Game';
+                    change += change.length ? ` - ${video.gameCmd}` : video.gameCmd;
+                }
+
+                if (Object.keys(set.channel).length) {
+                    let options = {
+                        url: `https://api.twitch.tv/v5/channels/${chatbot.channels[args.channel].id}`,
+                        method: 'PUT',
+                        headers: {
+                            'Accept': 'application/vnd.twitchtv.v5+json',
+                            'Authorization': `OAuth ${chatbot.channels[args.channel].oauthToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(set)
+                    };
+
+                    // change stream game and/ or title
+                    request(options, (err, res, body) => {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        body = JSON.parse(body);
+
+                        if (typeof body.error === 'undefined') {
+                            chatbot.client.say('#' + args.channel, `Stream ${message} has changed to (${change})`);
+                        } else {
+                            chatbot.client.say('#' + args.channel, `Couldn't change ${message}`);
+                        }
+                    });
+                }
+            } else {
+                // if titleCmd is set, change stream titel
+                if (typeof video.titleCmd !== 'undefined' && video.titleCmd.length) {
+                    chatbot.client.say('#' + args.channel, `!title ${video.titleCmd}`);
+                }
+
+                // if gameCmd is set, change stream game
+                if (typeof video.gameCmd !== 'undefined' && video.gameCmd.length) {
+                    chatbot.client.say('#' + args.channel, `!game ${video.gameCmd}`);
+                }
             }
 
             const call = {

@@ -94,7 +94,6 @@ function js() {
             'node_modules/skateboard/skateboard.min.js',
             'node_modules/moment/moment.js',
             config.sourcePath + 'js/lib/**/*.js',
-            'node_modules/slick-carousel/slick/slick.js',
             'node_modules/cssuseragent/cssua.js',
             'node_modules/datatables.net/js/jquery.dataTables.js',
             'node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js',
