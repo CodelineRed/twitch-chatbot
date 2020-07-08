@@ -80,19 +80,26 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | username            | Required - Twitch User Name                                                                                                      |
 | tmiToken            | Required - [Twitch TMI Token](https://twitchapps.com/tmi/)                                                                       |
-| oauthToken          | Optional - Twitch OAuth Token (Button: Connect Channel with Chatbot)                                                             |
 | clientIdToken       | Optional - [Twitch Client ID Token](https://dev.twitch.tv/) (is presetted)                                                       |
 | youtubeToken        | Optional - [YouTube API Token](https://console.developers.google.com)                                                            |
 | videosFolder        | Optional - Absolute path to videos folder with trailing slash                                                                    |
 | locale              | Required - German and English are presetted                                                                                      |
 | channels            | Required - List of Channels to connect                                                                                           |
 
+## [`gulpfile.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/gulpfile.dist.json)
+|                     | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| browserSyncConfig   | Defines which config is used for [BrowserSync](https://www.npmjs.com/package/browser-sync) (default: browserSyncDev)             |
+| sourcePath          | Path to raw files (default: src/)                                                                                                |
+| publicPath          | Path to transpiled files (default: public/)                                                                                      |
+| env                 | Environment dev, test or prod (default: dev)                                                                                     |
+
 ## Chatbot Commands
 | Name                | Command                                                                                                                          |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | about               | !about, !chatbot, !cb, !bug, !bugs, !help                                                                                        |
 | commands            | !commands, !cc                                                                                                                   |
-| counter             | counter increased if users counts from 1 - 99 without interruption                                                               |
+| counter             | counter increased if users counts from 1 - X without interruption                                                                |
 | playlistInfo        | !info, !plan, !programm, !sendeplan                                                                                              |
 | poll                | !vote 1 - X                                                                                                                      |
 | raffle              | custom keyword (default: !raffle)                                                                                                |
@@ -103,7 +110,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Timestamp
 * Badges
 * Custom User Color
-* "/me" Messages
+* "/me" Messages in full color and italic style
 * Cheers
 * Subs, Resubs, Sub Gifts (random and specific), Gift Upgrades
 * Bans, Timeouts, Deletes
@@ -280,3 +287,6 @@ Example execution: `$ node migration.js -d up`
 * [Winner Deep Voice](https://freesound.org/people/dersuperanton/sounds/435878/)
 * [Winner Female Voice](https://freesound.org/people/tim.kahn/sounds/80618/)
 * [Winner Robot Voice](https://freesound.org/people/Ionicsmusic/sounds/196892/)
+
+## Known Issues
+- If someone made a subbomb/ quick messages and is not known in user table than comes "UNIQUE constraint failed: user.id"

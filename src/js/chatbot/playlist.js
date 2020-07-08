@@ -321,16 +321,17 @@ const playlist = {
             if (rows.length) {
                 selectedPlaylist = rows[0];
 
-                select = 'id, uuid, name, file, duration, player, start, end, played, skipped, sort, ';
-                select += 'title_cmd AS titleCmd, game_cmd AS gameCmd, pvj.playlist_id AS playlistId, ';
-                select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, sub_name AS subName';
+                select = 'v.id, v.name, v.file, v.duration, v.player, ';
+                select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, v.sub_name AS subName, ';
+                select += 'pvj.uuid, pvj.start, pvj.end, pvj.played, pvj.skipped, pvj.sort, ';
+                select += 'pvj.title_cmd AS titleCmd, pvj.game_cmd AS gameCmd, pvj.playlist_id AS playlistId';
                 from = 'playlist_video_join AS pvj';
                 where = ['pvj.playlist_id = ?'];
                 let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
                 prepare = [args.playlist.id];
 
                 // find videos from target playlist
-                database.find(select, from, join, where, '', 'sort', 0, prepare, function(rowsVideo) {
+                database.find(select, from, join, where, '', 'pvj.sort', 0, prepare, function(rowsVideo) {
                     if (chatbot.socket !== null) {
                         selectedPlaylist.videos = rowsVideo;
                         const call = {
@@ -356,7 +357,6 @@ const playlist = {
                     channel: args.channel,
                     config: {
                         hasClientIdToken: !!chatbot.config.clientIdToken.length,
-                        hasOauthToken: !!chatbot.channels[args.channel].oauthToken.length,
                         hasVideosFolder: fs.existsSync(chatbot.config.videosFolder),
                         hasYoutubeToken: !!chatbot.config.youtubeToken.length
                     }
@@ -370,16 +370,16 @@ const playlist = {
         }
     },
     getPlaylists: function(chatbot, args) {
-        let select = 'id, name, active, p.updated_at AS updatedAt, ';
+        let select = 'p.id, p.name, p.active, p.updated_at AS updatedAt, ';
         select += 'p.created_at AS createdAt, COUNT(pvj.playlist_id) AS videoQuantity';
         let from = 'playlist AS p';
         let join = 'LEFT JOIN playlist_video_join AS pvj ON p.id = pvj.playlist_id ';
-        let where = ['channel_id = ?'];
-        let group = 'name';
+        let where = ['p.channel_id = ?'];
+        let group = 'p.name';
         let order = group;
         let prepare = [chatbot.channels[args.channel].id];
 
-        database.find(select, from, join, where, group, order, 0, prepare, function(rows) {
+        database.find(select, from, join, where, group, order, 100, prepare, function(rows) {
             if (chatbot.socket !== null) {
                 chatbot.playlists[args.channel] = rows;
                 const call = {
@@ -398,12 +398,12 @@ const playlist = {
     },
     getPlaylistSearchResults: function(chatbot, args) {
         let search = args.playlistSearch.replace(/ /g, '%');
-        let select = 'id, name, active, p.updated_at AS updatedAt, ';
+        let select = 'p.id, p.name, p.active, p.updated_at AS updatedAt, ';
         select += 'p.created_at AS createdAt, COUNT(pvj.playlist_id) AS videoQuantity';
         let from = 'playlist AS p';
         let join = 'LEFT JOIN playlist_video_join AS pvj ON p.id = pvj.playlist_id ';
         let where = ['channel_id = ?', 'name LIKE ?'];
-        let group = 'name';
+        let group = 'p.name';
         let order = group;
         let prepare = [chatbot.channels[args.channel].id, `%${search}%`];
 
@@ -754,13 +754,14 @@ const playlist = {
         }
     },
     mergePlaylists: function(chatbot, args) {
-        let select = 'id, uuid, name, file, duration, player, start, end, played, skipped, sort, ';
-        select += 'title_cmd AS titleCmd, game_cmd AS gameCmd, pvj.playlist_id AS playlistId, ';
-        select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, sub_name AS subName';
+        let select = 'v.id, v.name, v.file, v.duration, v.player, ';
+        select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, v.sub_name AS subName, ';
+        select += 'pvj.uuid, pvj.start, pvj.end, pvj.played, pvj.skipped, pvj.sort, ';
+        select += 'pvj.title_cmd AS titleCmd, pvj.game_cmd AS gameCmd, pvj.playlist_id AS playlistId';
         let from = 'playlist_video_join AS pvj';
         let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
         let where = ['pvj.playlist_id = ?'];
-        let order = 'sort';
+        let order = 'pvj.sort';
         let limit = 0; // equal to: args.merge.from === 0 && args.merge.to === 0
         let prepare = [args.merge.target.id];
 

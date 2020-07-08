@@ -44,6 +44,7 @@
         "gulp-clean-css": "^4.3.0",
         "gulp-concat": "^2.6.1",
         "gulp-eslint": "^6.0.0",
+        "gulp-favicons": "^2.4.0",
         "gulp-if": "^3.0.0",
         "gulp-imagemin": "^7.1.0",
         "gulp-jsonminify": "^1.1.0",
@@ -77,12 +78,12 @@
         "string-format-js": "^1.0.0",
         "tmi.js": "^1.5.0",
         "uuid": "^8.2.0",
-        "vanilla-lazyload": "^17.0.1",
+        "vanilla-lazyload": "^17.1.0",
         "vue": "^2.6.11",
         "vue-ctk-date-time-picker": "2.5.0",
         "vue-i18n": "^8.18.2",
         "vue-router": "^3.3.4",
-        "yargs": "^15.3.1"
+        "yargs": "^15.4.0"
     },
     "scripts": {
         "postinstall": "node npm-postinstall.js",

@@ -47,28 +47,33 @@ const command = {
         console.log(`* Executed ${args.message} command by ${args.userstate['display-name']} at ${args.channel}.`);
     },
     updateCommand: function(chatbot, args) {
-        if (chatbot.socket !== null) {
-            chatbot.commands[args.channel][args.commandIndex] = args.command;
+        chatbot.commands[args.channel][args.commandIndex] = args.command;
 
-            const set = {
-                cooldown: args.command.cooldown,
-                active: args.command.active,
-                lastExec: args.command.lastExec,
-                updatedAt: moment().unix()
-            };
+        const set = {
+            cooldown: args.command.cooldown,
+            active: args.command.active,
+            lastExec: args.command.lastExec,
+            updatedAt: moment().unix()
+        };
 
-            const where = [
-                `channel_id = '${chatbot.channels[args.channel].id}'`,
-                `command_id = ${args.command.id}`
-            ];
+        const where = [
+            `channel_id = '${chatbot.channels[args.channel].id}'`,
+            `command_id = ${args.command.id}`
+        ];
 
-            database.update('channel_command_join', set, where);
-        }
+        database.update('channel_command_join', set, where);
     },
     updateCommandLastExec: function(chatbot, args) {
-        if (chatbot.socket !== null) {
-            chatbot.commands[args.channel][args.commandIndex].lastExec = moment().unix();
+        chatbot.commands[args.channel][args.commandIndex].lastExec = moment().unix();
 
+        let where = [
+            `channel_id = '${chatbot.channels[args.channel].id}'`,
+            `command_id = ${chatbot.commands[args.channel][args.commandIndex].id}`
+        ];
+
+        database.update('channel_command_join', {lastExec: chatbot.commands[args.channel][args.commandIndex].lastExec}, where);
+        
+        if (chatbot.socket !== null) {
             const call = {
                 args: {
                     channel: args.channel,
@@ -81,13 +86,6 @@ const command = {
             };
 
             chatbot.socket.write(JSON.stringify(call));
-
-            let where = [
-                `channel_id = '${chatbot.channels[args.channel].id}'`,
-                `command_id = ${chatbot.commands[args.channel][args.commandIndex].id}`
-            ];
-
-            database.update('channel_command_join', {lastExec: call.args.lastExec}, where);
         }
     },
     commandList: {
@@ -115,6 +113,9 @@ const command = {
                 const number = parseInt(args.message);
                 chatbot.counters[args.channel].streak = (number - chatbot.counters[args.channel].streak === 1) ? number : 0;
 
+                //command.logCommand(args);
+                command.updateCommandLastExec(chatbot, args);
+
                 if (chatbot.socket !== null) {
                     const call = {
                         args: {
@@ -127,8 +128,6 @@ const command = {
                     };
 
                     chatbot.socket.write(JSON.stringify(call));
-                    //command.logCommand(args);
-                    command.updateCommandLastExec(chatbot, args);
 
                     if (chatbot.socketCounter !== null) {
                         chatbot.socketCounter.write(JSON.stringify(call));

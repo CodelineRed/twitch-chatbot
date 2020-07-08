@@ -163,6 +163,8 @@ function onHosted(channel, username, viewers, autohost) {
                     'room-id': rows[0].id,
                     'user-id': rows[0].id,
                     'display-name': chatbot.getChannelDisplayName(chatbot, cname),
+                    'badges': null,
+                    'badge-info': null,
                     'message-type': 'info'
                 }
             };
@@ -190,6 +192,8 @@ function onHosting(channel, target, viewers) {
                     'room-id': rows[0].id,
                     'user-id': rows[0].id,
                     'display-name': chatbot.getChannelDisplayName(chatbot, cname),
+                    'badges': null,
+                    'badge-info': null,
                     'message-type': 'info'
                 }
             };
@@ -300,6 +304,8 @@ function onRaided(channel, username, viewers){
                     'room-id': rows[0].id,
                     'user-id': rows[0].id,
                     'display-name': chatbot.getChannelDisplayName(chatbot, cname),
+                    'badges': null,
+                    'badge-info': null,
                     'message-type': 'info'
                 }
             };
@@ -570,6 +576,8 @@ function onUnhost(channel, viewers) {
                     'room-id': rows[0].id,
                     'user-id': rows[0].id,
                     'display-name': chatbot.getChannelDisplayName(chatbot, cname),
+                    'badges': null,
+                    'badge-info': null,
                     'message-type': 'info'
                 }
             };

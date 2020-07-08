@@ -54,7 +54,7 @@ const poll = {
             let select = 'uc.uuid';
             let from = 'poll AS p';
             let join = 'JOIN user_choice AS uc ON p.id = uc.poll_id';
-            let where = ['poll_id = ?', 'user_id = ?'];
+            let where = ['uc.poll_id = ?', 'uc.user_id = ?'];
             let prepare = [
                 chatbot.activePolls[args.channel].id,
                 args.userstate['user-id']
@@ -219,7 +219,7 @@ const poll = {
         let order = 'p.created_at DESC, o.id';
         let prepare = [chatbot.channels[args.channel].id];
 
-        database.find(select, from, join, where, group, order, 0, prepare, function(rows) {
+        database.find(select, from, join, where, group, order, 100, prepare, function(rows) {
             let polls = [];
             let currentPollId = 0;
             let index = 0;

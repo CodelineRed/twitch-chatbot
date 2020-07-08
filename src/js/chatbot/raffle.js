@@ -8,7 +8,7 @@ const raffle = {
         let select = 'DISTINCT u.name';
         let from = 'attendee AS a';
         let join = 'JOIN user AS u ON a.user_id = u.id';
-        let where = ['raffle_id = ?', 'user_id = ?'];
+        let where = ['a.raffle_id = ?', 'a.user_id = ?'];
         let prepare = [
             chatbot.activeRaffles[args.channel].id,
             args.userstate['user-id']
@@ -140,9 +140,9 @@ const raffle = {
         }
     },
     getActiveRaffle: function(chatbot, args) {
-        let select = 'r.id, r.name, keyword, active, start, end, r.updated_at, r.created_at, ';
-        select += 'multiplicator_partner, multiplicator_moderator, multiplicator_vip, multiplicator_subscriber, ';
-        select += 'multiplicator_turbo, multiplicator_prime, multiplicator_follower, multiplicator_guest, ';
+        let select = 'r.id, r.name, r.keyword, r.active, r.start, r.end, r.updated_at, r.created_at, ';
+        select += 'r.multiplicator_partner, r.multiplicator_moderator, r.multiplicator_vip, r.multiplicator_subscriber, ';
+        select += 'r.multiplicator_turbo, r.multiplicator_prime, r.multiplicator_follower, r.multiplicator_guest, ';
         select += 'ra.id AS ra_id, ra.name AS ra_name, ra.file AS ra_file, ra.duration AS ra_duration, r.audio_volume AS ra_volume, ';
         select += '(SELECT GROUP_CONCAT(name, \', \') FROM (SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id ORDER BY u.name COLLATE NOCASE ASC)) AS attendees, ';
         select += '(SELECT COUNT(*) FROM (SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id)) AS attendee_count, ';
@@ -150,7 +150,7 @@ const raffle = {
         //select += '(SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id AND winner = 1 LIMIT 1) AS winner';
         let from = 'raffle AS r';
         let join = 'LEFT JOIN audio AS ra ON r.audio_id = ra.id';
-        let where = ['active = ?', 'channel_id = ?'];
+        let where = ['r.active = ?', 'r.channel_id = ?'];
         let order = 'r.created_at DESC';
         let prepare = [1, chatbot.channels[args.channel].id];
 
@@ -163,7 +163,7 @@ const raffle = {
                     id: rows[0].id,
                     name: rows[0].name,
                     keyword: rows[0].keyword,
-                    active: !!rows[0].active,
+                    active: true,
                     start: rows[0].start,
                     end: rows[0].end,
                     attendees: rows[0].attendees,
@@ -216,9 +216,9 @@ const raffle = {
         });
     },
     getRaffles: function(chatbot, args) {
-        let select = 'r.id, r.name, keyword, active, start, end, r.updated_at, r.created_at, ';
-        select += 'multiplicator_partner, multiplicator_moderator, multiplicator_vip, multiplicator_subscriber, ';
-        select += 'multiplicator_turbo, multiplicator_prime, multiplicator_follower, multiplicator_guest, ';
+        let select = 'r.id, r.name, r.keyword, r.active, r.start, r.end, r.updated_at, r.created_at, ';
+        select += 'r.multiplicator_partner, r.multiplicator_moderator, r.multiplicator_vip, r.multiplicator_subscriber, ';
+        select += 'r.multiplicator_turbo, r.multiplicator_prime, r.multiplicator_follower, r.multiplicator_guest, ';
         select += 'ra.id AS ra_id, ra.name AS ra_name, ra.file AS ra_file, ra.duration AS ra_duration, r.audio_volume AS ra_volume, ';
         select += '(SELECT GROUP_CONCAT(name, \', \') FROM (SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id ORDER BY u.name COLLATE NOCASE ASC)) AS attendees, ';
         select += '(SELECT COUNT(*) FROM (SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id)) AS attendee_count, ';
@@ -227,11 +227,11 @@ const raffle = {
         select += '(SELECT name FROM attendee LEFT JOIN audio ON audio_id = id WHERE raffle_id = r.id AND winner = 1) AS winner_audio';
         let from = 'raffle AS r';
         let join = 'LEFT JOIN audio AS ra ON r.audio_id = ra.id';
-        let where = ['channel_id = ?'];
+        let where = ['r.channel_id = ?'];
         let order = 'r.created_at DESC';
         let prepare = [chatbot.channels[args.channel].id];
 
-        database.find(select, from, join, where, '', order, 0, prepare, function(rows) {
+        database.find(select, from, join, where, '', order, 100, prepare, function(rows) {
             let raffles = [];
 
             if (rows.length) {

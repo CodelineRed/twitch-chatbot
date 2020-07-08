@@ -6,6 +6,7 @@ const babel       = require('gulp-babel');
 const minifyCss   = require('gulp-clean-css');
 const concat      = require('gulp-concat');
 const eslint      = require('gulp-eslint');
+const favicons    = require('gulp-favicons');
 const gulpIf      = require('gulp-if');
 const minifyImg   = require('gulp-imagemin');
 const minifyJson  = require('gulp-jsonminify');
@@ -62,6 +63,32 @@ function cleanUp() {
             config.publicPath + 'json/**/*',
             config.publicPath + 'svg/**/*'
         ]);
+}
+
+// generate favicons
+function favicon() {
+    return gulp.src('./src/img/favicon.png')
+        .pipe(favicons({
+            appName: 'Twitch Chatbot',
+            appShortName: 'Twitch Chatbot',
+            appDescription: 'Twitch Chatbot made with Vue Skeleton',
+            developerName: 'InsanityMeetsHH',
+            developerURL: 'https://insanitymeetshh.net/',
+            background: '#212121',
+            path: 'img/favicons/',
+            url: 'https://vue.insanitymeetshh.net/',
+            display: 'standalone',
+            orientation: 'portrait',
+            scope: '/',
+            start_url: '/#/',
+            version: 1.0,
+            logging: false,
+            html: 'index.html',
+            pipeHTML: true,
+            replace: true
+        }))
+//        .pipe(gulp.dest(config.systemPath + 'img/favicons/'))
+        .pipe(gulp.dest(config.publicPath + 'img/favicons/'));
 }
 
 // copy font files
@@ -266,6 +293,7 @@ exports.browserSyncInit = browserSyncInit;
 exports.browserSyncReload = browserSyncReload;
 exports.chatbotLint = chatbotLint;
 exports.cleanUp = cleanUp;
+exports.favicon = favicon;
 exports.font = font;
 exports.img = img;
 exports.js = js;
@@ -286,7 +314,7 @@ exports.watchAndReload = watchAndReload;
 gulp.task('lintAll', gulp.series(scssLint, jsLint, vueJsLint, vueLint, chatbotLint));
 
 // build task
-gulp.task('build', gulp.series(cleanUp, audio, font, img, js, jsLint, jsRequire, json, scss, scssLint, svg, vue, vueJs, vueJsLint, vueLint, chatbotLint));
+gulp.task('build', gulp.series(cleanUp, audio, favicon, font, img, js, jsLint, jsRequire, json, scss, scssLint, svg, vue, vueJs, vueJsLint, vueLint, chatbotLint));
 
 // default task if you just call "gulp"
 gulp.task('default', gulp.parallel(watchAndReload, browserSyncInit));

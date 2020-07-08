@@ -9,26 +9,35 @@ const user = {
             args.userstate['user-id'] = 'chatbot';
         }
 
+        let allowedMsgTypes = ['chat', 'action'];
+        let badges = args.userstate.badges === null ? '' : JSON.stringify(args.userstate.badges);
+        let badgeInfo = args.userstate['badge-info'] === null ? '' : JSON.stringify(args.userstate['badge-info']);
         let time = moment().unix();
-        let select = 'id, name, color';
         let from = 'user';
         let where = ['id = ?'];
         let prepare = [args.userstate['user-id']];
 
-        database.find(select, from, '', where, '', '', 1, prepare, function(rows) {
+        database.find('*', from, '', where, '', '', 1, prepare, function(rows) {
             // if user found
             if (rows.length) {
-                select = 'user_id';
                 from = 'channel_user_join';
-                where = ['channel_id = ?'];
-                prepare = [args.userstate['room-id']];
+                where = [
+                    'channel_id = ?',
+                    'user_id = ?'
+                ];
+                prepare = [
+                    args.userstate['room-id'],
+                    args.userstate['user-id']
+                ];
 
-                database.find(select, from, '', where, '', '', 1, prepare, function(rowsCuj) {
+                database.find('*', from, '', where, '', '', 1, prepare, function(rowsCuj) {
                     // if user not in channel
                     if (!rowsCuj.length) {
                         let values = {
                             channelId: args.userstate['room-id'],
                             userId: args.userstate['user-id'],
+                            badges: badges,
+                            badgeInfo: badgeInfo,
                             updatedAt: time,
                             createdAt: time
                         };
@@ -36,8 +45,9 @@ const user = {
                         database.insert('channel_user_join', [values], function(insertUser) {
                             callback();
                         });
-                    } else if (rows[0].name !== args.userstate['display-name']) {
-                        // if user name has changed
+                    } else if (rows[0].name !== args.userstate['display-name'] 
+                        || typeof args.userstate.color === 'string' && rows[0].color !== args.userstate.color) {
+                        // if user name or color has changed
                         let set = {
                             name: args.userstate['display-name'],
                             updatedAt: time
@@ -47,15 +57,20 @@ const user = {
                         database.update('user', set, where, function(updateUser) {
                             callback();
                         });
-                    } else if (typeof args.userstate.color === 'string' && rows[0].color !== args.userstate.color) {
-                        // if user color has changed
+                    } else if (allowedMsgTypes.indexOf(args.userstate['message-type']) >= 0 
+                        && (rowsCuj[0].badges !== badges || rowsCuj[0].badge_info !== badgeInfo)) {
+                        // if user badges has changed
                         let set = {
-                            color: args.userstate.color,
+                            badges: badges,
+                            badgeInfo: badgeInfo,
                             updatedAt: time
                         };
-                        where = [`id = '${args.userstate['user-id']}'`];
+                        where = [
+                            `channel_id = '${args.userstate['room-id']}'`,
+                            `user_id = '${args.userstate['user-id']}'`
+                        ];
 
-                        database.update('user', set, where, function(updateUser) {
+                        database.update('channel_user_join', set, where, function(updateUser) {
                             callback();
                         });
                     } else {
@@ -77,6 +92,8 @@ const user = {
                     values = {
                         channelId: args.userstate['room-id'],
                         userId: args.userstate['user-id'],
+                        badges: badges,
+                        badgeInfo: badgeInfo,
                         updatedAt: time,
                         createdAt: time
                     };

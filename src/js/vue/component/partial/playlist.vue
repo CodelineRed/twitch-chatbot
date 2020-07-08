@@ -10,7 +10,6 @@
                 activePlaylist: {videos: []},
                 config: {
                     hasClientIdToken: false,
-                    hasOauthToken: false,
                     hasVideosFolder: false,
                     hasYoutubeToken: false
                 },

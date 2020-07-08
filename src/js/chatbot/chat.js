@@ -67,7 +67,7 @@ const chat = {
             globalMod: typeof args.badges.global_mod === 'string' ? {style: 'fas', icon: 'hammer', transform: null, title: 'Global Mod', cssClass: 'global-mod'} : undefined,
             vip: typeof args.badges.vip === 'string' ? {style: 'fas', icon: 'gem', transform: null, title: 'Vip', cssClass: null} : undefined,
             mod: typeof args.badges.moderator === 'string' ? {style: 'fas', icon: 'gavel', transform: null, title: 'Mod', cssClass: null} : undefined,
-            founder: typeof args.badges.founder === 'string' ? {style: 'fas', icon: 'award', transform: null, title: 'Founder', cssClass: null} : undefined,
+            founder: typeof args.badges.founder === 'string' ? {style: 'fas', icon: 'award', transform: null, title: 'Founder (' + args.badgeInfo.founder + ')', cssClass: null} : undefined,
             subscriber: typeof args.badges.subscriber === 'string' ? {style: 'fas', icon: 'star', transform: null, title: 'Sub (' + args.badgeInfo.subscriber + ')', cssClass: null} : undefined,
             hypeTrain: typeof args.badges['hype-train'] === 'string' ? {style: 'fas', icon: 'train', transform: null, title: (args.badges['hype-train'] === '2' ? 'Former ' : '') + 'Hype Train Conductor', cssClass: args.badges['hype-train'] === '2' ? 'hype-train former' : 'hype-train'} : undefined,
             bits: typeof args.badges.bits === 'string' ? {style: 'fab', icon: 'ethereum', transform: null, title: 'Bits (' + args.badges.bits + ')', cssClass: null} : undefined,
@@ -105,81 +105,84 @@ const chat = {
         return '<img class="emote lazy img-fluid" src="img/empty-emote.png" data-src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + emote + '">';
     },
     getMessage: function(chatbot, args) {
+        chat.prepareMessages(chatbot, args, true);
+
+        let formatBadges = {
+            user: args.userstate['display-name'],
+            badges: args.userstate.badges,
+            badgeInfo: args.userstate['badge-info']
+        };
+
+        let formatMessage = {
+            channel: args.channel,
+            emotes: args.userstate.emotes,
+            message: args.message
+        };
+        
+        let values = {
+            uuid: typeof args.userstate.id === 'undefined' ? uuidv4() : args.userstate.id,
+            badges: chat.formatBadges(chatbot, formatBadges),
+            badgeInfo: formatBadges.badgeInfo === null || typeof formatBadges.badgeInfo === 'undefined' ? '' : formatBadges.badgeInfo,
+            roomId: typeof args.userstate['room-id'] === 'undefined' ? '' : args.userstate['room-id'],
+            color: args.userstate.color === null || typeof args.userstate.color === 'undefined' ? '' : args.userstate.color,
+            emotes: args.userstate.emotes === null || typeof args.userstate.emotes === 'undefined' ? '' : args.userstate.emotes,
+            flags: args.userstate.flags === null || typeof args.userstate.flags === 'undefined' ? '' : args.userstate.flags,
+            message: chat.formatMessage(formatMessage),
+            type: args.userstate['message-type'],
+            purge: {showMessage: false, hasPurge: false},
+            user: args.userstate['display-name'],
+            userId: typeof args.userstate['user-id'] === 'undefined' ? '0' : args.userstate['user-id'],
+            createdAt: typeof args.userstate['tmi-sent-ts'] === 'undefined' ? moment().unix() : (parseInt(args.userstate['tmi-sent-ts']) / 1000).toFixed(0) // unix timestamp (seconds)
+        };
+
         if (chatbot.socket !== null) {
-            chat.prepareMessages(chatbot, args, true);
-
-            let formatBadges = {
-                user: args.userstate['display-name'],
-                badges: args.userstate.badges,
-                badgeInfo: args.userstate['badge-info']
-            };
-
-            let formatMessage = {
-                channel: args.channel,
-                emotes: args.userstate.emotes,
-                message: args.message
-            };
-
             const call = {
                 args: {
                     channel: args.channel,
-                    message: {
-                        uuid: typeof args.userstate.id === 'undefined' ? uuidv4() : args.userstate.id,
-                        badges: chat.formatBadges(chatbot, formatBadges),
-                        badgeInfo: formatBadges.badgeInfo === null || typeof formatBadges.badgeInfo === 'undefined' ? '' : formatBadges.badgeInfo,
-                        roomId: typeof args.userstate['room-id'] === 'undefined' ? '' : args.userstate['room-id'],
-                        color: args.userstate.color === null || typeof args.userstate.color === 'undefined' ? '' : args.userstate.color,
-                        emotes: args.userstate.emotes === null || typeof args.userstate.emotes === 'undefined' ? '' : args.userstate.emotes,
-                        flags: args.userstate.flags === null || typeof args.userstate.flags === 'undefined' ? '' : args.userstate.flags,
-                        message: chat.formatMessage(formatMessage),
-                        type: args.userstate['message-type'],
-                        purge: {showMessage: false, hasPurge: false},
-                        user: args.userstate['display-name'],
-                        userId: typeof args.userstate['user-id'] === 'undefined' ? '0' : args.userstate['user-id'],
-                        createdAt: typeof args.userstate['tmi-sent-ts'] === 'undefined' ? moment().unix() : (parseInt(args.userstate['tmi-sent-ts']) / 1000).toFixed(0) // unix timestamp (seconds)
-                    }
+                    message: Object.assign({}, values)
                 },
                 method: 'setMessage',
                 ref: 'chat',
                 env: 'browser'
             };
-
-            chatbot.messages[args.channel].push(call.args.message);
             chatbot.socket.write(JSON.stringify(call));
 
             if (chatbot.socketChat !== null) {
                 chatbot.socketChat.write(JSON.stringify(call));
             }
+        }
 
-            if (typeof chatbot.channels[args.channel] !== 'undefined') {
-                let values = Object.assign({}, call.args.message);
-                delete values.roomId;
-                delete values.color;
-                delete values.user;
-                values.badges = args.userstate.badges === null ? '' : JSON.stringify(args.userstate.badges);
-                values.badgeInfo = Object.keys(values.badgeInfo).length ? JSON.stringify(values.badgeInfo) : '';
-                values.channelId = chatbot.channels[args.channel].id;
-                values.emotes = Object.keys(values.emotes).length ? JSON.stringify(values.emotes) : '';
-                values.flags = typeof values.flags === 'string' ? values.flags : JSON.stringify(values.flags);
-                values.message = args.message;
-                values.notification = '';
-                values.purge = JSON.stringify(values.purge);
-                values.updatedAt = values.createdAt;
+        chatbot.messages[args.channel].push(values);
+        if (typeof chatbot.channels[args.channel] !== 'undefined') {
+            values.badges = args.userstate.badges === null ? '' : JSON.stringify(args.userstate.badges);
+            values.badgeInfo = Object.keys(values.badgeInfo).length ? JSON.stringify(values.badgeInfo) : '';
+            values.channelId = chatbot.channels[args.channel].id;
+            values.emotes = Object.keys(values.emotes).length ? JSON.stringify(values.emotes) : '';
+            values.flags = typeof values.flags === 'string' ? values.flags : JSON.stringify(values.flags);
+            values.message = args.message;
+            values.notification = '';
+            values.purge = JSON.stringify(values.purge);
+            values.updatedAt = values.createdAt;
+            delete values.roomId;
+            delete values.color;
+            delete values.user;
+            delete values.badges;
+            delete values.badgeInfo;
 
-                database.insert('chat', [values]);
-            }
+            database.insert('chat', [values]);
         }
     },
     getMessages: function(chatbot, args) {
         chat.prepareMessages(chatbot, args, false);
 
-        let subSelect = 'SELECT ch.uuid, ch.channel_id, ch.badges, ch.badge_info, ';
-        subSelect += 'ch.emotes, ch.flags, ch.message, ch.notification, ch.type, ';
-        subSelect += 'ch.purge, ch.user_id, ch.updated_at, ch.created_at, ';
-        subSelect += 'u.name AS user_name, u.color ';
+        let subSelect = 'SELECT ch.uuid, ch.channel_id, ch.emotes, ch.flags, ';
+        subSelect += 'ch.message, ch.notification, ch.type, ch.purge, ';
+        subSelect += 'ch.user_id, ch.updated_at, ch.created_at, ';
+        subSelect += 'u.name AS user_name, u.color, cuj.badges, cuj.badge_info ';
         let subFrom = 'FROM channel AS c ';
         let subJoin = 'JOIN chat AS ch ON c.id = ch.channel_id ';
         subJoin += 'JOIN user AS u ON ch.user_id = u.id ';
+        subJoin += 'JOIN channel_user_join AS cuj ON u.id = cuj.user_id ';
         let subWhere = 'WHERE c.name = ? ';
         let subOrder = 'ORDER BY ch.created_at DESC ';
         let subLimit = 'LIMIT 100';
@@ -248,112 +251,113 @@ const chat = {
         });
     },
     getNotification: function(chatbot, args) {
+        chat.prepareMessages(chatbot, args, true);
+
+        let formatMessage = {
+            channel: args.channel,
+            emotes: {},
+            message: args.message
+        };
+
+        let values = {
+            uuid: typeof args.userstate.id === 'undefined' ? uuidv4() : args.userstate.id,
+            badges: '',
+            badgeInfo: '',
+            roomId: args.userstate['room-id'] === 'undefined' ? 0 : args.userstate['user-id'],
+            color: '',
+            emotes: '',
+            flags: '',
+            message: args.notification + (args.message ? ' (' + chat.formatMessage(formatMessage) + ')' : ''),
+            type: 'notification',
+            purge: {showMessage: false, hasPurge: false},
+            user: '[' + args.userstate['message-type'].charAt(0).toUpperCase() + args.userstate['message-type'].slice(1) + ']',
+            userId: typeof args.userstate['user-id'] === 'undefined' ? 0 : args.userstate['user-id'],
+            createdAt: typeof args.userstate['tmi-sent-ts'] === 'undefined' ? moment().unix() : (parseInt(args.userstate['tmi-sent-ts']) / 1000).toFixed(0) // unix timestamp (seconds)
+        };
+            
         if (chatbot.socket !== null) {
-            chat.prepareMessages(chatbot, args, true);
-
-            let formatMessage = {
-                channel: args.channel,
-                emotes: {},
-                message: args.message
-            };
-
             const call = {
                 args: {
                     channel: args.channel,
-                    message: {
-                        uuid: typeof args.userstate.id === 'undefined' ? uuidv4() : args.userstate.id,
-                        badges: '',
-                        badgeInfo: '',
-                        roomId: args.userstate['room-id'] === 'undefined' ? 0 : args.userstate['user-id'],
-                        color: '',
-                        emotes: '',
-                        flags: '',
-                        message: args.notification + (args.message ? ' (' + chat.formatMessage(formatMessage) + ')' : ''),
-                        type: 'notification',
-                        purge: {showMessage: false, hasPurge: false},
-                        user: '[' + args.userstate['message-type'].charAt(0).toUpperCase() + args.userstate['message-type'].slice(1) + ']',
-                        userId: typeof args.userstate['user-id'] === 'undefined' ? 0 : args.userstate['user-id'],
-                        createdAt: typeof args.userstate['tmi-sent-ts'] === 'undefined' ? moment().unix() : (parseInt(args.userstate['tmi-sent-ts']) / 1000).toFixed(0) // unix timestamp (seconds)
-                    }
+                    message: Object.assign({}, values)
                 },
                 method: 'setMessage',
                 ref: 'chat',
                 env: 'browser'
             };
 
-            chatbot.messages[args.channel].push(call.args.message);
             chatbot.socket.write(JSON.stringify(call));
 
             if (chatbot.socketChat !== null) {
                 chatbot.socketChat.write(JSON.stringify(call));
             }
+        }
 
-            if (typeof chatbot.channels[args.channel] !== 'undefined') {
-                let values = Object.assign({}, call.args.message);
-                delete values.roomId;
-                delete values.color;
-                delete values.user;
-                values.channelId = chatbot.channels[args.channel].id;
-                values.message = typeof args.message === 'string' ? args.message : '';
-                values.notification = call.args.message.user + ' ' + args.notification;
-                values.purge = JSON.stringify(values.purge);
-                values.updatedAt = values.createdAt;
+        chatbot.messages[args.channel].push(values);
+        if (typeof chatbot.channels[args.channel] !== 'undefined') {
+            values.channelId = chatbot.channels[args.channel].id;
+            values.message = typeof args.message === 'string' ? args.message : '';
+            values.notification = values.user + ' ' + args.notification;
+            values.purge = JSON.stringify(values.purge);
+            values.updatedAt = values.createdAt;
+            delete values.roomId;
+            delete values.color;
+            delete values.user;
+            delete values.badges;
+            delete values.badgeInfo;
 
-                database.insert('chat', [values]);
-            }
+            database.insert('chat', [values]);
         }
     },
     getPurge: function(chatbot, args) {
-        if (chatbot.socket !== null) {
-            chat.prepareMessages(chatbot, args, false);
+        chat.prepareMessages(chatbot, args, false);
 
-            // if message deleted
-            if (typeof args.userstate['target-msg-id'] === 'string') {
-                let set = {
-                    updatedAt: moment().unix(),
-                    purge: JSON.stringify(args.purge)
-                };
-                let where = [`uuid = '${args.userstate['target-msg-id']}'`];
+        // if message deleted
+        if (typeof args.userstate['target-msg-id'] === 'string') {
+            let set = {
+                updatedAt: moment().unix(),
+                purge: JSON.stringify(args.purge)
+            };
+            let where = [`uuid = '${args.userstate['target-msg-id']}'`];
 
-                database.update('chat', set, where, function(update) {
-                    chat.getMessages(chatbot, args);
-                });
-            }
+            database.update('chat', set, where, function(update) {
+                chat.getMessages(chatbot, args);
+            });
+        }
 
-            // if message timeout / ban
-            if (typeof args.userstate['target-user-id'] === 'string') {
-                let from = 'chat';
-                let set = {
-                    updatedAt: moment().unix(),
-                    purge: JSON.stringify(args.purge)
-                };
-                let where = [
-                    `user_id = '${args.userstate['target-user-id']}'`,
-                    'purge LIKE \'%"showMessage":false%\''
-                ];
+        // if message timeout / ban
+        if (typeof args.userstate['target-user-id'] === 'string') {
+            let from = 'chat';
+            let set = {
+                updatedAt: moment().unix(),
+                purge: JSON.stringify(args.purge)
+            };
+            let where = [
+                `user_id = '${args.userstate['target-user-id']}'`,
+                'purge LIKE \'%"showMessage":false%\''
+            ];
 
-                database.update(from, set, where, function(update) {
-                    where = ['user_id = ?'];
-                    let order = 'created_at DESC';
-                    let prepare = [args.userstate['target-user-id']];
+            database.update(from, set, where, function(update) {
+                where = ['user_id = ?'];
+                let order = 'created_at DESC';
+                let prepare = [args.userstate['target-user-id']];
 
-                    database.find('*', from, '', where, '', order, 1, prepare, function(rows) {
-                        if (rows.length) {
-                            where = [`uuid = '${rows[0].uuid}'`];
-                            set.purge = JSON.parse(set.purge);
-                            set.purge.showMessage = true;
-                            set.purge = JSON.stringify(set.purge);
+                database.find('*', from, '', where, '', order, 1, prepare, function(rows) {
+                    if (rows.length) {
+                        where = [`uuid = '${rows[0].uuid}'`];
+                        set.purge = JSON.parse(set.purge);
+                        set.purge.showMessage = true;
+                        set.purge = JSON.stringify(set.purge);
 
-                            // add showMessage = true to latest message
-                            database.update(from, set, where, function(updateSingle) {
-                                chat.getMessages(chatbot, args);
-                            });
-                        } else {
+                        // add showMessage = true to latest message
+                        database.update(from, set, where, function(updateSingle) {
                             chat.getMessages(chatbot, args);
-                        }
-                    });
+                        });
+                    } else {
+                        chat.getMessages(chatbot, args);
+                    }
                 });
-            }
+            });
         }
     },
     prepareBttvEmotes: function(channel) {
