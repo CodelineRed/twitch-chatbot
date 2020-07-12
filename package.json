@@ -83,7 +83,7 @@
         "vue-ctk-date-time-picker": "2.5.0",
         "vue-i18n": "^8.18.2",
         "vue-router": "^3.3.4",
-        "yargs": "^15.4.0"
+        "yargs": "^15.4.1"
     },
     "scripts": {
         "postinstall": "node npm-postinstall.js",

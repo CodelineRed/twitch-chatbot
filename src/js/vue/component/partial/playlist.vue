@@ -29,7 +29,7 @@
                     active: false,
                     videos: []
                 },
-                playlists: [],
+                playlists: null,
                 playlistId: 0,
                 playlistIndex: 0,
                 playlistSearch: '',
@@ -187,7 +187,6 @@
             let $this = this;
             this.getActivePlaylist();
             this.getPlaylistConfig();
-            this.getPlaylists();
 
             jQuery('.playlist .modal').on('shown.bs.modal', function() {
                 jQuery(this).find('input[type="text"]').first().trigger('focus');
@@ -615,7 +614,7 @@
                     playlist = this.playlist;
                 }
 
-                if (typeof socketWrite === 'function' && playlist.id > 0 && this.playlists.length > 1 
+                if (typeof socketWrite === 'function' && playlist.id > 0 && this.playlists !== null && this.playlists.length > 1 
                     && confirm('Are you sure to remove playlist "' + playlist.name + '"?')) {
                     const call = {
                         method: 'removePlaylist',
@@ -650,6 +649,7 @@
                     this.playlist.name = playlist.name;
                     this.playlist.active = playlist.active;
                     this.playlistSearch = this.getPlaylistLabel(playlist);
+                    console.log(playlist.videos);
                 }
 
                 this.playlistSearchResults = [];
@@ -688,6 +688,7 @@
             setPlaylist: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.playlist = args.playlist;
+                    this.initDataTable();
                 }
             },
             setPlaylistConfig: function(args) {
@@ -697,7 +698,10 @@
             },
             setPlaylists: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.playlists = args.playlists;
+                    if (this.playlists === null || this.playlists.length !== args.playlists.length) {
+                        this.playlists = args.playlists;
+                        this.initDataTable();
+                    }
                 }
             },
             setPlaylistSearchResults: function(args) {
@@ -919,9 +923,12 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div v-if="playlists.length" class="col-12 pt-3">
+                            <div v-if="playlists === null" class="col-12">
+                                Please wait <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />.
+                            </div>
+                            <div v-else-if="playlists.length" class="col-12">
                                 <div class="table-responsive">
-                                    <table id="playlistsTable" class="table table-striped table-hover table-dark">
+                                    <table id="playlistsTable" class="table table-striped table-hover table-dark data-table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
@@ -950,6 +957,9 @@
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                            <div v-else class="col-12">
+                                Playlists not found.
                             </div>
                         </div>
                     </div>
@@ -1018,7 +1028,7 @@
                             </div>
                             <div v-if="playlist.videos.length" class="col-12 pt-3">
                                 <div class="table-responsive">
-                                    <table id="playlistFormTable" class="table table-striped table-hover table-dark">
+                                    <table id="playlistFormTable" class="table table-striped table-hover table-dark data-table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
@@ -1322,7 +1332,7 @@
                             <div class="col-12 col-md-6 col-xl-4 offset-md-6 offset-xl-8">
                                 <label for="merge-playlists-from" class="col-form-label">
                                     Videos from / to:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="infinity = 0. max 'to' = 50">
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="infinity = 0">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
@@ -1342,7 +1352,7 @@
                                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                                                 <div class="input-group-text">to</div>
                                             </div>
-                                            <input id="merge-playlists-to" v-model.number="merge.to" type="number" min="0" max="50" class="form-control" :class="{'is-invalid': merge.to > 0 && merge.to < merge.from}" placeholder="to">
+                                            <input id="merge-playlists-to" v-model.number="merge.to" type="number" min="0" class="form-control" :class="{'is-invalid': merge.to > 0 && merge.to < merge.from}" placeholder="to">
                                         </div>
                                     </div>
                                 </div>

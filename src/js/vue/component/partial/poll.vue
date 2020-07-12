@@ -2,12 +2,13 @@
     import Datetime from 'vue-ctk-date-time-picker';
     import audio from '../../method/audio';
     import bsComponent from '../../method/bs-component';
+    import dataTable from '../../method/data-table';
 
     export default {
         components: {
             'c-datetime': Datetime
         },
-        mixins: [audio, bsComponent],
+        mixins: [audio, bsComponent, dataTable],
         data: function() {
             return {
                 activePoll: {},
@@ -40,13 +41,13 @@
                     },
                     options: []
                 },
-                polls: [],
+                polls: null,
                 startCountdown: 0,
                 startCountdownInterval: 0,
                 winner: {
                     id: 0,
                     name: '',
-                    chat: 0,
+                    chat: 1,
                     audio: {
                         id: 0,
                         file: '',
@@ -111,12 +112,14 @@
                 jQuery('body').css('overflow', 'hidden');
             }
 
-            if (!this.isPopout) {
-                this.getPolls();
-            }
-
             jQuery('#animate-poll-winner').on('hidden.bs.modal', function() {
                 $this.stopAudio('test');
+            });
+
+            jQuery('#all-polls').on('shown.bs.modal', function() {
+                if (!$this.isPopout) {
+                    $this.getPolls();
+                }
             });
         },
         methods: {
@@ -361,7 +364,10 @@
             },
             setPolls: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.polls = args.polls;
+                    if (this.polls === null || this.polls.length !== args.polls.length) {
+                        this.polls = args.polls;
+                        this.initDataTable();
+                    }
                 }
             },
             setPollWinner: function(args) {
@@ -549,7 +555,7 @@
                         </div>
                     </div>
                     <div class="col-12 text-right">
-                        <button v-if="polls.length" type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#all-polls">All Polls</button>
+                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#all-polls">All Polls</button>
                         <button type="button" class="btn btn-sm btn-primary" :disabled="poll.name === '' || !poll.options.length || (poll.end > 0 && poll.end < poll.start)" @click="addPoll()">Activate Poll</button>
                     </div>
                 </div>
@@ -569,9 +575,12 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div v-if="polls.length" class="col-12 pt-3">
+                            <div v-if="polls === null" class="col-12">
+                                Please wait <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />.
+                            </div>
+                            <div v-else-if="polls.length" class="col-12">
                                 <div class="table-responsive">
-                                    <table id="pollsTable" class="table table-striped table-hover table-dark">
+                                    <table id="pollsTable" class="table table-striped table-hover table-dark data-table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
@@ -617,6 +626,9 @@
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                            <div v-else class="col-12">
+                                Raffles not found.
                             </div>
                         </div>
                     </div>

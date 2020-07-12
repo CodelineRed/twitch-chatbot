@@ -178,7 +178,7 @@ const command = {
             }
         },
         poll: function(chatbot, args) {
-            if (typeof chatbot.activePolls[args.channel].id !== 'undefined' && /^!vote ([0-99])$/i.test(args.message)) {
+            if (typeof chatbot.activePolls[args.channel] !== 'undefined' && /^!vote ([0-99])$/i.test(args.message)) {
                 args.choice = parseInt(args.message.toLowerCase().match(/^!vote ([0-99])$/)[1]);
 
                 // if poll is active
@@ -191,7 +191,7 @@ const command = {
             }
         },
         raffle: function(chatbot, args) {
-            if (typeof chatbot.activeRaffles[args.channel].id !== 'undefined' 
+            if (typeof chatbot.activeRaffles[args.channel] !== 'undefined' 
                 && chatbot.activeRaffles[args.channel].keyword === args.message) {
                 // if raffle is active
                 if (moment().unix() >= chatbot.activeRaffles[args.channel].start

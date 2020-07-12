@@ -2,12 +2,13 @@
     import Datetime from 'vue-ctk-date-time-picker';
     import audio from '../../method/audio';
     import bsComponent from '../../method/bs-component';
+    import dataTable from '../../method/data-table';
 
     export default {
         components: {
             'c-datetime': Datetime
         },
-        mixins: [audio, bsComponent],
+        mixins: [audio, bsComponent, dataTable],
         data: function() {
             return {
                 activeRaffle: {},
@@ -47,13 +48,13 @@
                         guest: 1
                     }
                 },
-                raffles: [],
+                raffles: null,
                 startCountdown: 0,
                 startCountdownInterval: 0,
                 winner: {
                     id: 0,
                     name: '',
-                    chat: 0,
+                    chat: 1,
                     audio: {
                         id: 0,
                         file: '',
@@ -128,12 +129,14 @@
                 jQuery('body').css('overflow', 'hidden');
             }
 
-            if (!this.isPopout) {
-                this.getRaffles();
-            }
-
             jQuery('#animate-raffle-winner').on('hidden.bs.modal', function() {
                 $this.stopAudio('test');
+            });
+
+            jQuery('#all-raffles').on('shown.bs.modal', function() {
+                if (!$this.isPopout) {
+                    $this.getRaffles();
+                }
             });
         },
         methods: {
@@ -373,7 +376,10 @@
             },
             setRaffles: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.raffles = args.raffles;
+                    if (this.raffles === null || this.raffles.length !== args.raffles.length) {
+                        this.raffles = args.raffles;
+                        this.initDataTable();
+                    }
                 }
             },
             setRaffleWinner: function(args) {
@@ -548,7 +554,7 @@
                         </div>
                     </div>
                     <div class="col-12 text-right">
-                        <button v-if="raffles.length" type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#all-raffles">All Raffles</button>
+                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#all-raffles">All Raffles</button>
                         <button type="button" class="btn btn-sm btn-primary" :disabled="raffle.name === '' || raffle.keyword === '' || (raffle.end > 0 && raffle.end < raffle.start)" @click="addRaffle()">Activate Raffle</button>
                     </div>
                 </div>
@@ -568,9 +574,12 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div v-if="raffles.length" class="col-12 pt-3">
+                            <div v-if="raffles === null" class="col-12">
+                                Please wait <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />.
+                            </div>
+                            <div v-else-if="raffles.length" class="col-12">
                                 <div class="table-responsive">
-                                    <table id="rafflesTable" class="table table-striped table-hover table-dark">
+                                    <table id="rafflesTable" class="table table-striped table-hover table-dark data-table">
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
@@ -612,6 +621,9 @@
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                            <div v-else class="col-12">
+                                Raffles not found.
                             </div>
                         </div>
                     </div>

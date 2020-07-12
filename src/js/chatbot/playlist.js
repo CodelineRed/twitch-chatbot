@@ -770,7 +770,7 @@ const playlist = {
         } else if (args.merge.from === 0 && args.merge.to > 0) {
             limit = '0,' + args.merge.to;
         } else if (args.merge.from > 0 && args.merge.to === 0) {
-            limit = (args.merge.from - 1) + ',50';
+            limit = (args.merge.from - 1) + ',9999';
         }
 
         // find videos from target playlist

@@ -177,23 +177,8 @@ function addVideoRecursive(videos, channel, index) {
                                     createdAt: time // unix timestamp (seconds)
                                 };
 
-                                // if playlist exists
-                                if (playlistRows.length) {
-                                    if (playlists.indexOf(playlist) === -1) {
-                                        playlists.push(playlist);
-                                        log(`* Found playlist "${playlist}"`);
-                                    }
-
-                                    values.playlistId = playlistRows[0].id;
-                                    values.sort = 1 * playlistRows[0].videoQuantity;
-                                    database.insert('playlist_video_join', [values], function(pvjInsert) {
-                                        index++;
-                                        if (typeof videos[index] !== 'undefined') {
-                                            addVideoRecursive(videos, channel, index);
-                                        }
-                                        importSummary(videos, index);
-                                    });
-                                } else {
+                                // if playlist NOT exists
+                                if (playlistRows[0].id === null) {
                                     let playlistValues = {
                                         channelId: channel.id,
                                         name: playlist,
@@ -215,6 +200,21 @@ function addVideoRecursive(videos, channel, index) {
                                             }
                                             importSummary(videos, index);
                                         });
+                                    });
+                                } else {
+                                    if (playlists.indexOf(playlist) === -1) {
+                                        playlists.push(playlist);
+                                        log(`* Found playlist "${playlist}"`);
+                                    }
+
+                                    values.playlistId = playlistRows[0].id;
+                                    values.sort = 1 * playlistRows[0].videoQuantity;
+                                    database.insert('playlist_video_join', [values], function(pvjInsert) {
+                                        index++;
+                                        if (typeof videos[index] !== 'undefined') {
+                                            addVideoRecursive(videos, channel, index);
+                                        }
+                                        importSummary(videos, index);
                                     });
                                 }
                             });
@@ -243,15 +243,15 @@ if (fs.existsSync(videosFolder) && typeof argv.channel === 'string' && argv.chan
         if (error) {
             console.log(error);
         } else {
-            let select = 'id, name, room_id AS roomId, updated_at AS updatedAt, created_at AS createdAt';
+            let select = 'id, name, updated_at AS updatedAt, created_at AS createdAt';
             database.find(select, 'channel', '', ['name = ?'], '', '', 1, [argv.channel], function(rows) {
                 if (rows.length) {
                     log(`* Found channel ${argv.channel}`);
                     addVideoRecursive(videos, rows[0], 0);
-                } else if (typeof argv.channelid === 'number' && argv.channelid > 0) {
+                } else if (typeof argv.identity === 'number' && argv.identity > 0) {
                     let values = {
+                        id: argv.identity,
                         name: argv.channel,
-                        roomId: argv.channelid,
                         updatedAt: time,
                         createdAt: time
                     };
@@ -261,7 +261,7 @@ if (fs.existsSync(videosFolder) && typeof argv.channel === 'string' && argv.chan
                         addVideoRecursive(videos, values, 0);
                     });
                 } else {
-                    log('* Option --channelid is missing or empty');
+                    log('* Option --identity is missing or empty');
                 }
             });
         }

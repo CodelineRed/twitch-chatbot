@@ -299,14 +299,15 @@ const raffle = {
 
             // if raffle is not closed
             if (!args.close) {
-                let select = 'a.user';
+                let select = 'u.name';
                 let from = 'attendee AS a';
+                let join = 'JOIN user AS u ON a.user_id = u.id';
                 let where = ['raffle_id = ?'];
                 let prepare = [chatbot.activeRaffles[args.channel].id];
 
-                database.find(select, from, '', where, '', '', 0, prepare, function(rows) {
+                database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
                     for (let i = 0; i < rows.length; i++) {
-                        winners.push(rows[i].user);
+                        winners.push(rows[i].name);
                     }
 
                     // pick random winner
@@ -335,7 +336,7 @@ const raffle = {
                             winner: 1
                         };
                         where = [
-                            `user = '${winner.name}'`,
+                            `'${winner.name}' IN (SELECT name FROM user WHERE attendee.user_id = user.id)`,
                             `raffle_id = ${chatbot.activeRaffles[args.channel].id}`
                         ];
 

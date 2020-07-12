@@ -182,7 +182,7 @@ const chat = {
         let subFrom = 'FROM channel AS c ';
         let subJoin = 'JOIN chat AS ch ON c.id = ch.channel_id ';
         subJoin += 'JOIN user AS u ON ch.user_id = u.id ';
-        subJoin += 'JOIN channel_user_join AS cuj ON u.id = cuj.user_id ';
+        subJoin += 'JOIN channel_user_join AS cuj ON ch.user_id = cuj.user_id AND ch.channel_id = cuj.channel_id ';
         let subWhere = 'WHERE c.name = ? ';
         let subOrder = 'ORDER BY ch.created_at DESC ';
         let subLimit = 'LIMIT 100';
@@ -217,8 +217,8 @@ const chat = {
                 chatbot.messages[args.channel].push({
                     uuid: row.uuid,
                     channelId: row.channel_id,
-                    badges: chat.formatBadges(chatbot, formatBadges),
-                    badgeInfo: formatBadges.badge_info,
+                    badges: row.type === 'notification' ? '' : chat.formatBadges(chatbot, formatBadges),
+                    badgeInfo: row.type === 'notification' ? '' : formatBadges.badge_info,
                     color: row.color,
                     emotes: formatMessage.emotes,
                     flags: row.flags,
