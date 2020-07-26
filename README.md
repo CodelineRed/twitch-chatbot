@@ -289,4 +289,4 @@ Example execution: `$ node migration.js -d up`
 * [Winner Robot Voice](https://freesound.org/people/Ionicsmusic/sounds/196892/)
 
 ## Known Issues
-- If someone made a subbomb/ quick messages and is not known in user table than comes "UNIQUE constraint failed: user.id"
+- Sometimes user are not inserted in channel_user_join. This is under investigation.

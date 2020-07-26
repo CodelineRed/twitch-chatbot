@@ -59,6 +59,10 @@ const chat = {
             args.badges = {};
         }
 
+        if (args.badgeInfo === null) {
+            args.badgeInfo = {};
+        }
+
         // further badges can be found in Chatty > Settings > Look > Badges > Enable Custom Badges > Edit Item > ID/Version
         const badges = {
             broadcaster: typeof args.badges.broadcaster === 'string' ? {style: 'fas', icon: 'video', transform: null, title: 'Broadcaster', cssClass: null} : undefined,
@@ -67,8 +71,8 @@ const chat = {
             globalMod: typeof args.badges.global_mod === 'string' ? {style: 'fas', icon: 'hammer', transform: null, title: 'Global Mod', cssClass: 'global-mod'} : undefined,
             vip: typeof args.badges.vip === 'string' ? {style: 'fas', icon: 'gem', transform: null, title: 'Vip', cssClass: null} : undefined,
             mod: typeof args.badges.moderator === 'string' ? {style: 'fas', icon: 'gavel', transform: null, title: 'Mod', cssClass: null} : undefined,
-            founder: typeof args.badges.founder === 'string' ? {style: 'fas', icon: 'award', transform: null, title: 'Founder (' + args.badgeInfo.founder + ')', cssClass: null} : undefined,
-            subscriber: typeof args.badges.subscriber === 'string' ? {style: 'fas', icon: 'star', transform: null, title: 'Sub (' + args.badgeInfo.subscriber + ')', cssClass: null} : undefined,
+            founder: typeof args.badges.founder === 'string' ? {style: 'fas', icon: 'award', transform: null, title: 'Founder' + (typeof args.badgeInfo.founder === 'undefined' ? '' : ' (' + args.badgeInfo.founder + ')'), cssClass: null} : undefined,
+            subscriber: typeof args.badges.subscriber === 'string' ? {style: 'fas', icon: 'star', transform: null, title: 'Sub' + (typeof args.badgeInfo.subscriber === 'undefined' ? '' : ' (' + args.badgeInfo.subscriber + ')'), cssClass: null} : undefined,
             hypeTrain: typeof args.badges['hype-train'] === 'string' ? {style: 'fas', icon: 'train', transform: null, title: (args.badges['hype-train'] === '2' ? 'Former ' : '') + 'Hype Train Conductor', cssClass: args.badges['hype-train'] === '2' ? 'hype-train former' : 'hype-train'} : undefined,
             bits: typeof args.badges.bits === 'string' ? {style: 'fab', icon: 'ethereum', transform: null, title: 'Bits (' + args.badges.bits + ')', cssClass: null} : undefined,
             bitsLeader: typeof args.badges['bits-leader'] === 'string' ? {style: 'fab', icon: 'ethereum', transform: null, title: 'Bits Leader', cssClass: 'bits-leader'} : undefined,
@@ -118,7 +122,7 @@ const chat = {
             emotes: args.userstate.emotes,
             message: args.message
         };
-        
+
         let values = {
             uuid: typeof args.userstate.id === 'undefined' ? uuidv4() : args.userstate.id,
             badges: chat.formatBadges(chatbot, formatBadges),
@@ -274,7 +278,7 @@ const chat = {
             userId: typeof args.userstate['user-id'] === 'undefined' ? 0 : args.userstate['user-id'],
             createdAt: typeof args.userstate['tmi-sent-ts'] === 'undefined' ? moment().unix() : (parseInt(args.userstate['tmi-sent-ts']) / 1000).toFixed(0) // unix timestamp (seconds)
         };
-            
+
         if (chatbot.socket !== null) {
             const call = {
                 args: {

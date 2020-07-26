@@ -1,4 +1,5 @@
 const database     = require('./database');
+const locales      = require('./locales');
 const fs           = require('fs');
 const mediainfo    = require('mediainfo-wrapper');
 const moment       = require('moment');
@@ -32,7 +33,7 @@ const playlist = {
                 } else {
                     playlist.getPlaylists(chatbot, args);
                 }
-                console.log(`* Added playlist "${args.playlist.name}"`);
+                console.log(locales.t('playlist-added', [args.playlist.name]));
             });
         }
     },
@@ -92,7 +93,7 @@ const playlist = {
                         }
 
                         playlist.getPlaylists(chatbot, args);
-                        console.log(`* Added video "${args.video.name}" to playlist "${rows[0].name}"`);
+                        console.log(locales.t('video-added', [args.video.name, rows[0].name]));
                     });
                 } else {
                     database.insert('video', [values], function(insert) {
@@ -123,7 +124,7 @@ const playlist = {
                             }
 
                             playlist.getPlaylists(chatbot, args);
-                            console.log(`* Added video "${args.video.name}" to playlist "${rows[0].name}"`);
+                            console.log(locales.t('video-added', [args.video.name, rows[0].name]));
                         });
                     });
                 }
@@ -138,7 +139,7 @@ const playlist = {
 
             database.remove(from, where, prepare, function(remove) {
                 playlist.getActivePlaylist(chatbot, args);
-                console.log(`* Cleared playlist "${chatbot.activePlaylists[args.channel].name}"`);
+                console.log(locales.t('playlist-cleared', [chatbot.activePlaylists[args.channel].name]));
             });
         }
     },
@@ -572,22 +573,16 @@ const playlist = {
             }
 
             if (chatbot.channels[args.channel].oauthToken.length) {
-                let message = '';
-                let change = '';
                 let set = {'channel': {}};
 
                 // if titleCmd is set, change stream titel
                 if (typeof video.titleCmd !== 'undefined' && video.titleCmd.length) {
                     set.channel.status = video.titleCmd;
-                    message += 'Title';
-                    change += video.titleCmd;
                 }
 
                 // if gameCmd is set, change stream game
                 if (typeof video.gameCmd !== 'undefined' && video.gameCmd.length) {
                     set.channel.game = video.gameCmd;
-                    message += message.length ? ' and Game' : 'Game';
-                    change += change.length ? ` - ${video.gameCmd}` : video.gameCmd;
                 }
 
                 if (Object.keys(set.channel).length) {
@@ -610,9 +605,21 @@ const playlist = {
                         body = JSON.parse(body);
 
                         if (typeof body.error === 'undefined') {
-                            chatbot.client.say('#' + args.channel, `Stream ${message} has changed to (${change})`);
+                            if (typeof set.channel.status !== 'undefined' && typeof set.channel.game !== 'undefined' ) {
+                                locales.t('change-channel-1', [set.channel.status, set.channel.game]);
+                            } else if (typeof set.channel.status !== 'undefined') {
+                                locales.t('change-channel-2', [set.channel.status]);
+                            } else {
+                                locales.t('change-channel-3', [set.channel.game]);
+                            }
                         } else {
-                            chatbot.client.say('#' + args.channel, `Couldn't change ${message}`);
+                            if (typeof set.channel.status !== 'undefined' && typeof set.channel.game !== 'undefined' ) {
+                                locales.t('could-not-change-channel-1', [set.channel.status, set.channel.game]);
+                            } else if (typeof set.channel.status !== 'undefined') {
+                                locales.t('could-not-change-channel-2', [set.channel.status]);
+                            } else {
+                                locales.t('could-not-change-channel-3', [set.channel.game]);
+                            }
                         }
                     });
                 }
@@ -718,7 +725,7 @@ const playlist = {
                     let duration = 0;
                     let durationRegExp = /^PT([0-9]+H)?([0-9]+M)?([0-9]+S)?/;
                     let durationString = body.items[0].contentDetails.duration;
-                    let format = chatbot.t['date'];
+                    let format = locales.t('date');
                     let multiplier = 60 * 60;
                     let name = body.items[0].snippet.title;
                     let subName = typeof body.items[0].snippet.tags === 'undefined' ? '' : body.items[0].snippet.tags[0];
@@ -815,7 +822,7 @@ const playlist = {
                         }
 
                         playlist.getPlaylists(chatbot, args);
-                        console.log(`* Merged ${rowsSource.length} videos from "${args.merge.source.name}" to "${args.merge.target.name}"`);
+                        console.log(locales.t('playlist-merged', [rowsSource.length, args.merge.source.name, args.merge.target.name]));
                     });
                 } else {
                     // prepend playlist
@@ -845,7 +852,7 @@ const playlist = {
                             }
 
                             playlist.getPlaylists(chatbot, args);
-                            console.log(`* Merged ${rowsSource.length} videos from "${args.merge.source.name}" to "${args.merge.target.name}"`);
+                            console.log(locales.t('playlist-merged', [rowsSource.length, args.merge.source.name, args.merge.target.name]));
                         });
                     });
                 }
@@ -887,7 +894,7 @@ const playlist = {
                         playlist.getActivePlaylist(chatbot, args);
                     }
                     playlist.getPlaylist(chatbot, args);
-                    console.log(`* Moved video "${args.video.name}" ${direction} in playlist "${args.playlist.name}"`);
+                    console.log(locales.t('video-moved', [args.video.name, locales.t(direction), args.playlist.name]));
                 });
             });
         });
@@ -906,7 +913,7 @@ const playlist = {
 
             database.update('playlist_video_join', set, where, function(update) {
                 playlist.getActivePlaylist(chatbot, args);
-                console.log(`* Resetted playlist "${chatbot.activePlaylists[args.channel].name}"`);
+                console.log(locales.t('playlist-resetted', [chatbot.activePlaylists[args.channel].name]));
             });
         }
     },
@@ -931,10 +938,10 @@ const playlist = {
 
                     database.update(from, set, where, function(update) {
                         playlist.getActivePlaylist(chatbot, args);
-                        console.log(`* Removed playlist "${args.playlist.name}"`);
+                        console.log(locales.t('playlist-removed', [args.playlist.name]));
                     });
                 } else {
-                    console.log(`* Removed playlist "${args.playlist.name}"`);
+                    console.log(locales.t('playlist-removed', [args.playlist.name]));
                 }
             });
         }
@@ -949,7 +956,7 @@ const playlist = {
             }
 
             playlist.getPlaylist(chatbot, args);
-            console.log(`* Removed video "${args.video.name}" from playlist "${args.playlist.name}"`);
+            console.log(locales.t('video-removed', [args.video.name, args.playlist.name]));
         });
     },
     removeVideosByFlagFromActivePlaylist: function(chatbot, args) {
@@ -967,7 +974,7 @@ const playlist = {
             database.remove('playlist_video_join', [`uuid IN ('${uuidArray.join('\', \'')}')`], [], function(remove) {
                 playlist.getActivePlaylist(chatbot, args);
                 playlist.getPlaylists(chatbot, args);
-                console.log(`* Removed ${remove.changes} videos from "${chatbot.activePlaylists[args.channel].name}"`);
+                console.log(locales.t('videos-removed', [remove.changes, chatbot.activePlaylists[args.channel].name]));
             });
         } else {
             playlist.getActivePlaylist(chatbot, args);
@@ -982,7 +989,7 @@ const playlist = {
             database.update('playlist', {active: 1, updatedAt: time}, [`id = ${args.playlist.id}`], function(update) {
                 playlist.getActivePlaylist(chatbot, args);
                 playlist.getPlaylists(chatbot, args);
-                console.log(`* Switched to playlist "${args.playlist.name}"`);
+                console.log(locales.t('playlist-switched', [args.playlist.name]));
             });
         });
     },
@@ -1003,7 +1010,7 @@ const playlist = {
                 }
 
                 playlist.getPlaylists(chatbot, args);
-                console.log(`* Updated playlist "${args.playlist.name}"`);
+                console.log(locales.t('playlist-updated', [args.playlist.name]));
             });
         }
     },
@@ -1052,7 +1059,7 @@ const playlist = {
                         }
                     }
 
-                    console.log(`* Updated video "${args.video.name}" in playlist "${args.playlist.name}"`);
+                    console.log(locales.t('video-updated', [args.video.name, args.playlist.name]));
                 });
             });
         }

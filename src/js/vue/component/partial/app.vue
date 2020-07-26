@@ -10,7 +10,7 @@
         mounted: function() {
             jQuery('html').attr('lang', this.$t('lang'));
             jQuery('html').removeClass('no-js');
-            
+
             let oauthTokenRegExp = /access_token=([a-z0-9]+)/;
             if (oauthTokenRegExp.test(document.location.hash)) {
                 // redirect to token page

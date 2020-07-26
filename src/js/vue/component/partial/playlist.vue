@@ -291,7 +291,7 @@
                 this.video.duration =(durationHours * 60 * 60) + (durationMin * 60) + durationSec;
             },
             clearActivePlaylist: function() {
-                if (typeof socketWrite === 'function' && confirm('Are you sure to clear playlist?')) {
+                if (typeof socketWrite === 'function' && confirm(this.$t('confirm-clear-playlist'))) {
                     const call = {
                         method: 'clearActivePlaylist',
                         args: {
@@ -318,19 +318,13 @@
             },
             getFilePlaceholder: function() {
                 if (this.video.player === 'local') {
-                    return 'Rel. File Path starting from \'videosFolder\'';
-                }
-
-                if (this.video.player === 'twitch-clip') {
-                    return 'Twitch Clip Slug';
-                }
-
-                if (this.video.player === 'twitch') {
-                    return 'Twitch Video ID';
-                }
-
-                if (this.video.player === 'youtube') {
-                    return 'YouTube Video ID';
+                    return this.$t('local-video-placeholder');
+                } else if (this.video.player === 'twitch-clip') {
+                    return this.$t('twitch-clip-placeholder');
+                } else if (this.video.player === 'twitch') {
+                    return this.$t('twitch-video-placeholder');
+                } else if (this.video.player === 'youtube') {
+                    return this.$t('youtube-video-placeholder');
                 }
             },
             getLocalVideoMeta: function() {
@@ -375,7 +369,8 @@
                 }
             },
             getPlaylistLabel: function(playlist) {
-                return playlist.name + ' (' + (playlist.active ? 'active, ' : '') + playlist.videoQuantity + ' Videos)';
+                return playlist.name + ' (' + (playlist.active ? 'active, ' : '') 
+                    + playlist.videoQuantity + ' ' + this.$tc('video', playlist.videoQuantity) + ')';
             },
             getPlaylists: function() {
                 if (typeof socketWrite === 'function') {
@@ -563,7 +558,7 @@
                 window.open(url, 'Player', params);
             },
             removeVideo: function(video, index, playlist) {
-                if (typeof socketWrite === 'function' && confirm('Are you sure to remove video "' + video.name + '"?')) {
+                if (typeof socketWrite === 'function' && confirm(this.$t('confirm-remove-video', [video.name]))) {
                     const call = {
                         method: 'removeVideo',
                         args: {
@@ -582,7 +577,7 @@
                 }
             },
             removeVideosByFlagFromActivePlaylist: function(flag, value) {
-                if (typeof socketWrite === 'function' && confirm('Are you sure to remove ' + flag + ' videos?')) {
+                if (typeof socketWrite === 'function' && confirm(this.$t('confirm-remove-flagged-videos', [this.$t(flag).toLowerCase()]))) {
                     const call = {
                         method: 'removeVideosByFlagFromActivePlaylist',
                         args: {
@@ -597,7 +592,7 @@
                 }
             },
             resetActivePlaylist: function() {
-                if (typeof socketWrite === 'function' && confirm('Are you sure to reset playlist?')) {
+                if (typeof socketWrite === 'function' && confirm(this.$t('confirm-reset-playlist'))) {
                     const call = {
                         method: 'resetActivePlaylist',
                         args: {
@@ -615,7 +610,7 @@
                 }
 
                 if (typeof socketWrite === 'function' && playlist.id > 0 && this.playlists !== null && this.playlists.length > 1 
-                    && confirm('Are you sure to remove playlist "' + playlist.name + '"?')) {
+                    && confirm(this.$t('confirm-remove-playlist', [playlist.name]))) {
                     const call = {
                         method: 'removePlaylist',
                         args: {
@@ -826,13 +821,13 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Duration</th>
-                        <th scope="col">Start</th>
-                        <th scope="col">End</th>
-                        <th scope="col">Played</th>
-                        <th scope="col">Skipped</th>
-                        <th scope="col">Cmd</th>
+                        <th scope="col">{{ $t('name') }}</th>
+                        <th scope="col">{{ $t('duration') }}</th>
+                        <th scope="col">{{ $t('start') }}</th>
+                        <th scope="col">{{ $t('end') }}</th>
+                        <th scope="col">{{ $t('played') }}</th>
+                        <th scope="col">{{ $t('skipped') }}</th>
+                        <th scope="col">{{ $t('cmd') }}</th>
                         <th scope="col" data-orderable="false"></th>
                     </tr>
                 </thead>
@@ -870,13 +865,13 @@
                         </td>
                         <td :data-order="getVideoCommands(videoItem).length ? '1' : '0'">
                             <span v-if="videoItem.titleCmd === '' && videoItem.gameCmd === ''">-</span>
-                            <button v-if="videoItem.titleCmd !== '' || videoItem.gameCmd !== ''" type="button" class="btn btn-sm btn-primary" data-toggle="popover" title="Commands" :data-content="getVideoCommands(videoItem)"><font-awesome-icon :icon="['fas', 'terminal']" class="fa-fw" /></button>
+                            <button v-if="videoItem.titleCmd !== '' || videoItem.gameCmd !== ''" type="button" class="btn btn-sm btn-primary" data-toggle="popover" :title="$tc('command', 2)" :data-content="getVideoCommands(videoItem)"><font-awesome-icon :icon="['fas', 'terminal']" class="fa-fw" /></button>
                         </td>
                         <td class="text-center">
                             <span class="text-nowrap">
-                                <button type="button" class="btn btn-sm btn-primary btn-animation mr-2" data-animation-success="success" data-animation-error="error" data-toggle="tooltip" data-placement="top" title="Save" @click="updateVideo(videoItem, index, activePlaylist)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
-                                <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Update" @click="showVideoForm(videoItem, index)"><font-awesome-icon :icon="['fas', 'edit']" class="fa-fw" /></button>
-                                <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(videoItem, index, activePlaylist)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-primary btn-animation mr-2" data-animation-success="success" data-animation-error="error" data-toggle="tooltip" data-placement="top" :title="$t('save')" @click="updateVideo(videoItem, index, activePlaylist)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" :title="$t('update')" @click="showVideoForm(videoItem, index)"><font-awesome-icon :icon="['fas', 'edit']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" :title="$t('remove-from-playlist')" @click="removeVideo(videoItem, index, activePlaylist)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                             </span>
                         </td>
                     </tr>
@@ -889,23 +884,23 @@
                     <font-awesome-icon :icon="['fas', 'cogs']" class="fa-fw" />
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a href="#" class="dropdown-item bg-danger" onclick="javascript:return false;" @click="clearActivePlaylist()">Clear Playlist</a>
+                    <a href="#" class="dropdown-item bg-danger" onclick="javascript:return false;" @click="clearActivePlaylist()">{{ $t('clear-playlist') }}</a>
                     <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item bg-warning" onclick="javascript:return false;" @click="removeVideosByFlagFromActivePlaylist('played', true)">Remove Played Videos</a>
-                    <a href="#" class="dropdown-item bg-warning" onclick="javascript:return false;" @click="removeVideosByFlagFromActivePlaylist('skipped', true)">Remove Skipped Videos</a>
+                    <a href="#" class="dropdown-item bg-warning" onclick="javascript:return false;" @click="removeVideosByFlagFromActivePlaylist('played', true)">{{ $t('remove-played-videos') }}</a>
+                    <a href="#" class="dropdown-item bg-warning" onclick="javascript:return false;" @click="removeVideosByFlagFromActivePlaylist('skipped', true)">{{ $t('remove-skipped-videos') }}</a>
                     <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#all-playlists">All Playlists</a>
-                    <a href="#" class="dropdown-item bg-primary" onclick="javascript:return false;" @click="resetActivePlaylist()">Reset Playlist</a>
-                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#remove-playlist">Remove Playlist</a>
-                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#merge-playlists">Merge Playlists</a>
-                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#switch-playlist">Switch Playlist</a>
-                    <a href="#" class="dropdown-item bg-primary" onclick="javascript:return false;" @click="showPlaylistForm()">Update Playlist</a>
-                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#playlist-form">Add Playlist</a>
+                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#all-playlists">{{ $t('all-playlists') }}</a>
+                    <a href="#" class="dropdown-item bg-primary" onclick="javascript:return false;" @click="resetActivePlaylist()">{{ $t('reset-playlist') }}</a>
+                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#remove-playlist">{{ $t('remove-playlist') }}</a>
+                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#merge-playlists">{{ $t('merge-playlists') }}</a>
+                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#switch-playlist">{{ $t('switch-playlist') }}</a>
+                    <a href="#" class="dropdown-item bg-primary" onclick="javascript:return false;" @click="showPlaylistForm()">{{ $t('update-playlist') }}</a>
+                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#playlist-form">{{ $t('add-playlist') }}</a>
                     <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#video-form">Add Video</a>
+                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#video-form">{{ $t('add-video') }}</a>
                 </div>
             </div>
         </div>
@@ -915,7 +910,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="all-playlists-modal-title" class="modal-title">
-                            All Playlists
+                            {{ $t('all-playlists') }}
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -924,7 +919,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div v-if="playlists === null" class="col-12">
-                                Please wait <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />.
+                                {{ $t('please-wait') }} <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />.
                             </div>
                             <div v-else-if="playlists.length" class="col-12">
                                 <div class="table-responsive">
@@ -932,10 +927,10 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Videos</th>
-                                                <th scope="col">Updated at</th>
-                                                <th scope="col">Created at</th>
+                                                <th scope="col">{{ $t('name') }}</th>
+                                                <th scope="col">{{ $tc('video', 2) }}</th>
+                                                <th scope="col">{{ $t('updated-at') }}</th>
+                                                <th scope="col">{{ $t('created-at') }}</th>
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>
@@ -949,8 +944,8 @@
                                                 <td>{{ playlistItem.createdAt|formatDateTime($t('datetime')) }}</td>
                                                 <td>
                                                     <span class="text-nowrap">
-                                                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Switch to Playlist" @click="switchPlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" /></button>
-                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove Playlist" :disabled="playlistItem.name.toLowerCase() === 'general'" @click="removePlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" :title="$t('switch-to-playlist')" @click="switchPlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" :title="$t('remove-playlist')" :disabled="playlistItem.name.toLowerCase() === 'general'" @click="removePlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                                                     </span>
                                                 </td>
                                             </tr>
@@ -959,12 +954,12 @@
                                 </div>
                             </div>
                             <div v-else class="col-12">
-                                Playlists not found.
+                                {{ $t('playlists-not-found') }}
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
                     </div>
                 </div>
             </div>
@@ -975,8 +970,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="playlist-form-modal-title" class="modal-title">
-                            <span v-if="!updateMode">Add Playlist</span>
-                            <span v-if="updateMode">Update Playlist</span>
+                            <span v-if="!updateMode">{{ $t('add-playlist') }}</span>
+                            <span v-if="updateMode">{{ $t('update-playlist') }}</span>
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -985,13 +980,13 @@
                     <div class="modal-body">
                         <div v-if="!updateMode" class="row">
                             <div class="col-12 col-md-10">
-                                <label for="playlist-form-name" class="col-form-label">Name:</label>
+                                <label for="playlist-form-name" class="col-form-label">{{ $t('name') }}:</label>
                                 <input id="playlist-form-name" v-model="playlist.name" type="text" class="form-control" :class="{'is-invalid': playlist.name === ''}" autocomplete="off">
                             </div>
                             <div class="col-12 col-md-2">
                                 <div class="custom-control custom-switch pt-2 pt-md-5 float-left mr-3">
                                     <input id="playlist-form-active" v-model.number="playlist.active" type="checkbox" value="1" class="custom-control-input">
-                                    <label class="custom-control-label" for="playlist-form-active">Active</label>
+                                    <label class="custom-control-label" for="playlist-form-active">{{ $t('active') }}</label>
                                 </div>
                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                                 <div class="clearfix"></div>
@@ -1000,12 +995,12 @@
                         <div v-if="updateMode" class="row">
                             <div class="col-12 form-search">
                                 <label for="playlist-form-search" class="col-form-label">
-                                    Search Playlist:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Min. 3 chars. Space is jocker char.">
+                                    {{ $t('search-playlist') }}:&nbsp;
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('search-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="playlist-form-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': video.playlistId === 0}" autocomplete="off" placeholder="Name">
+                                <input id="playlist-form-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': video.playlistId === 0}" autocomplete="off" :placeholder="$t('name')">
                                 <div v-if="showLoader.playlist" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>
@@ -1016,7 +1011,7 @@
                                 </div>
                             </div>
                             <div v-if="playlist.name !== ''" class="col-12">
-                                <label for="playlist-form-name" class="col-form-label">Name:</label>
+                                <label for="playlist-form-name" class="col-form-label">{{ $t('name') }}:</label>
                                 <div class="form-row">
                                     <div class="col">
                                         <input id="playlist-form-name" v-model="playlist.name" type="text" class="form-control" :class="{'is-invalid': playlist.name === ''}" autocomplete="off" :disabled="playlist.name.toLowerCase() === 'general'">
@@ -1032,8 +1027,8 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Duration</th>
+                                                <th scope="col">{{ $t('name') }}</th>
+                                                <th scope="col">{{ $t('duration') }}</th>
                                                 <th scope="col" data-orderable="false"></th>
                                             </tr>
                                         </thead>
@@ -1053,7 +1048,7 @@
                                                 <td><span class="text-nowrap">{{ videoItem.duration|formatDuration() }}</span></td>
                                                 <td class="text-center">
                                                     <span class="text-nowrap">
-                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove from Playlist" @click="removeVideo(videoItem, index, playlist)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" :title="$t('remove-from-playlist')" @click="removeVideo(videoItem, index, playlist)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                                                     </span>
                                                 </td>
                                             </tr>
@@ -1064,8 +1059,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button v-if="!updateMode" type="button" class="btn btn-primary" @click="addPlaylist()">Add</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
+                        <button v-if="!updateMode" type="button" class="btn btn-primary" @click="addPlaylist()">{{ $t('add') }}</button>
                     </div>
                 </div>
             </div>
@@ -1076,8 +1071,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="video-form-modal-title" class="modal-title">
-                            <span v-if="!updateMode">Add Video</span>
-                            <span v-if="updateMode">Update Video</span>
+                            <span v-if="!updateMode">{{ $t('add-video') }}</span>
+                            <span v-if="updateMode">{{ $t('update-video') }}</span>
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -1087,12 +1082,12 @@
                         <div class="row">
                             <div v-if="!updateMode" class="col-12 col-md-6 form-search">
                                 <label for="video-form-video-search" class="col-form-label">
-                                    Search Video:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Min. 3 chars. Space is jocker char.">
+                                    {{ $t('search-video') }}:&nbsp;
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('search-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="video-form-video-search" v-model="videoSearch" type="text" class="form-control" autocomplete="off" placeholder="Name or File">
+                                <input id="video-form-video-search" v-model="videoSearch" type="text" class="form-control" autocomplete="off" :placeholder="$t('name-or-file')">
                                 <div v-if="showLoader.video" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>
@@ -1105,8 +1100,8 @@
                             </div>
                             <div v-if="!updateMode" class="col-12 col-md-6 form-search">
                                 <label for="video-form-playlist-search" class="col-form-label">
-                                    Search Playlist:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Min. 3 chars. Space is jocker char.">
+                                    {{ $t('search-playlist') }}:&nbsp;
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('search-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
@@ -1122,8 +1117,8 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <label for="video-form-title-cmd" class="col-form-label">
-                                    Title Command:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="From this video, change channel title to">
+                                    {{ $t('title-command') }}:&nbsp;
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('title-command-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
@@ -1137,8 +1132,8 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <label for="video-form-game-cmd" class="col-form-label">
-                                    Game Command:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="From this video, change channel game/cat. to">
+                                    {{ $t('game-command') }}:&nbsp;
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('game-command-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
@@ -1154,32 +1149,32 @@
                                 <hr>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label for="video-form-player" class="col-form-label">Player:</label>
+                                <label for="video-form-player" class="col-form-label">{{ $t('player') }}:</label>
                                 <select id="video-form-player" v-model="video.player" :disabled="videoSearch.length > 0" class="custom-select">
-                                    <option value="local" :disabled="!config.hasVideosFolder">Local Video</option>
-                                    <option value="twitch-clip">Twitch Clip</option>
-                                    <option value="twitch">Twitch Video</option>
-                                    <option value="youtube">Youtube Video</option>
+                                    <option value="local" :disabled="!config.hasVideosFolder">{{ $t('local-video') }}</option>
+                                    <option value="twitch-clip">{{ $t('twitch-clip') }}</option>
+                                    <option value="twitch">{{ $t('twitch-video') }}</option>
+                                    <option value="youtube">{{ $t('youtube-video') }}</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-6">
-                                <label for="video-form-file" class="col-form-label">File:</label>
+                                <label for="video-form-file" class="col-form-label">{{ $t('file') }}:</label>
                                 <input id="video-form-file" v-model="video.file" type="text" class="form-control" :class="{'is-invalid': isInvalidFile()}" :disabled="videoSearch.length > 0" autocomplete="off" :placeholder="getFilePlaceholder()">
                             </div>
                             <div class="col-12 col-md-6">
-                                <label for="video-form-name" class="col-form-label">Name:</label>
+                                <label for="video-form-name" class="col-form-label">{{ $t('name') }}:</label>
                                 <input id="video-form-name" v-model="video.name" type="text" class="form-control" :class="{'is-invalid': video.name === ''}" :disabled="videoSearch.length > 0" autocomplete="off">
                             </div>
                             <div class="col-12 col-md-6">
-                                <label for="video-form-subname" class="col-form-label">Sub Name:</label>
+                                <label for="video-form-subname" class="col-form-label">{{ $t('sub-name') }}:</label>
                                 <input id="video-form-subname" v-model="video.subName" type="text" class="form-control" :disabled="videoSearch.length > 0" autocomplete="off">
                             </div>
                             <div class="col-12 col-md-6">
-                                <label for="video-form-duration-hours" class="col-form-label">Duration:</label>
+                                <label for="video-form-duration-hours" class="col-form-label">{{ $t('duration') }}:</label>
                                 <div class="form-row">
                                     <div class="col">
                                         <div class="input-group">
-                                            <input id="video-form-duration-hours" v-model.number="video.durationHours" type="number" min="0" max="23" class="form-control" :class="{'is-invalid': isInvalidHours()}" :disabled="videoSearch.length > 0" placeholder="hours">
+                                            <input id="video-form-duration-hours" v-model.number="video.durationHours" type="number" min="0" max="23" class="form-control" :class="{'is-invalid': isInvalidHours()}" :disabled="videoSearch.length > 0" :placeholder="$t('hours').toLowerCase()">
                                             <div class="input-group-append">
                                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                                                 <div class="input-group-text">h</div>
@@ -1188,7 +1183,7 @@
                                     </div>
                                     <div class="col">
                                         <div class="input-group">
-                                            <input id="video-form-duration-min" v-model.number="video.durationMin" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': isInvalidMin()}" :disabled="videoSearch.length > 0" placeholder="min.">
+                                            <input id="video-form-duration-min" v-model.number="video.durationMin" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': isInvalidMin()}" :disabled="videoSearch.length > 0" :placeholder="$t('min').toLowerCase()">
                                             <div class="input-group-append">
                                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                                                 <div class="input-group-text">m</div>
@@ -1197,7 +1192,7 @@
                                     </div>
                                     <div class="col">
                                         <div class="input-group">
-                                            <input id="video-form-duration-sec" v-model.number="video.durationSec" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': isInvalidSec()}" :disabled="videoSearch.length > 0" placeholder="sec.">
+                                            <input id="video-form-duration-sec" v-model.number="video.durationSec" type="number" min="0" max="59" class="form-control" :class="{'is-invalid': isInvalidSec()}" :disabled="videoSearch.length > 0" :placeholder="$t('sec').toLowerCase()">
                                             <div class="input-group-append">
                                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                                                 <div class="input-group-text">s</div>
@@ -1209,16 +1204,16 @@
                             <div class="col-12 col-md-6 pt-3 pt-md-5">
                                 <div class="custom-control custom-switch float-left mr-3">
                                     <input id="video-form-played" v-model.number="video.played" type="checkbox" value="1" class="custom-control-input">
-                                    <label class="custom-control-label" for="video-form-played">Played</label>
+                                    <label class="custom-control-label" for="video-form-played">{{ $t('played') }}</label>
                                 </div>
                                 <div class="custom-control custom-switch float-left mr-3">
                                     <input id="video-form-skipped" v-model.number="video.skipped" type="checkbox" value="1" class="custom-control-input">
-                                    <label class="custom-control-label" for="video-form-skipped">Skipped</label>
+                                    <label class="custom-control-label" for="video-form-skipped">{{ $t('skipped') }}</label>
                                 </div>
                                 <div class="custom-control custom-switch float-left">
                                     <input id="video-form-autofill" v-model.number="video.autofill" type="checkbox" value="1" class="custom-control-input" :disabled="isDisabledAutofill()">
-                                    <label class="custom-control-label" for="video-form-autofill" data-toggle="tooltip" data-placement="top" title="Autofill 'Name' and 'Duration' by given 'File'">
-                                        Autofill
+                                    <label class="custom-control-label" for="video-form-autofill" data-toggle="tooltip" data-placement="top" :title="$t('autofill-tooltip')">
+                                        {{ $t('autofill') }}
                                     </label>
                                 </div>
                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
@@ -1227,9 +1222,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button v-if="!updateMode" type="button" class="btn btn-primary" @click="addVideo()">Add</button>
-                        <button v-if="updateMode" type="button" class="btn btn-primary" @click="updateVideo()">Update</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
+                        <button v-if="!updateMode" type="button" class="btn btn-primary" @click="addVideo()">{{ $t('add') }}</button>
+                        <button v-if="updateMode" type="button" class="btn btn-primary" @click="updateVideo()">{{ $t('update') }}</button>
                     </div>
                 </div>
             </div>
@@ -1240,7 +1235,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="remove-playlist-modal-title" class="modal-title">
-                            Remove Playlist
+                            {{ $t('remove-playlist') }}
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -1250,12 +1245,12 @@
                         <div class="row">
                             <div class="col-12 form-search">
                                 <label for="remove-playlist-search" class="col-form-label">
-                                    Search Playlist:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Min. 3 chars. Space is jocker char.">
+                                    {{ $t('search-playlist') }}:&nbsp;
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('search-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="remove-playlist-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': video.playlistId === 0}" autocomplete="off" placeholder="Name">
+                                <input id="remove-playlist-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': video.playlistId === 0}" autocomplete="off" :placeholder="$t('name')">
                                 <div v-if="showLoader.playlist" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>
@@ -1268,8 +1263,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-danger" :disabled="playlist.name.toLowerCase() === 'general'" @click="removePlaylist()">Remove</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
+                        <button type="button" class="btn btn-danger" :disabled="playlist.name.toLowerCase() === 'general'" @click="removePlaylist()">{{ $t('remove') }}</button>
                     </div>
                 </div>
             </div>
@@ -1280,7 +1275,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="merge-playlists-modal-title" class="modal-title">
-                            Merge Playlist
+                            {{ $t('merge-playlists') }}
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -1290,8 +1285,8 @@
                         <div class="row">
                             <div class="col-12 col-md-4 form-search">
                                 <label for="merge-playlists-search-target" class="col-form-label">
-                                    Search Playlist Target:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Min. 3 chars. Space is jocker char.">
+                                    {{ $t('search-playlist-target') }}:&nbsp;
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('search-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
@@ -1306,20 +1301,20 @@
                                 </div>
                             </div>
                             <div class="col-12 col-md-4">
-                                <label for="merge-playlists-method" class="col-form-label">Method:</label>
+                                <label for="merge-playlists-method" class="col-form-label">{{ $t('method') }}:</label>
                                 <select id="merge-playlists-method" v-model.number="merge.method" class="custom-select">
-                                    <option value="1">Append</option>
-                                    <option value="-1">Prepend</option>
+                                    <option value="1">{{ $t('append') }}</option>
+                                    <option value="-1">{{ $t('prepend') }}</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-4 form-search">
                                 <label for="merge-playlists-search-source" class="col-form-label">
-                                    Search Playlist Source:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Min. 3 chars. Space is jocker char.">
+                                    {{ $t('search-playlist-source') }}:&nbsp;
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('search-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="merge-playlists-search-source" v-model="playlistSourceSearch" type="text" class="form-control" :class="{'is-invalid': video.playlistId === 0}" autocomplete="off" placeholder="Name">
+                                <input id="merge-playlists-search-source" v-model="playlistSourceSearch" type="text" class="form-control" :class="{'is-invalid': video.playlistId === 0}" autocomplete="off" :placeholder="$t('name')">
                                 <div v-if="showLoader.playlist" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>
@@ -1331,8 +1326,8 @@
                             </div>
                             <div class="col-12 col-md-6 col-xl-4 offset-md-6 offset-xl-8">
                                 <label for="merge-playlists-from" class="col-form-label">
-                                    Videos from / to:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="infinity = 0">
+                                    {{ $t('videos-from-to') }}:&nbsp;
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('videos-from-to-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
@@ -1341,18 +1336,18 @@
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
-                                                <div class="input-group-text">from</div>
+                                                <div class="input-group-text">{{ $t('from').toLowerCase() }}</div>
                                             </div>
-                                            <input id="merge-playlists-from" v-model.number="merge.from" type="number" min="0" class="form-control" :class="{'is-invalid': merge.to > 0 && merge.from > merge.to}" placeholder="from">
+                                            <input id="merge-playlists-from" v-model.number="merge.from" type="number" min="0" class="form-control" :class="{'is-invalid': merge.to > 0 && merge.from > merge.to}" :placeholder="$t('from')">
                                         </div>
                                     </div>
                                     <div class="col">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
-                                                <div class="input-group-text">to</div>
+                                                <div class="input-group-text">{{ $t('to').toLowerCase() }}</div>
                                             </div>
-                                            <input id="merge-playlists-to" v-model.number="merge.to" type="number" min="0" class="form-control" :class="{'is-invalid': merge.to > 0 && merge.to < merge.from}" placeholder="to">
+                                            <input id="merge-playlists-to" v-model.number="merge.to" type="number" min="0" class="form-control" :class="{'is-invalid': merge.to > 0 && merge.to < merge.from}" :placeholder="$t('to')">
                                         </div>
                                     </div>
                                 </div>
@@ -1360,8 +1355,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="mergePlaylists()">Merge</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
+                        <button type="button" class="btn btn-primary" @click="mergePlaylists()">{{ $t('merge') }}</button>
                     </div>
                 </div>
             </div>
@@ -1372,7 +1367,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="switch-playlist-modal-title" class="modal-title">
-                            Switch Playlist
+                            {{ $t('switch-playlist') }}
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -1382,12 +1377,12 @@
                         <div class="row">
                             <div class="col-12 form-search">
                                 <label for="switch-playlist-search" class="col-form-label">
-                                    Search Playlist:&nbsp;
-                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Min. 3 chars. Space is jocker char.">
+                                    {{ $t('search-playlist') }}:&nbsp;
+                                    <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('search-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="switch-playlist-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': video.playlistId === 0}" autocomplete="off" placeholder="Name">
+                                <input id="switch-playlist-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': video.playlistId === 0}" autocomplete="off" :placeholder="$t('name')">
                                 <div v-if="showLoader.playlist" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>
@@ -1400,8 +1395,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="switchPlaylist()">Switch</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
+                        <button type="button" class="btn btn-primary" @click="switchPlaylist()">{{ $t('switch') }}</button>
                     </div>
                 </div>
             </div>

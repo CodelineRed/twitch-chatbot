@@ -181,7 +181,7 @@
                 this.getRaffleWinner(true);
             },
             closeRaffle: function() {
-                if (typeof socketWrite === 'function' && confirm('Are you sure to close "' + this.activeRaffle.name + '"?')) {
+                if (typeof socketWrite === 'function' && confirm(this.$t('confirm-close-raffle', [this.activeRaffle.name]))) {
                     this.endCountdown = 0;
                     const call = {
                         method: 'closeRaffle',
@@ -420,10 +420,10 @@
 <template>
     <div class="raffle p-2" :class="{popout: isPopout}">
         <div v-if="activeRaffle.id && !isPopout" class="h4 text-center">
-            <a href="#" onclick="javascript:return false;" @click="popoutRaffle()">Raffle <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
+            <a href="#" onclick="javascript:return false;" @click="popoutRaffle()">{{ $t('raffle') }} <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
         </div>
         <div v-if="!activeRaffle.id && !isPopout" class="h4 text-center">
-            Raffle
+            {{ $t('raffle') }}
         </div>
         <div class="row">
             <div class="col-12">
@@ -431,11 +431,11 @@
                     <div class="h5">
                         {{ activeRaffle.name }}
                     </div>
-                    <p>Raffle starts in {{ startCountdown|formatDuration() }}</p>
-                    <button v-if="!isPopout" type="button" class="btn btn-sm btn-primary" @click="startRaffle()">Start Raffle</button>
+                    <p>{{ $t('raffle-starts-in') }} {{ startCountdown|formatDuration() }}</p>
+                    <button v-if="!isPopout" type="button" class="btn btn-sm btn-primary" @click="startRaffle()">{{ $t('start-raffle') }}</button>
                 </div>
                 <div v-if="!activeRaffle.id && isPopout" class="text-center h2">
-                    No Raffle is currently active!
+                    {{ $t('no-raffle-active') }}
                 </div>
                 <div v-if="activeRaffle.id && startCountdown === 0" class="text-white">
                     <div v-if="!winner.name" class="overview">
@@ -443,19 +443,19 @@
                             {{ activeRaffle.name }}
                         </div>
                         <p>
-                            <span v-if="activeRaffle.keyword === null" class="text-nowrap">Join via Poll |&nbsp;</span>
-                            <span v-else>Keyword: {{ activeRaffle.keyword }} |&nbsp;</span>
-                            Attendees: {{ activeRaffle.attendeeCount }} |&nbsp;
-                            Entries: {{ activeRaffle.entries }}
+                            <span v-if="activeRaffle.keyword === null" class="text-nowrap">{{ $t('join-via-poll') }} |&nbsp;</span>
+                            <span v-else>{{ $t('keyword') }}: {{ activeRaffle.keyword }} |&nbsp;</span>
+                            {{ $tc('attendee', activeRaffle.attendeeCount) }}: {{ activeRaffle.attendeeCount }} |&nbsp;
+                            {{ $tc('entry', activeRaffle.entries) }}: {{ activeRaffle.entries }}
                         </p>
                         <p>
-                            Attendees: {{ activeRaffle.attendees }}
+                            {{ $tc('attendee', activeRaffle.attendeeCount) }}: {{ activeRaffle.attendees }}
                         </p>
                         <p v-if="activeRaffle.end && endCountdown">
-                            Raffle ends in {{ endCountdown|formatDuration() }}
+                            {{ $t('raffle-ends-in') }} {{ endCountdown|formatDuration() }}
                         </p>
                         <p v-if="activeRaffle.end && !endCountdown">
-                            Raffle has ended
+                            {{ $t('raffle-has-ended') }}
                         </p>
                     </div>
                     <div v-if="winner.name" class="winner">
@@ -469,11 +469,11 @@
                         </div>
                     </div>
                     <div v-if="!isPopout" class="text-right">
-                        <span v-if="winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Close Animation"><button v-if="winner.id" type="button" class="btn btn-sm btn-warning" @click="closeRaffleAnimation()"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
-                        <span v-if="!winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Animate Winner"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#animate-raffle-winner"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
-                        <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Announce to Chat"><button type="button" class="btn btn-sm btn-primary" @click="announceRaffleToChat()"><font-awesome-icon :icon="['fas', 'comment-dots']" class="fa-fw" /></button></span>
-                        <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Result to Chat"><button type="button" class="btn btn-sm btn-primary" @click="raffleResultToChat()"><font-awesome-icon :icon="['fas', 'chart-pie']" class="fa-fw" /></button></span>
-                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Close Raffle"><button type="button" class="btn btn-sm btn-danger" @click="closeRaffle()"><font-awesome-icon :icon="['fas', 'times']" class="fa-fw" /></button></span>
+                        <span v-if="winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" :title="$t('close-animation')"><button v-if="winner.id" type="button" class="btn btn-sm btn-warning" @click="closeRaffleAnimation()"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
+                        <span v-if="!winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" :title="$t('animate-winner')"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#animate-raffle-winner"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
+                        <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" :title="$t('announce-to-chat')"><button type="button" class="btn btn-sm btn-primary" @click="announceRaffleToChat()"><font-awesome-icon :icon="['fas', 'comment-dots']" class="fa-fw" /></button></span>
+                        <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" :title="$t('result-to-chat')"><button type="button" class="btn btn-sm btn-primary" @click="raffleResultToChat()"><font-awesome-icon :icon="['fas', 'chart-pie']" class="fa-fw" /></button></span>
+                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('close-raffle')"><button type="button" class="btn btn-sm btn-danger" @click="closeRaffle()"><font-awesome-icon :icon="['fas', 'times']" class="fa-fw" /></button></span>
                     </div>
                 </div>
             </div>
@@ -481,30 +481,30 @@
         <div class="row" :class="{'d-none': activeRaffle.id || isPopout}">
             <div class="col-12">
                 <div class="form-group">
-                    <label for="raffle-name">Annoucement:</label>
+                    <label for="raffle-name">{{ $t('annoucement') }}:</label>
                     <input id="raffle-name" v-model="raffle.name" type="text" class="form-control" placeholder="" :class="{'is-invalid': raffle.name === ''}">
                 </div>
                 <div class="form-group">
-                    <label for="raffle-keyword">Keyword:</label>
+                    <label for="raffle-keyword">{{ $t('keyword') }}:</label>
                     <input id="raffle-keyword" v-model="raffle.keyword" type="text" class="form-control" placeholder="" :class="{'is-invalid': raffle.keyword === ''}">
                 </div>
                 <div class="form-row">
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
-                            <label for="raffle-start">Start:</label>
-                            <c-datetime id="raffle-start" v-model="datetimePicker.start" class="pommes" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
+                            <label for="raffle-start">{{ $t('start') }}:</label>
+                            <c-datetime id="raffle-start" v-model="datetimePicker.start" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
                         </div>
                     </div>
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
-                            <label for="raffle-end">End:</label>
+                            <label for="raffle-end">{{ $t('end') }}:</label>
                             <c-datetime id="raffle-end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
                         </div>
                     </div>
                     <div v-if="hasMultiplicators" class="col-12">
                         <label for="raffle-multiplicators-partner" class="col-form-label">
-                            Multiplicators&nbsp;
-                            <span class="d-inline-block" data-toggle="popover" title="Description" data-content="The higher the multiplicator, the higher the chance of winning.<br>The user is automatically assigned to the highest group. Partner is highest and guest is lowest.<br>-1 = skip Group">
+                            {{ $t('multiplicators') }}&nbsp;
+                            <span class="d-inline-block" data-toggle="popover" :title="$t('multiplicators-title')" :data-content="$t('multiplicators-content')">
                                 <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                             </span>
                         </label>
@@ -518,11 +518,11 @@
                     <div class="col-12">
                         <div class="form-group custom-control custom-switch float-left mr-3">
                             <input id="raffle-multiplicators" v-model="hasMultiplicators" type="checkbox" class="custom-control-input">
-                            <label for="raffle-multiplicators" class="custom-control-label">Multiplicators</label>
+                            <label for="raffle-multiplicators" class="custom-control-label">{{ $t('multiplicators') }}</label>
                         </div>
                         <div class="form-group custom-control custom-switch float-left">
                             <input id="raffle-background-audio" v-model="hasBackgroundAudio" type="checkbox" class="custom-control-input">
-                            <label for="raffle-background-audio" class="custom-control-label">Background Audio</label>
+                            <label for="raffle-background-audio" class="custom-control-label">{{ $t('background-audio') }}</label>
                         </div>
                     </div>
                     <div v-if="hasBackgroundAudio" class="col-12">
@@ -530,32 +530,32 @@
                             <div class="col-12 col-lg-6">
                                 <div class="form-group">
                                     <label for="raffle-audio-file" class="col-form-label">
-                                        Audio File:&nbsp;
-                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Audio is only played in popout window">
+                                        {{ $t('audio-file') }}:&nbsp;
+                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('audio-file-tooltip')">
                                             <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                         </span>
                                     </label>
                                     <select id="raffle-audio-file" v-model.number="raffle.audio.id" class="custom-select">
-                                        <option value="0">None</option>
+                                        <option value="0">{{ $t('none') }}</option>
                                         <option v-for="audio in audioLoops" :key="audio.id" :value="audio.id">{{ audio.name }}</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-12 col-lg-6">
                                 <div class="form-group">
-                                    <label for="raffle-audio-volume">Volume ({{ raffle.audio.volume }}%)</label>
+                                    <label for="raffle-audio-volume">{{ $t('volume') }} ({{ raffle.audio.volume }}%)</label>
                                     <input id="raffle-audio-volume" v-model.number="raffle.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('background', raffle.audio.volume / 100)">
                                 </div>
                             </div>
                             <div class="col-12 mb-3">
-                                <button type="button" class="btn btn-light mr-2" :disabled="!raffle.audio.file.length" @click="playAudio('background', raffle.audio.file, raffle.audio.volume / 100, true)">Play Audio</button>
+                                <button type="button" class="btn btn-light mr-2" :disabled="!raffle.audio.file.length" @click="playAudio('background', raffle.audio.file, raffle.audio.volume / 100, true)">{{ $t('play-audio') }}</button>
                                 <button type="button" class="btn btn-light" @click="stopAudio('background')">Stop Audio</button>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 text-right">
-                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#all-raffles">All Raffles</button>
-                        <button type="button" class="btn btn-sm btn-primary" :disabled="raffle.name === '' || raffle.keyword === '' || (raffle.end > 0 && raffle.end < raffle.start)" @click="addRaffle()">Activate Raffle</button>
+                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#all-raffles">{{ $t('all-raffles') }}</button>
+                        <button type="button" class="btn btn-sm btn-primary" :disabled="raffle.name === '' || raffle.keyword === '' || (raffle.end > 0 && raffle.end < raffle.start)" @click="addRaffle()">{{ $t('activate-raffle') }}</button>
                     </div>
                 </div>
             </div>
@@ -566,7 +566,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="all-raffles-modal-title" class="modal-title">
-                            All Raffles
+                            {{ $t('all-raffles') }}
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -575,7 +575,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div v-if="raffles === null" class="col-12">
-                                Please wait <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />.
+                                {{ $t('please-wait') }} <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />.
                             </div>
                             <div v-else-if="raffles.length" class="col-12">
                                 <div class="table-responsive">
@@ -583,10 +583,10 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Multiplicators</th>
-                                                <th scope="col">Summary</th>
-                                                <th scope="col">Created at</th>
+                                                <th scope="col">{{ $t('name') }}</th>
+                                                <th scope="col">{{ $t('multiplicators') }}</th>
+                                                <th scope="col">{{ $t('summary') }}</th>
+                                                <th scope="col">{{ $t('created-at') }}</th>
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>
@@ -595,8 +595,8 @@
                                                 <td>{{ index + 1 }}</td>
                                                 <td>
                                                     <span class="text-nowrap">{{ raffleItem.name }}</span><br>
-                                                    <span v-if="raffleItem.keyword === null" class="text-nowrap">Join via Poll</span>
-                                                    <span v-else class="text-nowrap">Keyword: {{ raffleItem.keyword }}</span>
+                                                    <span v-if="raffleItem.keyword === null" class="text-nowrap">{{ $t('join-via-poll') }}</span>
+                                                    <span v-else class="text-nowrap">{{ $t('keyword') }}: {{ raffleItem.keyword }}</span>
                                                 </td>
                                                 <td>
                                                     <span v-for="(multiplicator, name) in raffleItem.multiplicators" :key="name" class="text-nowrap">
@@ -604,17 +604,17 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <span v-if="raffleItem.audio.id" class="text-nowrap">Raffle Audio: {{ raffleItem.audio.name }}<br></span>
-                                                    <span class="text-nowrap">Attendees: {{ raffleItem.attendeeCount }}<br></span>
-                                                    <span class="text-nowrap">Entries: {{ raffleItem.entries }}<br></span>
-                                                    <span class="text-nowrap">Winner: {{ raffleItem.winner }}<br></span>
-                                                    <span v-if="raffleItem.winnerAudio" class="text-nowrap">Winner Audio: {{ raffleItem.winnerAudio }}</span>
+                                                    <span v-if="raffleItem.audio.id" class="text-nowrap">{{ $t('raffle-audio') }}: {{ raffleItem.audio.name }}<br></span>
+                                                    <span class="text-nowrap">{{ $tc('attendee', raffleItem.attendeeCount) }}: {{ raffleItem.attendeeCount }}<br></span>
+                                                    <span class="text-nowrap">{{ $tc('entry', raffleItem.entries) }}: {{ raffleItem.entries }}<br></span>
+                                                    <span class="text-nowrap">{{ $t('winner') }}: {{ raffleItem.winner }}<br></span>
+                                                    <span v-if="raffleItem.winnerAudio" class="text-nowrap">{{ $t('winner-audio') }}: {{ raffleItem.winnerAudio }}</span>
                                                 </td>
                                                 <td>{{ raffleItem.createdAt|formatDateTime($t('datetime')) }}</td>
                                                 <td>
                                                     <span class="text-nowrap">
-                                                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Copy to Form" @click="copyToForm(raffleItem)"><font-awesome-icon :icon="['fas', 'copy']" class="fa-fw" /></button>
-                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove Raffle" :disabled="raffleItem.active" @click="removeRaffle(raffleItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" :title="$t('copy-to-form')" @click="copyToForm(raffleItem)"><font-awesome-icon :icon="['fas', 'copy']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" :title="$t('remove-raffle')" :disabled="raffleItem.active" @click="removeRaffle(raffleItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                                                     </span>
                                                 </td>
                                             </tr>
@@ -623,12 +623,12 @@
                                 </div>
                             </div>
                             <div v-else class="col-12">
-                                Raffles not found.
+                                {{ $t('raffles-not-found') }}
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
                     </div>
                 </div>
             </div>
@@ -639,7 +639,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="animate-raffle-winner-modal-title" class="modal-title">
-                            Animate Winner
+                            {{ $t('animate-winner') }}
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -650,36 +650,36 @@
                             <div class="col-12 col-md-6">
                                 <div class="form-group">
                                     <label for="animate-raffle-winner-file" class="col-form-label">
-                                        Audio File:&nbsp;
-                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Audio is only played in popout window">
+                                        {{ $t('audio-file') }}:&nbsp;
+                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('audio-file-tooltip')">
                                             <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                         </span>
                                     </label>
                                     <select id="animate-raffle-winner-file" v-model.number="winner.audio.id" class="custom-select">
-                                        <option value="0">None</option>
+                                        <option value="0">{{ $t('none') }}</option>
                                         <option v-for="audio in audioJingles" :key="audio.id" :value="audio.id">{{ audio.name }}</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="form-group">
-                                    <label for="animate-raffle-winner-volume">Volume ({{ winner.audio.volume }}%)</label>
+                                    <label for="animate-raffle-winner-volume">{{ $t('volume') }} ({{ winner.audio.volume }}%)</label>
                                     <input id="animate-raffle-winner-volume" v-model.number="winner.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('winner', winner.audio.volume / 100)">
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="custom-control custom-switch">
                                     <input id="animate-raffle-winner-Announce" v-model.number="winner.chat" type="checkbox" value="1" class="custom-control-input">
-                                    <label class="custom-control-label" for="animate-raffle-winner-Announce">Announce Winner to Chat</label>
+                                    <label class="custom-control-label" for="animate-raffle-winner-Announce">{{ $t('announce-winner-to-chat') }}</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" :disabled="!winner.audio.file.length" @click="playAudio('winner', winner.audio.file, winner.audio.volume / 100)">Play Audio</button>
-                        <button type="button" class="btn btn-light" @click="stopAudio('winner')">Stop Audio</button>
-                        <button type="button" class="btn btn-primary" @click="animateRaffleWinner()">Ok</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-light" :disabled="!winner.audio.file.length" @click="playAudio('winner', winner.audio.file, winner.audio.volume / 100)">{{ $t('play-audio') }}</button>
+                        <button type="button" class="btn btn-light" @click="stopAudio('winner')">{{ $t('stop-audio') }}</button>
+                        <button type="button" class="btn btn-primary" @click="animateRaffleWinner()">{{ $t('ok') }}</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
                     </div>
                 </div>
             </div>

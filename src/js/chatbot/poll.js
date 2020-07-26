@@ -1,4 +1,5 @@
 const database     = require('./database');
+const locales      = require('./locales');
 const moment       = require('moment');
 const {v4: uuidv4} = require('uuid');
 
@@ -45,7 +46,7 @@ const poll = {
                         });
                     }
                 });
-                console.log(`* Added poll "${args.poll.name}"`);
+                console.log(locales.t('poll-added', [args.poll.name]));
             });
         }
     },
@@ -92,8 +93,8 @@ const poll = {
     announcePollToChat: function(chatbot, args) {
         if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
             let name = chatbot.activePolls[args.channel].name;
-            let raffle = chatbot.activePolls[args.channel].raffleId ? ' | Raffle: ' + chatbot.activePolls[args.channel].raffleName : '';
-            let multipleChoice = chatbot.activePolls[args.channel].multipleChoice ? 'Yes' : 'No';
+            let raffle = chatbot.activePolls[args.channel].raffleId ? ' | ' + locales.t('raffle') + ': ' + chatbot.activePolls[args.channel].raffleName : '';
+            let multipleChoice = chatbot.activePolls[args.channel].multipleChoice ? locales.t('yes') : locales.t('no');
             let options = chatbot.activePolls[args.channel].options;
             let results =  '';
 
@@ -101,7 +102,7 @@ const poll = {
                 results += ` !vote ${i + 1} - ${options[i].name} |`;
             }
 
-            chatbot.client.say('#' + args.channel, `Poll: ${name} |${results} Multiple Choice: ${multipleChoice}${raffle}`);
+            chatbot.client.say('#' + args.channel, locales.t('poll-announcement', [name, results, multipleChoice, raffle]));
         }
     },
     closePoll: function(chatbot, args) {
@@ -327,7 +328,7 @@ const poll = {
 
                 // if winner should be announced to chat
                 if (winner.chat) {
-                    chatbot.client.say('#' + args.channel, `Poll Winner: ${winner.name} ${winner.average}% (${winner.votes} Votes)`);
+                    chatbot.client.say('#' + args.channel, locales.t('poll-winner', [winner.name, winner.average, winner.votes]));
                 }
 
                 let from = 'option';
@@ -382,7 +383,7 @@ const poll = {
                 results += ` ${options[i].name} ${options[i].average}% |`;
             }
 
-            chatbot.client.say('#' + args.channel, `Poll: ${name} |${results} Attendees: ${attendees} | Votes: ${votes}`);
+            chatbot.client.say('#' + args.channel, locales.t('poll-result', [name, results, attendees, votes]));
         }
     },
     removePoll: function(chatbot, args) {
@@ -391,7 +392,7 @@ const poll = {
                 database.remove('option', ['poll_id = ?'], [args.poll.id]);
                 database.remove('user_choice', ['poll_id = ?'], [args.poll.id]);
                 poll.getPolls(chatbot, args);
-                console.log(`* Removed poll "${args.poll.name}"`);
+                console.log(locales.t('poll-removed', [args.poll.name]));
             });
         }
     },

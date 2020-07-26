@@ -5,6 +5,12 @@
 
     export default {
         mixins: [bsComponent, dataTable, slider],
+        props: {
+            drop: {
+                type: String,
+                default: 'dropup'
+            }
+        },
         data: function() {
             return {
                 currentLocale: window.localStorage.getItem('currentLocale') ? window.localStorage.getItem('currentLocale') : 'en',
@@ -39,6 +45,9 @@
                     $this.initPopover();
                     $this.init = true;
                 }, 250);
+            },
+            getButtonClass: function() {
+                return this.drop;
             }
         }
     };
@@ -46,12 +55,12 @@
 
 <template>
     <div class="col-auto">
-        <div class="btn-group dropdown">
+        <div class="btn-group" :class="getButtonClass()">
             <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <font-awesome-icon :icon="['fas', 'globe']" class="fa-fw" />
             </button>
             <div class="dropdown-menu">
-                <a v-for="locale in languages" :key="locale" class="dropdown-item" :class="{active: locale === currentLocale}" onclick="javascript:return false;" href="#" @click="changeLang(locale)">{{ $t("lang-" + locale) }}</a>
+                <a v-for="locale in languages" :key="locale" class="dropdown-item" :class="{active: locale === currentLocale}" onclick="javascript:return false;" href="#" @click="changeLang(locale)">{{ $t('lang-' + locale) }}</a>
             </div>
         </div>
     </div>

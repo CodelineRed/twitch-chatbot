@@ -157,22 +157,22 @@
                 <div class="controls pb-2">
                     <div class="custom-control custom-switch float-left mr-3">
                         <input id="message-time" v-model="showTimestamp" type="checkbox" class="custom-control-input">
-                        <label class="custom-control-label" for="message-time">Timestamp</label>
+                        <label class="custom-control-label" for="message-time">{{ $t('timestamp') }}</label>
                     </div>
                     <div class="custom-control custom-switch float-left mr-3">
                         <input id="message-badges" v-model="showBadges" type="checkbox" class="custom-control-input">
-                        <label class="custom-control-label" for="message-badges">Badges</label>
+                        <label class="custom-control-label" for="message-badges">{{ $tc('badge', 2) }}</label>
                     </div>
                     <div class="custom-control custom-switch float-left mr-3">
                         <input id="message-user-color" v-model="showUserColor" type="checkbox" class="custom-control-input">
-                        <label class="custom-control-label" for="message-user-color">Color</label>
+                        <label class="custom-control-label" for="message-user-color">{{ $t('color') }}</label>
                     </div>
                     <div class="custom-control custom-switch float-left mr-3">
                         <input id="message-pause" v-model="isPause" type="checkbox" class="custom-control-input">
-                        <label class="custom-control-label" for="message-pause">Pause</label>
+                        <label class="custom-control-label" for="message-pause">{{ $t('pause') }}</label>
                     </div>
                     <div class="float-left">
-                        <a v-if="isPopout == false" href="#" onclick="javascript:return false;" @click="popoutChat()">Popout <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
+                        <a v-if="isPopout == false" href="#" onclick="javascript:return false;" @click="popoutChat()">{{ $t('popout') }} <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
                     </div>
                     <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
                     <div class="clearfix"></div>
@@ -181,7 +181,7 @@
                     <!-- eslint-disable-next-line vue/require-v-for-key -->
                     <div v-for="(message, index) in messages" :class="getMessageClass(index, message)" class="message">
                         <span v-if="showTimestamp" class="timestamp mr-2" data-toggle="tooltip" data-placement="top" :title="message.createdAt|formatDateTime($t('datetime'))">
-                            [{{ message.createdAt|formatDateTime($t("time")) }}]
+                            [{{ message.createdAt|formatDateTime($t('time')) }}]
                         </span>
                         <span v-if="showBadges">
                             <!-- eslint-disable-next-line vue/require-v-for-key -->
@@ -201,7 +201,7 @@
                     </div>
                 </div>
                 <div v-if="showScrollBottom" class="scroll-bottom" @click="scrollBottom()" @mouseover="isMessagesHover = true" @mouseout="isMessagesHover = false">
-                    Resume auto scroll
+                    {{ $t('resume-auto-scroll') }}
                 </div>
             </div>
         </div>

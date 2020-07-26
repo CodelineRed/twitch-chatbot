@@ -170,7 +170,7 @@
                 this.getPollWinner(true);
             },
             closePoll: function() {
-                if (typeof socketWrite === 'function' && confirm('Are you sure to close "' + this.activePoll.name + '"?')) {
+                if (typeof socketWrite === 'function' && confirm(this.$t('confirm-close-poll', [this.activePoll.name]))) {
                     this.endCountdown = 0;
                     const call = {
                         method: 'closePoll',
@@ -277,7 +277,7 @@
             },
             removePoll: function(poll) {
                 if (typeof socketWrite === 'function' && poll.id > 0  
-                    && confirm('Are you sure to remove poll "' + poll.name + '"?')) {
+                    && confirm(this.$t('confirm-remove-poll', [poll.name]))) {
                     const call = {
                         method: 'removePoll',
                         args: {
@@ -408,10 +408,10 @@
 <template>
     <div class="poll p-2" :class="{popout: isPopout}">
         <div v-if="activePoll.id && !isPopout" class="h4 text-center">
-            <a href="#" onclick="javascript:return false;" @click="popoutPoll()">Poll <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
+            <a href="#" onclick="javascript:return false;" @click="popoutPoll()">{{ $t('poll') }} <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
         </div>
         <div v-if="!activePoll.id && !isPopout" class="h4 text-center">
-            Poll
+            {{ $t('poll') }}
         </div>
         <div class="row">
             <div class="col-12">
@@ -419,12 +419,12 @@
                     <div class="h5">
                         {{ activePoll.name }}
                     </div>
-                    <p>Multiple Choice: <span v-if="activePoll.multipleChoice">Yes</span><span v-if="!activePoll.multipleChoice">No</span></p>
-                    <p>Poll starts in {{ startCountdown|formatDuration() }}</p>
-                    <button v-if="!isPopout" type="button" class="btn btn-sm btn-primary" @click="startPoll()">Start Poll</button>
+                    <p>{{ $t('multiple-choice') }}: <span v-if="activePoll.multipleChoice">{{ $t('yes') }}</span><span v-else>{{ $t('no') }}</span></p>
+                    <p>{{ $t('poll-starts-in') }} {{ startCountdown|formatDuration() }}</p>
+                    <button v-if="!isPopout" type="button" class="btn btn-sm btn-primary" @click="startPoll()">{{ $t('start-poll') }}</button>
                 </div>
                 <div v-if="!activePoll.id && isPopout" class="text-center h2">
-                    No Poll is currently active!
+                    {{ $t('no-poll-active') }}
                 </div>
                 <div v-if="activePoll.id && startCountdown === 0" class="text-white">
                     <div v-if="!winner.id" class="overview">
@@ -433,10 +433,10 @@
                         </div>
                         <p>
                             <span v-if="activePoll.raffleId">
-                                Raffle: {{ activePoll.raffleName }}<br>
+                                {{ $t('raffle') }}: {{ activePoll.raffleName }}<br>
                             </span>
-                            Multiple Choice: <span v-if="activePoll.multipleChoice">Yes</span><span v-if="!activePoll.multipleChoice">No</span><br>
-                            Attendees: {{ activePoll.attendees }} | Votes: {{ activePoll.votes }}
+                            {{ $t('multiple-choice') }}: <span v-if="activePoll.multipleChoice">{{ $t('yes') }}</span><span v-else>{{ $t('no') }}</span><br>
+                            {{ $tc('attendee', activePoll.attendees) }}: {{ activePoll.attendees }} | {{ $tc('vote', activePoll.votes) }}: {{ activePoll.votes }}
                         </p>
                         <div v-for="(option, index) in activePoll.options" :key="option.id" class="mb-3">
                             <div class="form-row">
@@ -444,7 +444,7 @@
                                     !vote {{ index + 1 }} - {{ option.name }}
                                 </div>
                                 <div class="col text-right">
-                                    {{ option.average }}% ({{ option.votes }} Votes)
+                                    {{ option.average }}% ({{ option.votes }} {{ $tc('vote', option.votes) }})
                                 </div>
                             </div>
                             <div class="progress mt-2">
@@ -452,10 +452,10 @@
                             </div>
                         </div>
                         <p v-if="activePoll.end && endCountdown">
-                            Poll ends in {{ endCountdown|formatDuration() }}
+                            {{ $t('poll-ends-in') }} {{ endCountdown|formatDuration() }}
                         </p>
                         <p v-if="activePoll.end && !endCountdown">
-                            Poll has ended
+                            {{ $t('poll-has-ended') }}
                         </p>
                     </div>
                     <div v-if="winner.id" class="winner">
@@ -469,11 +469,11 @@
                         </div>
                     </div>
                     <div v-if="!isPopout" class="text-right">
-                        <span v-if="winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Close Animation"><button v-if="winner.id" type="button" class="btn btn-sm btn-warning" @click="closePollAnimation()"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
-                        <span v-if="!winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Animate Winner"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#animate-poll-winner"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
-                        <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Announce to Chat"><button type="button" class="btn btn-sm btn-primary" @click="announcePollToChat()"><font-awesome-icon :icon="['fas', 'comment-dots']" class="fa-fw" /></button></span>
-                        <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" title="Result to Chat"><button type="button" class="btn btn-sm btn-primary" @click="pollResultToChat()"><font-awesome-icon :icon="['fas', 'chart-pie']" class="fa-fw" /></button></span>
-                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Close Poll"><button type="button" class="btn btn-sm btn-danger" @click="closePoll()"><font-awesome-icon :icon="['fas', 'times']" class="fa-fw" /></button></span>
+                        <span v-if="winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" :title="$t('close-animation')"><button v-if="winner.id" type="button" class="btn btn-sm btn-warning" @click="closePollAnimation()"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
+                        <span v-if="!winner.id" class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" :title="$t('animate-winner')"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#animate-poll-winner"><font-awesome-icon :icon="['fas', 'award']" class="fa-fw" /></button></span>
+                        <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" :title="$t('announce-to-chat')"><button type="button" class="btn btn-sm btn-primary" @click="announcePollToChat()"><font-awesome-icon :icon="['fas', 'comment-dots']" class="fa-fw" /></button></span>
+                        <span class="d-inline-block mr-2" data-toggle="tooltip" data-placement="top" :title="$t('result-to-chat')"><button type="button" class="btn btn-sm btn-primary" @click="pollResultToChat()"><font-awesome-icon :icon="['fas', 'chart-pie']" class="fa-fw" /></button></span>
+                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('close-poll')"><button type="button" class="btn btn-sm btn-danger" @click="closePoll()"><font-awesome-icon :icon="['fas', 'times']" class="fa-fw" /></button></span>
                     </div>
                 </div>
             </div>
@@ -481,11 +481,11 @@
         <div class="row" :class="{'d-none': activePoll.id || isPopout}">
             <div class="col-12">
                 <div class="form-group">
-                    <label for="poll-name">Question:</label>
+                    <label for="poll-name">{{ $tc('question', 1) }}:</label>
                     <input id="poll-name" v-model="poll.name" type="text" class="form-control" placeholder="" :class="{'is-invalid': poll.name === ''}">
                 </div>
                 <div class="form-group">
-                    <label for="poll-options">Options:</label>
+                    <label for="poll-options">{{ $tc('option', 2) }}:</label>
                     <input id="poll-options" v-model="newOption" type="text" class="form-control" placeholder="New Option" :class="{'is-invalid': !poll.options.length}" @keyup.enter="addOption()">
                     <div v-if="poll.options.length" class="list-group pt-2">
                         <button v-for="(option, index) in poll.options" :key="option.id" type="button" class="list-group-item list-group-item-action" @click="removeOption(index)">{{ option }}</button>
@@ -494,36 +494,36 @@
                 <div class="form-row">
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
-                            <label for="poll-start">Start:</label>
-                            <c-datetime id="poll-start" v-model="datetimePicker.start" class="pommes" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
+                            <label for="poll-start">{{ $t('start') }}:</label>
+                            <c-datetime id="poll-start" v-model="datetimePicker.start" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate"></c-datetime>
                         </div>
                     </div>
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
-                            <label for="poll-end">End:</label>
-                            <c-datetime id="poll-end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
+                            <label for="poll-end">{{ $t('end') }}:</label>
+                            <c-datetime id="poll-end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate"></c-datetime>
                         </div>
                     </div>
                     <div v-if="hasRaffle" class="col-12 mb-3 text-white">
                         <div v-if="activeRaffle.id">
-                            Raffle: {{ activeRaffle.name }}
+                            {{ $t('raffle') }}: {{ activeRaffle.name }}
                         </div>
                         <div v-else>
-                            Please activate a Raffle.
+                            {{ $t('please-activate-raffle') }}
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="form-group custom-control custom-switch float-left mr-3">
                             <input id="poll-multiple-choice" v-model="poll.multipleChoice" type="checkbox" class="custom-control-input">
-                            <label for="poll-multiple-choice" class="custom-control-label">Multiple Choice</label>
+                            <label for="poll-multiple-choice" class="custom-control-label">{{ $t('multiple-choice') }}</label>
                         </div>
                         <div class="form-group custom-control custom-switch float-left mr-3">
                             <input id="poll-background-audio" v-model="hasBackgroundAudio" type="checkbox" class="custom-control-input">
-                            <label for="poll-background-audio" class="custom-control-label">Background Audio</label>
+                            <label for="poll-background-audio" class="custom-control-label">{{ $t('background-audio') }}</label>
                         </div>
                         <div class="form-group custom-control custom-switch float-left">
                             <input id="poll-has-raffle" v-model="hasRaffle" type="checkbox" class="custom-control-input">
-                            <label for="poll-has-raffle" class="custom-control-label">Raffle</label>
+                            <label for="poll-has-raffle" class="custom-control-label">{{ $t('raffle') }}</label>
                         </div>
                     </div>
                     <div v-if="hasBackgroundAudio" class="col-12">
@@ -531,32 +531,32 @@
                             <div class="col-12 col-lg-6">
                                 <div class="form-group">
                                     <label for="poll-audio-file" class="col-form-label">
-                                        Audio File:&nbsp;
-                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Audio is only played in popout window">
+                                        {{ $t('audio-file') }}:&nbsp;
+                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('audio-file-tooltip')">
                                             <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                         </span>
                                     </label>
                                     <select id="poll-audio-file" v-model.number="poll.audio.id" class="custom-select">
-                                        <option value="0">None</option>
+                                        <option value="0">{{ $t('none') }}</option>
                                         <option v-for="audio in audioLoops" :key="audio.id" :value="audio.id">{{ audio.name }}</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-12 col-lg-6">
                                 <div class="form-group">
-                                    <label for="poll-audio-volume">Volume ({{ poll.audio.volume }}%)</label>
+                                    <label for="poll-audio-volume">{{ $t('volume') }} ({{ poll.audio.volume }}%)</label>
                                     <input id="poll-audio-volume" v-model.number="poll.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('background', poll.audio.volume / 100)">
                                 </div>
                             </div>
                             <div class="col-12 mb-3">
-                                <button type="button" class="btn btn-light mr-2" :disabled="!poll.audio.file.length" @click="playAudio('background', poll.audio.file, poll.audio.volume / 100, true)">Play Audio</button>
-                                <button type="button" class="btn btn-light" @click="stopAudio('background')">Stop Audio</button>
+                                <button type="button" class="btn btn-light mr-2" :disabled="!poll.audio.file.length" @click="playAudio('background', poll.audio.file, poll.audio.volume / 100, true)">{{ $t('play-audio') }}</button>
+                                <button type="button" class="btn btn-light" @click="stopAudio('background')">{{ $t('stop-audio') }}</button>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 text-right">
-                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#all-polls">All Polls</button>
-                        <button type="button" class="btn btn-sm btn-primary" :disabled="poll.name === '' || !poll.options.length || (poll.end > 0 && poll.end < poll.start)" @click="addPoll()">Activate Poll</button>
+                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="modal" data-target="#all-polls">{{ $t('all-polls') }}</button>
+                        <button type="button" class="btn btn-sm btn-primary" :disabled="poll.name === '' || !poll.options.length || (poll.end > 0 && poll.end < poll.start)" @click="addPoll()">{{ $t('activate-poll') }}</button>
                     </div>
                 </div>
             </div>
@@ -567,7 +567,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="all-polls-modal-title" class="modal-title">
-                            All Polls
+                            {{ $t('all-polls') }}
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -576,7 +576,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div v-if="polls === null" class="col-12">
-                                Please wait <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />.
+                                {{ $t('please-wait') }} <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />.
                             </div>
                             <div v-else-if="polls.length" class="col-12">
                                 <div class="table-responsive">
@@ -584,13 +584,13 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">#</th>
-                                                <th scope="col">Question</th>
-                                                <th scope="col">Options</th>
-                                                <th scope="col">Multiple Choice</th>
-                                                <th scope="col">Attendees</th>
-                                                <th scope="col">Votes</th>
-                                                <th scope="col">Audio</th>
-                                                <th scope="col">Created at</th>
+                                                <th scope="col">{{ $t('question') }}</th>
+                                                <th scope="col">{{ $tc('option', 2) }}</th>
+                                                <th scope="col">{{ $t('multiple-choice') }}</th>
+                                                <th scope="col">{{ $tc('attendee', 2) }}</th>
+                                                <th scope="col">{{ $tc('vote', 2) }}</th>
+                                                <th scope="col">{{ $t('audio') }}</th>
+                                                <th scope="col">{{ $t('created-at') }}</th>
                                                 <th scope="col"></th>
                                             </tr>
                                         </thead>
@@ -600,26 +600,26 @@
                                                 <td>{{ pollItem.name }}</td>
                                                 <td>
                                                     <span v-for="option in pollItem.options" :key="option.id" class="text-nowrap">
-                                                        {{ option.name }} - {{ option.average }}% ({{ option.votes }} Votes)<span v-if="option.winner">&nbsp;<font-awesome-icon :icon="['fas', 'award']"></font-awesome-icon></span><br>
+                                                        {{ option.name }} - {{ option.average }}% ({{ option.votes }} {{ $tc('vote', option.votes) }})<span v-if="option.winner">&nbsp;<font-awesome-icon :icon="['fas', 'award']"></font-awesome-icon></span><br>
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <span v-if="pollItem.multipleChoice">Yes</span>
-                                                    <span v-if="!pollItem.multipleChoice">No</span>
+                                                    <span v-if="pollItem.multipleChoice">{{ $t('yes') }}</span>
+                                                    <span v-else>{{ $t('no') }}</span>
                                                 </td>
                                                 <td>{{ pollItem.attendees }}</td>
                                                 <td>{{ pollItem.votes }}</td>
                                                 <td>
-                                                    <span v-if="pollItem.audio.id" class="text-nowrap">Poll: {{ pollItem.audio.name }}<br></span>
+                                                    <span v-if="pollItem.audio.id" class="text-nowrap">{{ $t('poll') }}: {{ pollItem.audio.name }}<br></span>
                                                     <span v-for="option in pollItem.options" :key="option.id" class="text-nowrap">
-                                                        <span v-if="option.winner && option.audio.id">Option: {{ option.audio.name }}</span>
+                                                        <span v-if="option.winner && option.audio.id">{{ $tc('option', 1) }}: {{ option.audio.name }}</span>
                                                     </span>
                                                 </td>
                                                 <td>{{ pollItem.createdAt|formatDateTime($t('datetime')) }}</td>
                                                 <td>
                                                     <span class="text-nowrap">
-                                                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" title="Copy to Form" @click="copyToForm(pollItem)"><font-awesome-icon :icon="['fas', 'copy']" class="fa-fw" /></button>
-                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" title="Remove Poll" :disabled="pollItem.active" @click="removePoll(pollItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" :title="$t('copy-to-form')" @click="copyToForm(pollItem)"><font-awesome-icon :icon="['fas', 'copy']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" :title="$t('remove-poll')" :disabled="pollItem.active" @click="removePoll(pollItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                                                     </span>
                                                 </td>
                                             </tr>
@@ -628,12 +628,12 @@
                                 </div>
                             </div>
                             <div v-else class="col-12">
-                                Raffles not found.
+                                {{ $t('polls-not-found') }}
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
                     </div>
                 </div>
             </div>
@@ -644,7 +644,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 id="animate-poll-winner-modal-title" class="modal-title">
-                            Animate Winner
+                            {{ $t('animate-winner') }}
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -655,36 +655,36 @@
                             <div class="col-12 col-md-6">
                                 <div class="form-group">
                                     <label for="animate-poll-winner-file" class="col-form-label">
-                                        Audio File:&nbsp;
-                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Audio is only played in popout window">
+                                        {{ $t('audio-file') }}:&nbsp;
+                                        <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('audio-file-tooltip')">
                                             <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                         </span>
                                     </label>
                                     <select id="animate-poll-winner-file" v-model.number="winner.audio.id" class="custom-select">
-                                        <option value="0">None</option>
+                                        <option value="0">{{ $t('none') }}</option>
                                         <option v-for="audio in audioJingles" :key="audio.id" :value="audio.id">{{ audio.name }}</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="form-group">
-                                    <label for="animate-poll-winner-volume">Volume ({{ winner.audio.volume }}%)</label>
+                                    <label for="animate-poll-winner-volume">{{ $t('volume') }} ({{ winner.audio.volume }}%)</label>
                                     <input id="animate-poll-winner-volume" v-model.number="winner.audio.volume" type="range" class="custom-range mt-md-3" min="0" max="100" step="1" @change="setAudioVolume('winner', winner.audio.volume / 100)">
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="custom-control custom-switch">
                                     <input id="animate-poll-winner-Announce" v-model.number="winner.chat" type="checkbox" value="1" class="custom-control-input">
-                                    <label class="custom-control-label" for="animate-poll-winner-Announce">Announce Winner to Chat</label>
+                                    <label class="custom-control-label" for="animate-poll-winner-Announce">{{ $t('announce-winner-to-chat') }}</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" :disabled="!winner.audio.file.length" @click="playAudio('winner', winner.audio.file, winner.audio.volume / 100)">Play Audio</button>
-                        <button type="button" class="btn btn-light" @click="stopAudio('winner')">Stop Audio</button>
-                        <button type="button" class="btn btn-primary" @click="animatePollWinner()">Ok</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-light" :disabled="!winner.audio.file.length" @click="playAudio('winner', winner.audio.file, winner.audio.volume / 100)">{{ $t('play-audio') }}</button>
+                        <button type="button" class="btn btn-light" @click="stopAudio('winner')">{{ $t('stop-audio') }}</button>
+                        <button type="button" class="btn btn-primary" @click="animatePollWinner()">{{ $t('ok') }}</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
                     </div>
                 </div>
             </div>

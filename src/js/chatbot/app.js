@@ -4,7 +4,6 @@ const channel  = require('./channel');
 const command  = require('./command');
 const counter  = require('./counter');
 const database = require('./database');
-const locales  = require('./locales');
 const playlist = require('./playlist');
 const poll     = require('./poll');
 const raffle   = require('./raffle');
@@ -80,13 +79,6 @@ const chatbot = {
     removeVideo: playlist.removeVideo,
     removeVideosByFlagFromActivePlaylist: playlist.removeVideosByFlagFromActivePlaylist,
     saveChannelToken: channel.saveChannelToken,
-    setTranslation: function() {
-        if (typeof locales[chatbot.config.locale] === 'undefined') {
-            chatbot.t = locales.en;
-        } else {
-            chatbot.t = locales[chatbot.config.locale];
-        }
-    },
     startPoll: poll.startPoll,
     startRaffle: raffle.startRaffle,
     switchPlaylist: playlist.switchPlaylist,

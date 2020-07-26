@@ -1,6 +1,5 @@
 const moment      = require('moment');
 const skateboard  = require('skateboard');
-const format      = require('string-format-js');
 const tmi         = require('tmi.js');
 
 const config      = require('./src/app/chatbot.json');
@@ -10,7 +9,6 @@ const database    = require('./src/js/chatbot/database');
 const user        = require('./src/js/chatbot/user');
 
 chatbot.config = config;
-chatbot.setTranslation();
 
 // define configuration options
 const opts = {

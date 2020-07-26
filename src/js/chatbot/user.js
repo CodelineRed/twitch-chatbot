@@ -2,6 +2,8 @@ const database = require('./database');
 const moment   = require('moment');
 
 const user = {
+    newUsers: [],
+    newUserJoins: [],
     addUser: function(chatbot, args, callback) {
         // if is message from own chatbot
         if (args.userstate['display-name'].toLowerCase() === chatbot.config.username.toLowerCase()) {
@@ -32,7 +34,8 @@ const user = {
 
                 database.find('*', from, '', where, '', '', 1, prepare, function(rowsCuj) {
                     // if user not in channel
-                    if (!rowsCuj.length) {
+                    if (!rowsCuj.length && user.newUserJoins.indexOf(args.userstate['user-id'] + '-' + args.userstate['room-id']) === -1) {
+                        user.newUserJoins.push(args.userstate['user-id'] + '-' + args.userstate['room-id']);
                         let values = {
                             channelId: args.userstate['room-id'],
                             userId: args.userstate['user-id'],
@@ -57,7 +60,7 @@ const user = {
                         database.update('user', set, where, function(updateUser) {
                             callback();
                         });
-                    } else if (allowedMsgTypes.indexOf(args.userstate['message-type']) >= 0 
+                    } else if (rowsCuj.length && allowedMsgTypes.indexOf(args.userstate['message-type']) >= 0 
                         && (rowsCuj[0].badges !== badges || rowsCuj[0].badge_info !== badgeInfo)) {
                         // if user badges has changed
                         let set = {
@@ -78,8 +81,9 @@ const user = {
                         callback();
                     }
                 });
-            } else {
+            } else if (user.newUsers.indexOf(args.userstate['user-id']) === -1) {
                 // if user not found
+                user.newUsers.push(args.userstate['user-id']);
                 let values = {
                     id: args.userstate['user-id'],
                     name: args.userstate['display-name'],
@@ -98,9 +102,12 @@ const user = {
                         createdAt: time
                     };
 
-                    database.insert('channel_user_join', [values], function(insertCuj) {
-                        callback();
-                    });
+                    if (user.newUserJoins.indexOf(args.userstate['user-id'] + '-' + args.userstate['room-id']) === -1) {
+                        user.newUserJoins.push(args.userstate['user-id'] + '-' + args.userstate['room-id']);
+                        database.insert('channel_user_join', [values], function(insertCuj) {
+                            callback();
+                        });
+                    }
                 });
             }
         });

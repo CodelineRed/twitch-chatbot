@@ -1,4 +1,5 @@
 const database = require('./database');
+const locales  = require('./locales');
 const poll     = require('./poll');
 const raffle   = require('./raffle');
 const moment   = require('moment');
@@ -44,7 +45,7 @@ const command = {
     logCommand: function(args) {
         // extract command from message
         args.message = args.message.replace(/^(![a-z0-9]+)(.*)/, '$1');
-        console.log(`* Executed ${args.message} command by ${args.userstate['display-name']} at ${args.channel}.`);
+        console.log(locales.t('command-executed', [args.message, args.userstate['display-name'], args.channel]));
     },
     updateCommand: function(chatbot, args) {
         chatbot.commands[args.channel][args.commandIndex] = args.command;
@@ -72,7 +73,7 @@ const command = {
         ];
 
         database.update('channel_command_join', {lastExec: chatbot.commands[args.channel][args.commandIndex].lastExec}, where);
-        
+
         if (chatbot.socket !== null) {
             const call = {
                 args: {
@@ -93,17 +94,17 @@ const command = {
             if (/^!(about|chatbot|cb|bugs?|help)/i.test(args.message)) {
                 const version = require('../../../package.json')['version'];
                 const date = require('../../../package.json')['commitDate'];
-                const formatDate = moment(date).format('YYYY-MM-DD');
+                const formatDate = moment(date).format(locales.t('date'));
                 const bugs = require('../../../package.json')['bugs']['url'];
 
-                chatbot.client.say('#' + args.channel, `Software made by InsanityMeetsHH. Version: ${version} (${formatDate}) - Bug report: ${bugs}`);
+                chatbot.client.say('#' + args.channel, locales.t('command-about', [version, formatDate, bugs]));
                 command.logCommand(args);
                 command.updateCommandLastExec(chatbot, args);
             }
         },
         commands: function(chatbot, args) {
             if (/^!(commands|cc)/i.test(args.message)) {
-                chatbot.client.say('#' + args.channel, 'The bot commands for this channel: !about, !cc, !plan and !d[0-99](w[0-9])');
+                chatbot.client.say('#' + args.channel, locales.t('command-commands'));
                 command.logCommand(args);
                 command.updateCommandLastExec(chatbot, args);
             }
@@ -151,7 +152,7 @@ const command = {
                         nextVideo = '';
                         currentVideo = chatbot.activePlaylists[args.channel].videos[i].name;
                         currentVideoDuration = chatbot.activePlaylists[args.channel].videos[i].duration;
-                        currentVideoEnd = moment((chatbot.currentVideoStart[args.channel] + chatbot.activePlaylists[args.channel].videos[i].duration) * 1000).format('hh:mm:ss a');
+                        currentVideoEnd = moment((chatbot.currentVideoStart[args.channel] + chatbot.activePlaylists[args.channel].videos[i].duration) * 1000).format(locales.t('time-long-suffix'));
 
                         let nextCount = 1;
                         while (typeof chatbot.activePlaylists[args.channel].videos[i + nextCount] !== 'undefined') {
@@ -166,11 +167,19 @@ const command = {
                 }
 
                 if (currentVideo.length && nextVideo.length) {
-                    chatbot.client.say('#' + args.channel, `@${args.userstate['display-name']} - Now "${currentVideo}"` + (chatbot.currentVideoStart[args.channel] ? ` until ${currentVideoEnd}` : '') + `. Next "${nextVideo}".`);
+                    if (chatbot.currentVideoStart[args.channel]) {
+                        chatbot.client.say('#' + args.channel, locales.t('command-playlist-1-1', [args.userstate['display-name'], currentVideo, currentVideoEnd, nextVideo]));
+                    } else {
+                        chatbot.client.say('#' + args.channel, locales.t('command-playlist-1-2', [args.userstate['display-name'], currentVideo, nextVideo]));
+                    }
                 } else if (currentVideo.length && (chatbot.currentVideoStart[args.channel] + currentVideoDuration) > moment().unix()) {
-                    chatbot.client.say('#' + args.channel, `@${args.userstate['display-name']} - Now "${currentVideo}"` + (chatbot.currentVideoStart[args.channel] ? ` until ${currentVideoEnd}.` : '.'));
+                    if (chatbot.currentVideoStart[args.channel]) {
+                        chatbot.client.say('#' + args.channel, locales.t('command-playlist-2-1', [args.userstate['display-name'], currentVideo, currentVideoEnd]));
+                    } else {
+                        chatbot.client.say('#' + args.channel, locales.t('command-playlist-2-2', [args.userstate['display-name'], currentVideo]));
+                    }
                 } else {
-                    chatbot.client.say('#' + args.channel, `@${args.userstate['display-name']} - No further videos in playlist.`);
+                    chatbot.client.say('#' + args.channel, locales.t('command-playlist-3', [args.userstate['display-name']]));
                 }
 
                 command.logCommand(args);
@@ -216,7 +225,12 @@ const command = {
                     results.push(eyes);
                 }
 
-                chatbot.client.say('#' + args.channel, `@${args.userstate['display-name']} rolled d${sides}` + (dices > 1 ? `w${dices}`: '') + `: ${results.join(' + ')} = ${result}.`);
+                if (dices > 1) {
+                    chatbot.client.say('#' + args.channel, locales.t('command-roll-dice-1', [args.userstate['display-name'], locales.t('rolled'), sides, dices, results.join(' + '), result]));
+                } else {
+                    chatbot.client.say('#' + args.channel, locales.t('command-roll-dice-2', [args.userstate['display-name'], locales.t('rolled'), sides, results.join(' + '), result]));
+                }
+
                 command.logCommand(args);
                 command.updateCommandLastExec(chatbot, args);
             }

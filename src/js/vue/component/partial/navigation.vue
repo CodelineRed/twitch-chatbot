@@ -11,6 +11,6 @@
 <template>
     <div class="col-auto">
         <router-link class="btn btn-sm btn-primary mr-2" :to="{name: 'index'}"><font-awesome-icon :icon="['fas', 'home']" class="fa-fw" /></router-link>
-        <a class="btn btn-sm btn-success" target="_blank" :href="getOauthTokenLink()">Connect Twitch-Account with Chatbot</a>
+        <a class="btn btn-sm btn-success" target="_blank" :href="getOauthTokenLink()">{{ $t('token-twitch') }}</a>
     </div>
 </template>

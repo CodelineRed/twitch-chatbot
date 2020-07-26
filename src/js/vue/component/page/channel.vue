@@ -113,7 +113,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 id="components-order-modal-title" class="modal-title">
-                                Components Order
+                                {{ $tc('component', 2) }} {{ $t('order') }}
                             </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -127,11 +127,11 @@
                                             <thead>
                                                 <tr>
                                                     <th scope="col">#</th>
-                                                    <th scope="col">Component</th>
-                                                    <th scope="col">Show</th>
-                                                    <th scope="col" colspan="2">Smartphone</th>
-                                                    <th scope="col">Tablet</th>
-                                                    <th scope="col" colspan="3">Computer</th>
+                                                    <th scope="col">{{ $t('component') }}</th>
+                                                    <th scope="col">{{ $t('show') }}</th>
+                                                    <th scope="col" colspan="2">{{ $t('smartphone') }}</th>
+                                                    <th scope="col">{{ $t('tablet') }}</th>
+                                                    <th scope="col" colspan="3">{{ $t('computer') }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -155,7 +155,7 @@
                                                     </td>
                                                     <td v-for="(width, breakpoint) in properties.cols" :key="breakpoint">
                                                         <select v-model.number="componentsOrder[component].cols[breakpoint]" class="custom-select" @change="saveComponentsOrder()">
-                                                            <option value="0">Default</option>
+                                                            <option value="0">{{ $t('default') }}</option>
                                                             <option v-for="bpWidth in 12" :key="bpWidth" :value="bpWidth" :selected="bpWidth === width">{{ breakpoint }} {{ bpWidth }}</option>
                                                         </select>
                                                     </td>

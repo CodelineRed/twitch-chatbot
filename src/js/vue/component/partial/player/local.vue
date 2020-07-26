@@ -24,7 +24,7 @@
     <div class="embed-responsive embed-responsive-16by9">
         <video class="embed-responsive-item" autoplay>
             <source :src="generateUrl(video.file)" type="video/mp4">
-            No video support
+            {{ $t('no-video-support') }}
         </video> 
     </div>
 </template>

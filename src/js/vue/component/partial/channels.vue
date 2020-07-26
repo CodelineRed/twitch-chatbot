@@ -40,16 +40,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 col-xl-3 pb-3 d-none">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title text-center mb-0">
-                                + Add Channel
-                            </h5>
-                            <a href="#" class="stretched-link" @click="getChannels()"></a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

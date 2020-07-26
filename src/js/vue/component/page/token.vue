@@ -36,19 +36,19 @@
     <div class="row">
         <div class="col-12 pb-5">
             <h1 class="text-center">
-                {{ $t("nav-token") }} - {{ $t('app') }}
+                {{ $t('nav-token') }} - {{ $t('app') }}
             </h1>
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6 col-xxl-4">
                     <p v-if="status === 0" class="text-center">
-                        Please wait <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />.
+                        Please wait{{ $t('please-wait') }} <font-awesome-icon :icon="['fas', 'sync']" class="fa-spin" />
                     </p>
                     <p v-else-if="status === 1" class="text-center">
-                        "{{ $route.params.property }}" has been updated.<br>
-                        You can now close this page.
+                        <!-- eslint-disable-next-line vue/no-v-html -->
+                        <span v-html="$t('token-text', [$route.params.property])"></span>
                     </p>
                     <p v-else class="text-center">
-                        Authorization failed.
+                        {{ $t('auth-failed') }}
                     </p>
                 </div>
             </div>

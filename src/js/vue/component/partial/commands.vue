@@ -68,17 +68,17 @@
         <div class="col-12">
             <div class="commands p-2">
                 <div class="h4 text-center">
-                    Commands
+                    {{ $tc('command', 2) }}
                 </div>
                 <div v-if="commands.length > 0" class="table-responsive">
                     <table id="commandsTable" class="table table-striped table-hover table-dark data-table">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Cooldown</th>
-                                <th scope="col">Last Exec</th>
-                                <th scope="col">Active</th>
+                                <th scope="col">{{ $t('name') }}</th>
+                                <th scope="col">{{ $t('cooldown') }}</th>
+                                <th scope="col">{{ $t('last-exec') }}</th>
+                                <th scope="col">{{ $t('active') }}</th>
                                 <th scope="col" class="text-center" data-orderable="false">
                                     <span class="d-none" data-toggle="tooltip" data-placement="top" title="Refresh" @click="getCommands()">
                                         <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" />
