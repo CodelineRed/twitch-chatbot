@@ -151,9 +151,9 @@ const raffle = {
         //select += '(SELECT DISTINCT u.name FROM attendee AS a JOIN user AS u ON a.user_id = u.id WHERE raffle_id = r.id AND winner = 1 LIMIT 1) AS winner';
         let from = 'raffle AS r';
         let join = 'LEFT JOIN audio AS ra ON r.audio_id = ra.id';
-        let where = ['r.active = ?', 'r.channel_id = ?'];
+        let where = ['r.channel_id = ?', 'r.active = 1'];
         let order = 'r.created_at DESC';
-        let prepare = [1, chatbot.channels[args.channel].id];
+        let prepare = [chatbot.channels[args.channel].id];
 
         database.find(select, from, join, where, '', order, 0, prepare, function(rows) {
             chatbot.activeRaffles[args.channel] = {};

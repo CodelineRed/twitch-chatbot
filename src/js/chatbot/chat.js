@@ -337,6 +337,7 @@ const chat = {
                 purge: JSON.stringify(args.purge)
             };
             let where = [
+                `channel_id = '${args.userstate['room-id']}'`,
                 `user_id = '${args.userstate['target-user-id']}'`,
                 'purge LIKE \'%"showMessage":false%\''
             ];

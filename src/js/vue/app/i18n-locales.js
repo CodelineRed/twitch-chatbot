@@ -166,8 +166,8 @@ const en = {
     'nav-home': 'All Channels',
     'nav-token': 'Token',
 
-    'dp': '.',
-    'ts': ',',
+    'dp': '.', // decimal point
+    'ts': ',', // thousands separator
     'date': 'YYYY-MM-DD',
     'time': 'hh:mm',
     'time-suffix': 'hh:mm a',
@@ -329,8 +329,8 @@ const de = {
     'nav-error': 'Fehlerseite',
     'nav-home': 'Alle Channels',
 
-    'dp': ',',
-    'ts': '.',
+    'dp': ',', // decimal point
+    'ts': '.', // thousands separator
     'date': 'DD.MM.YYYY',
     'time': 'HH:mm',
     'time-suffix': 'HH:mm \\U\\h\\r',

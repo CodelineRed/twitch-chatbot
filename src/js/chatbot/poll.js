@@ -136,10 +136,10 @@ const poll = {
         join += 'LEFT JOIN raffle AS pr ON p.raffle_id = pr.id ';
         join += 'LEFT JOIN audio AS pa ON p.audio_id = pa.id ';
         //join += 'LEFT JOIN audio AS oa ON o.audio_id = oa.id';
-        let where = ['p.active = ?', 'p.channel_id = ?'];
+        let where = ['p.channel_id = ?', 'p.active = 1'];
         let group = 'o.name';
         let order = 'p.created_at DESC, o.id';
-        let prepare = [1, chatbot.channels[args.channel].id];
+        let prepare = [chatbot.channels[args.channel].id];
 
         database.find(select, from, join, where, group, order, 0, prepare, function(rows) {
             chatbot.activePolls[args.channel] = {};

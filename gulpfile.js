@@ -125,7 +125,6 @@ function js() {
             'node_modules/datatables.net/js/jquery.dataTables.js',
             'node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js',
             'node_modules/vanilla-lazyload/dist/lazyload.js',
-            'node_modules/string-format-js/format.js',
             config.sourcePath + 'js/plugin/**/*.js',
             config.sourcePath + 'js/module/**/*.js',
             config.sourcePath + 'js/scripts.js'

@@ -1,3 +1,4 @@
+const locales = require('./locales');
 const fs      = require('fs');
 const moment  = require('moment');
 const request = require('request');
@@ -6,19 +7,23 @@ const sqlite3 = require('sqlite3').verbose();
 const database = {
     connection: null,
     file: './data/chatbot.sqlite3',
-    callback: function(callback, args) {
-        if (typeof callback === 'function') {
-            if (typeof args === 'undefined') {
-                callback();
-            } else {
-                callback(args);
-            }
+    /**
+     * Opens connection to database
+     * 
+     * @returns {undefined}
+     */
+    open: function() {
+        if (fs.existsSync(this.file)) {
+            database.connection = new sqlite3.Database(this.file, sqlite3.OPEN_READWRITE);
+            this.backup();
         }
     },
-    open: function() {
-        database.connection = new sqlite3.Database(this.file, sqlite3.OPEN_READWRITE);
-        this.backup();
-    },
+    /**
+     * Creates database backup depending on format
+     * 
+     * @param {string} format optional https://momentjs.com/docs/#/parsing/string-format/ (default: YYYY-MM-DD)
+     * @returns {undefined}
+     */
     backup: function(format) {
         format = typeof format === 'undefined' ? 'YYYY-MM-DD' : format;
         let backupFile = 'chatbot.' + moment().format(format) + '.sqlite3';
@@ -31,18 +36,34 @@ const database = {
                     throw err;
                 }
 
-                console.log(`* Backup was created. ${backupFile}`);
+                console.log(locales.t('database-backup', [backupFile]));
             });
+        }
+    },
+    /**
+     * Executes callback if callback is a function
+     * 
+     * @param {function} callback optional
+     * @param {mixed} args optional
+     * @returns {undefined}
+     */
+    callback: function(callback, args) {
+        if (typeof callback === 'function') {
+            if (typeof args === 'undefined') {
+                callback();
+            } else {
+                callback(args);
+            }
         }
     },
     /**
      * @param {string} select required
      * @param {string} from required
-     * @param {string} join optional
+     * @param {string} join optional "JOIN" is prepending by default if no join/ left join/ right join is defined
      * @param {array} where optional
      * @param {string} group optional
      * @param {string} order optional
-     * @param {integer} limit optional
+     * @param {integer} limit optional 0 = infinity
      * @param {array} prepare optional
      * @param {function} callback optional
      * @param {mixed} callbackArgs optional
@@ -54,19 +75,23 @@ const database = {
             database.connection.serialize(() => {
                 let query = `SELECT ${select} FROM ${from} `;
 
-                if (typeof join !== 'undefined' && join.length) {
-                    query += `${join} `;
+                if (typeof join === 'string' && join.length) {
+                    if (/^(join|left join|right join)/i.test(join)) {
+                        query += `${join} `;
+                    } else {
+                        query += `JOIN ${join} `;
+                    }
                 }
 
                 if (typeof where !== 'undefined' && where.length) {
                     query += `WHERE ${where.join(' AND ')} `;
                 }
 
-                if (typeof group !== 'undefined' && group.length) {
+                if (typeof group === 'string' && group.length) {
                     query += `GROUP BY ${group} `;
                 }
 
-                if (typeof order !== 'undefined' && order.length) {
+                if (typeof order === 'string' && order.length) {
                     query += `ORDER BY ${order} `;
                 }
 
@@ -95,6 +120,14 @@ const database = {
             });
         }
     },
+    /**
+     * Creates active playlist record if not exists for channel.
+     * Loads active playlist record for channel. 
+     * 
+     * @param {object} chatbot required
+     * @param {string} channel required
+     * @returns {undefined}
+     */
     prepareActivePlaylists: function(chatbot, channel) {
         if (database.connection !== null) {
             let select = 'SELECT p.id ';
@@ -108,7 +141,9 @@ const database = {
                     console.error(errAll.message);
                 }
 
-                if (rowsActivePlaylist.length === 0) {
+                if (rowsActivePlaylist.length) {
+                    chatbot.getActivePlaylist(chatbot, {channel: channel});
+                } else {
                     let values = {
                         channelId: chatbot.channels[channel].id,
                         name: 'General',
@@ -129,12 +164,20 @@ const database = {
 
                         chatbot.playlists[channel] = [];
                         chatbot.playlists[channel].push(chatbot.activePlaylists[channel]);
-                        console.log(`* Added playlist "General" for "${channel}" to database.`);
+                        console.log(locales.t('database-playlist', [channel]));
                     });
                 }
             });
         }
     },
+    /**
+     * Calls BetterTTV API to look for registered bots for channel.
+     * Loads bot records for all channels. 
+     * 
+     * @param {object} chatbot required
+     * @param {string} channel required
+     * @returns {undefined}
+     */
     prepareBotTable: function(chatbot, channel) {
         if (database.connection !== null) {
             database.connection.all('SELECT name FROM bot', (errAll, rows) => {
@@ -173,13 +216,21 @@ const database = {
                                 return elem.name;
                             }).join(', ');
 
-                            console.log(`* Added "${botsString}" bot from BTTV to database.`);
+                            console.log(locales.t('database-bot', [botsString]));
                         }
                     });
                 });
             });
         }
     },
+    /**
+     * Creates channel record if not exists.
+     * Loads channel records. 
+     * 
+     * @param {object} chatbot required
+     * @param {string} channel required
+     * @returns {undefined}
+     */
     prepareChannelTable: function(chatbot, channelState) {
         if (database.connection !== null) {
             database.connection.serialize(() => {
@@ -216,7 +267,7 @@ const database = {
                                 createdAt: values.createdAt // unix timestamp (seconds)
                             };
 
-                            console.log(`* Added channel "${channel}" to database.`);
+                            console.log(locales.t('database-channel', [channel]));
 
                             database.prepareCommands(chatbot, channel);
                             database.prepareCounters(chatbot, channel);
@@ -227,6 +278,14 @@ const database = {
             });
         }
     },
+    /**
+     * Creates command records if not exists for channel.
+     * Loads command records for channel. 
+     * 
+     * @param {object} chatbot required
+     * @param {string} channel required
+     * @returns {undefined}
+     */
     prepareCommands: function(chatbot, channel) {
         if (database.connection !== null) {
             database.connection.all('SELECT * FROM command', (errAll, rowsAll) => {
@@ -260,7 +319,7 @@ const database = {
 
                 database.insert('command', values, function(insert) {
                     if (insert.changes) {
-                        console.log(`* Added ${insert.changes} commands to database.`);
+                        console.log(locales.t('database-command', [insert.changes]));
                     }
 
                     let select = 'SELECT cmd.id ';
@@ -308,8 +367,10 @@ const database = {
 
                             database.insert('channel_command_join', values, function(insertCcj) {
                                 if (insertCcj.changes) {
-                                    console.log(`* Added ${insertCcj.changes} command relations for "${channel}" to database.`);
+                                    console.log(locales.t('database-command-relation', [insertCcj.changes, channel]));
                                 }
+
+                                chatbot.getCommands(chatbot, {channel: channel});
                             });
                         });
                     });
@@ -317,6 +378,14 @@ const database = {
             });
         }
     },
+    /**
+     * Creates counter record if not exists for channel.
+     * Loads counter record for channel. 
+     * 
+     * @param {object} chatbot required
+     * @param {string} channel required
+     * @returns {undefined}
+     */
     prepareCounters: function(chatbot, channel) {
         if (database.connection !== null) {
             let stmt = database.connection.prepare('SELECT id FROM counter WHERE channel_id = ?');
@@ -325,7 +394,9 @@ const database = {
                     console.error(errAll.message);
                 }
 
-                if (rows.length === 0) {
+                if (rows.length) {
+                    chatbot.getCounter(chatbot, {channel: channel});
+                } else {
                     let values = {
                         channelId: chatbot.channels[channel].id,
                         name: 'General',
@@ -334,18 +405,18 @@ const database = {
                     };
 
                     database.insert('counter', [values], function(insert) {
-                        console.log(`* Added counter "General" for "${channel}" to database.`);
+                        console.log(locales.t('database-counter', [channel]));
                     });
                 }
             });
         }
     },
     /**
-     * @param {string} table
-     * @param {array} where
-     * @param {array} prepare
-     * @param {function} callback
-     * @param {mixed} callbackArgs
+     * @param {string} table required
+     * @param {array} where required
+     * @param {array} prepare optional
+     * @param {function} callback optional
+     * @param {mixed} callbackArgs optional
      * @returns {undefined}
      */
     remove: function(table, where, prepare, callback, callbackArgs) {
@@ -375,10 +446,10 @@ const database = {
         }
     },
     /**
-     * @param {string} table
-     * @param {array} values (array of objects)
-     * @param {function} callback
-     * @param {mixed} callbackArgs
+     * @param {string} table required
+     * @param {array} values required (array of objects)
+     * @param {function} callback optional
+     * @param {mixed} callbackArgs optional
      * @returns {undefined}
      */
     insert: function(table, values, callback, callbackArgs) {
@@ -437,11 +508,11 @@ const database = {
     },
     /**
      * 
-     * @param {string} table
-     * @param {object} set
-     * @param {array} where
-     * @param {function} callback
-     * @param {mixed} callbackArgs
+     * @param {string} table required
+     * @param {object} set required
+     * @param {array} where required
+     * @param {function} callback optional
+     * @param {mixed} callbackArgs optional
      * @returns {undefined}
      */
     update: function(table, set, where, callback, callbackArgs) {
@@ -455,10 +526,6 @@ const database = {
                 for (let i = 0; i < setKeys.length; i++) {
                     // camel case to snake case
                     let setKey = setKeys[i].replace(/([A-Z])/g, '_$1').toLowerCase();
-
-                    //if (setKey === 'id') {
-                    //    continue;
-                    //}
 
                     setArray.push(setKey + ' = $' + setKey);
                     prepare['$' + setKey] = set[setKeys[i]];

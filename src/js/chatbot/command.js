@@ -137,7 +137,7 @@ const command = {
             }
         },
         playlistInfo: function(chatbot, args) {
-            if (/^!(info|(sende)?plan|programm)/i.test(args.message)) {
+            if (/^!(info|(sende)?plan|programm|playlist|video)/i.test(args.message)) {
                 let currentVideo = '';
                 let currentVideoDuration = 0;
                 let currentVideoEnd = 0;

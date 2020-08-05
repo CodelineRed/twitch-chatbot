@@ -31,10 +31,10 @@
         "url": "git://github.com/InsanityMeetsHH/twitch-chatbot.git"
     },
     "devDependencies": {
-        "@babel/core": "^7.10.5",
+        "@babel/core": "^7.11.1",
         "@babel/plugin-transform-modules-amd": "^7.10.5",
         "babel-eslint": "^10.1.0",
-        "browser-sync": "^2.26.10",
+        "browser-sync": "^2.26.12",
         "del": "^5.1.0",
         "eslint-plugin-import": "^2.22.0",
         "eslint-plugin-vue": "^6.2.2",
@@ -62,7 +62,7 @@
         "@fortawesome/free-regular-svg-icons": "^5.14.0",
         "@fortawesome/free-solid-svg-icons": "^5.14.0",
         "@fortawesome/vue-fontawesome": "^0.1.10",
-        "bootstrap": "^4.5.0",
+        "bootstrap": "^4.5.1",
         "cssuseragent": "^2.1.31",
         "datatables.net": "^1.10.21",
         "datatables.net-bs4": "^1.10.21",
@@ -77,12 +77,12 @@
         "skateboard": "^2.0.1",
         "sqlite3": "^5.0.0",
         "tmi.js": "^1.5.0",
-        "uuid": "^8.2.0",
+        "uuid": "^8.3.0",
         "vanilla-lazyload": "^17.1.0",
         "vue": "^2.6.11",
         "vue-ctk-date-time-picker": "2.5.0",
-        "vue-i18n": "^8.19.0",
-        "vue-router": "^3.3.4",
+        "vue-i18n": "^8.20.0",
+        "vue-router": "^3.4.0",
         "yargs": "^15.4.1"
     },
     "scripts": {

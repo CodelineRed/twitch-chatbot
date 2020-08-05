@@ -151,8 +151,8 @@ const playlist = {
         let from = 'playlist AS p';
         let join = 'LEFT JOIN playlist_video_join AS pvj ON p.id = pvj.playlist_id ';
         join += 'LEFT JOIN video AS v ON pvj.video_id = v.id ';
-        let where = ['p.channel_id = ?', 'p.active = ?'];
-        let prepare = [chatbot.channels[args.channel].id, 1];
+        let where = ['p.channel_id = ?', 'p.active = 1'];
+        let prepare = [chatbot.channels[args.channel].id];
 
         database.find(select, from, join, where, '', 'sort', 0, prepare, function(rows) {
             if (rows.length) {
@@ -376,8 +376,8 @@ const playlist = {
         let from = 'playlist AS p';
         let join = 'LEFT JOIN playlist_video_join AS pvj ON p.id = pvj.playlist_id ';
         let where = ['p.channel_id = ?'];
-        let group = 'p.name';
-        let order = group;
+        let group = 'p.id';
+        let order = 'p.name';
         let prepare = [chatbot.channels[args.channel].id];
 
         database.find(select, from, join, where, group, order, 100, prepare, function(rows) {
@@ -822,7 +822,7 @@ const playlist = {
                         }
 
                         playlist.getPlaylists(chatbot, args);
-                        console.log(locales.t('playlist-merged', [rowsSource.length, args.merge.source.name, args.merge.target.name]));
+                        console.log(locales.t('playlist-merged', [rowsSource.length, locales.t('video', {count: rowsSource.length}), args.merge.source.name, args.merge.target.name]));
                     });
                 } else {
                     // prepend playlist
@@ -974,7 +974,7 @@ const playlist = {
             database.remove('playlist_video_join', [`uuid IN ('${uuidArray.join('\', \'')}')`], [], function(remove) {
                 playlist.getActivePlaylist(chatbot, args);
                 playlist.getPlaylists(chatbot, args);
-                console.log(locales.t('videos-removed', [remove.changes, chatbot.activePlaylists[args.channel].name]));
+                console.log(locales.t('videos-removed', [remove.changes, locales.t('video', {count: remove.changes}), chatbot.activePlaylists[args.channel].name]));
             });
         } else {
             playlist.getActivePlaylist(chatbot, args);

@@ -251,6 +251,10 @@
                 $this.videoSearch = '';
                 $this.playlistSearch = '';
             });
+
+            jQuery('#all-playlists').on('shown.bs.modal', function() {
+                $this.getPlaylists();
+            });
         },
         methods: {
             addPlaylist: function() {

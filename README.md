@@ -100,7 +100,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 | about               | !about, !chatbot, !cb, !bug, !bugs, !help                                                                                        |
 | commands            | !commands, !cc                                                                                                                   |
 | counter             | counter increased if users counts from 1 - X without interruption                                                                |
-| playlistInfo        | !info, !plan, !programm, !sendeplan                                                                                              |
+| playlistInfo        | !info, !plan, !programm, !sendeplan, !playlist, !video                                                                           |
 | poll                | !vote 1 - X                                                                                                                      |
 | raffle              | custom keyword (default: !raffle)                                                                                                |
 | rollDice            | e.g. !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                        |
