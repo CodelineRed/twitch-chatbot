@@ -62,7 +62,7 @@
         "@fortawesome/free-regular-svg-icons": "^5.14.0",
         "@fortawesome/free-solid-svg-icons": "^5.14.0",
         "@fortawesome/vue-fontawesome": "^0.1.10",
-        "bootstrap": "^4.5.1",
+        "bootstrap": "^4.5.2",
         "cssuseragent": "^2.1.31",
         "datatables.net": "^1.10.21",
         "datatables.net-bs4": "^1.10.21",
@@ -81,8 +81,8 @@
         "vanilla-lazyload": "^17.1.0",
         "vue": "^2.6.11",
         "vue-ctk-date-time-picker": "2.5.0",
-        "vue-i18n": "^8.20.0",
-        "vue-router": "^3.4.0",
+        "vue-i18n": "^8.21.0",
+        "vue-router": "^3.4.3",
         "yargs": "^15.4.1"
     },
     "scripts": {

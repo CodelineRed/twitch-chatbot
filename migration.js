@@ -1,9 +1,10 @@
-const database     = require('./src/js/chatbot/database');
+const database = require('./src/js/chatbot/database');
+const locales  = require('./src/js/chatbot/locales');
 
-const fs           = require('fs');
-const glob         = require('glob');
-const moment       = require('moment');
-const yargs        = require('yargs');
+const fs       = require('fs');
+const glob     = require('glob');
+const moment   = require('moment');
+const yargs    = require('yargs');
 
 const migrationFolder = './data/migration/';
 let pastMigrations = [];
@@ -16,8 +17,17 @@ const argv = yargs
     })
     .option('file', {
         alias: 'f',
-        description: 'Execute one specific migration file (e.g.: -f version-1.0.0',
+        description: 'Execute one specific migration file (e.g.: -f version-1.0.0)',
         type: 'string'
+    })
+    .option('locale', {
+        alias: 'l',
+        description: 'Locale for log messages (default: en)',
+        type: 'string'
+    })
+    .option('log', {
+        description: 'Show logs in CLI (default: true)',
+        type: 'boolean'
     })
     .help()
     .alias('help', 'h')
@@ -27,13 +37,29 @@ if (typeof argv.direction === 'undefined') {
     argv.direction = 'up';
 }
 
+if (typeof argv.log === 'undefined') {
+    argv.log = true;
+}
+
+if (argv.locale) {
+    locales.changeLanguage(argv.locale);
+} else {
+    locales.changeLanguage('en');
+}
+
+function log(message) {
+    if (argv.log === true) {
+        console.log(message);
+    }
+}
+
 // if file matches pattern
 if (/^version-[0-9]+.[0-9]+.[0-9]+$/.test(argv.file)) {
     // prepend folder path and append file extension
     argv.file = migrationFolder + argv.file + '.js';
 } else if (typeof argv.file === 'string' && argv.file.length) {
     // echo error message if "-f" was defined but not matches pattern
-    console.log(`* File "${argv.file}" is incorrect`);
+    log(locales.t('migration-file-incorrect', [argv.file]));
     // abort futher script execution
     process.exit(1);
 }
@@ -47,7 +73,7 @@ function executeMigarationFilesRecursive(migrationFiles, index) {
 
         // if migration was not executed in the past
         if (pastMigrations.indexOf(migrationFiles[index]) === -1 && argv.direction === 'up') {
-            migration.up(function() {
+            migration[argv.direction](function() {
                 let time = moment().unix();
                 let values = {
                     name: migrationFiles[index],
@@ -56,7 +82,7 @@ function executeMigarationFilesRecursive(migrationFiles, index) {
                 };
 
                 database.insert('migration', [values], function(migrationInsert) {
-                    console.log(`* Executed ${migrationFiles[index].replace(versionExtract, '$1')} up`);
+                    log(locales.t('migration-executed', [migrationFiles[index].replace(versionExtract, '$1'), locales.t(argv.direction)]));
                     executeMigarationFilesRecursive(migrationFiles, ++index);
                 });
             });
@@ -64,12 +90,12 @@ function executeMigarationFilesRecursive(migrationFiles, index) {
 
         // if migration was executed in the past
         if (pastMigrations.indexOf(migrationFiles[index]) !== -1 && argv.direction === 'down') {
-            migration.down(function() {
+            migration[argv.direction](function() {
                 let where = ['name = ?'];
                 let prepare = [migrationFiles[index]];
 
                 database.remove('migration', where, prepare, function(migrationRemove) {
-                    console.log(`* Executed ${migrationFiles[index].replace(versionExtract, '$1')} down`);
+                    log(locales.t('migration-executed', [migrationFiles[index].replace(versionExtract, '$1'), locales.t(argv.direction)]));
                     executeMigarationFilesRecursive(migrationFiles, ++index);
                 });
             });
@@ -92,7 +118,13 @@ if (fs.existsSync(migrationFolder)) {
                 if (argv.direction === 'down') {
                     migrationFiles.reverse();
                 }
-                executeMigarationFilesRecursive(migrationFiles, 0);
+
+                if ((argv.direction === 'up' && pastMigrations.length === migrationFiles.length) 
+                    || (argv.direction === 'down' && !pastMigrations.length)) {
+                    log(locales.t('migration-all-executed'));
+                } else {
+                    executeMigarationFilesRecursive(migrationFiles, 0);
+                }
             });
         }
     });

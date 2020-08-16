@@ -33,14 +33,14 @@ const argv = yargs
         description: 'Channel id / Room id (required if channel is not in databse)',
         type: 'number'
     })
+    .option('locale', {
+        alias: 'l',
+        description: 'Locale to use in date generation and log messages (default: en)',
+        type: 'string'
+    })
     .option('log', {
         description: 'Show logs in CLI (default: true)',
         type: 'boolean'
-    })
-    .option('locale', {
-        alias: 'l',
-        description: 'Locale to use in date generation (default: en)',
-        type: 'string'
     })
     .option('subname', {
         alias: 'sn',
@@ -64,9 +64,9 @@ if (typeof argv.log === 'undefined') {
 }
 
 if (argv.locale) {
-    argv.locale = typeof locales[argv.locale] === 'undefined' ? 'en' : argv.locale;
+    locales.changeLanguage(argv.locale);
 } else {
-    argv.locale = 'en';
+    locales.changeLanguage('en');
 }
 
 if (typeof argv.subname === 'undefined') {
@@ -82,18 +82,22 @@ function log(message) {
 function importSummary(videos, index) {
     // if all files processed and no video was added
     if (index === videos.length && !addedVideosAmount) {
-        log('* All videos already exists in database');
+        log(locales.t('ivf-all-video-exists'));
     } else if (index === videos.length && addedVideosAmount) {
-        const vs = addedVideosAmount > 1 ? 's' : '';
-        const ps = playlists.length > 1 ? 's' : '';
         const durationObject = moment.duration(moment().unix() - time, 's');
         const hours = ('0' + durationObject.hours()).substr(-2);
         const minutes = ('0' + durationObject.minutes()).substr(-2);
         const seconds = ('0' + durationObject.seconds()).substr(-2);
         const duration = hours + ':' + minutes + ':' + seconds + ' h';
 
-        log('----- Summary -----');
-        log(`* Added ${addedVideosAmount} video${vs} in ${playlists.length} playlist${ps} in ${duration}`);
+        log('----- ' + locales.t('summary') + ' -----');
+        log(locales.t('ivf-added-videos', [
+            addedVideosAmount,
+            locales.t('video', {count: addedVideosAmount}),
+            playlists.length,
+            locales.t('playlist', {count: playlists.length}),
+            duration
+        ]));
     }
 }
 
@@ -102,7 +106,7 @@ function addVideoRecursive(videos, channel, index) {
 
     // if is first function call
     if (!index) {
-        log(`* Found ${videosAmount} videos overall`);
+        log(locales.t('ivf-found-videos', [videosAmount, locales.t('video', {count: videosAmount})]));
     }
 
     let relFilePath = videos[index].replace(videosFolder, '');
@@ -118,7 +122,7 @@ function addVideoRecursive(videos, channel, index) {
                 if (data.length && typeof data[0].general !== 'undefined') {
                     // milliseconds to seconds
                     let duration = ((data[0].general.duration[0] / 1000) -.5).toFixed(0);
-                    let format = locales[argv.locale]['date'];
+                    let format = locales.t('date');
                     let playlist = relFilePath.indexOf('/') ? relFilePath.split('/')[0] : 'General';
                     let name = relFilePath
                         .split('/').pop()
@@ -158,7 +162,7 @@ function addVideoRecursive(videos, channel, index) {
                             // if video was added
                             if (insert.lastID) {
                                 addedVideosAmount++;
-                                log(`* Added video "${name}" to playlist "${playlist}" (#${addedVideosAmount})`);
+                                log(locales.t('ivf-added-video', [name, playlist, addedVideosAmount]));
                             }
 
                             let select = 'p.id, COUNT(pvj.playlist_id) AS videoQuantity';
@@ -189,7 +193,7 @@ function addVideoRecursive(videos, channel, index) {
                                     database.insert('playlist', [playlistValues], function(playlistInsert) {
                                         if (playlists.indexOf(playlist) === -1) {
                                             playlists.push(playlist);
-                                            log(`* Added playlist "${playlist}"`);
+                                            log(locales.t('ivf-added-playlist', [playlist]));
                                         }
 
                                         values.playlistId = playlistInsert.lastID;
@@ -204,7 +208,7 @@ function addVideoRecursive(videos, channel, index) {
                                 } else {
                                     if (playlists.indexOf(playlist) === -1) {
                                         playlists.push(playlist);
-                                        log(`* Found playlist "${playlist}"`);
+                                        log(locales.t('ivf-found-playlist', [playlist]));
                                     }
 
                                     values.playlistId = playlistRows[0].id;
@@ -246,7 +250,7 @@ if (fs.existsSync(videosFolder) && typeof argv.channel === 'string' && argv.chan
             let select = 'id, name, updated_at AS updatedAt, created_at AS createdAt';
             database.find(select, 'channel', '', ['name = ?'], '', '', 1, [argv.channel], function(rows) {
                 if (rows.length) {
-                    log(`* Found channel ${argv.channel}`);
+                    log(locales.t('ivf-found-channel', [argv.channel]));
                     addVideoRecursive(videos, rows[0], 0);
                 } else if (typeof argv.identity === 'number' && argv.identity > 0) {
                     let values = {
@@ -261,14 +265,14 @@ if (fs.existsSync(videosFolder) && typeof argv.channel === 'string' && argv.chan
                         addVideoRecursive(videos, values, 0);
                     });
                 } else {
-                    log('* Option --identity is missing or empty');
+                    log(locales.t('ivf-identity-is-missing'));
                 }
             });
         }
     });
 } else if (!fs.existsSync(videosFolder)) {
-    log(`* Folder not found (${config.videosFolder})`);
+    log(locales.t('ivf-folder-not-found', [config.videosFolder]));
 } else if  (typeof argv.channel === 'undefined' || !argv.channel.length) {
-    log('* Option --channel is missing or empty');
+    log(locales.t('ivf-channel-is-missing'));
 }
 

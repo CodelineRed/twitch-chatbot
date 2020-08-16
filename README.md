@@ -89,10 +89,10 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 ## [`gulpfile.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/gulpfile.dist.json)
 |                     | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| browserSyncConfig   | Defines which config is used for [BrowserSync](https://www.npmjs.com/package/browser-sync) (default: browserSyncDev)             |
-| sourcePath          | Path to raw files (default: src/)                                                                                                |
-| publicPath          | Path to transpiled files (default: public/)                                                                                      |
-| env                 | Environment dev, test or prod (default: dev)                                                                                     |
+| browserSyncConfig   | Required - Defines which config is used for [BrowserSync](https://www.npmjs.com/package/browser-sync) (default: browserSyncDev)  |
+| sourcePath          | Required - Path to raw files (default: src/)                                                                                     |
+| publicPath          | Required - Path to transpiled files (default: public/)                                                                           |
+| env                 | Required - Environment dev, test or prod (default: dev)                                                                          |
 
 ## Chatbot Commands
 | Name                | Command                                                                                                                          |
@@ -211,13 +211,13 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
-| --backup, -b        | Create an additional backup (default: false)                                                                                     |
-| --channel, -c       | Channel name which owns the videos (required)                                                                                    |
-| --identity, -i      | Channel id / Room id. (required if channel is not in databse)                                                                    |
-| --log               | Show logs in CLI (default: true)                                                                                                 |
-| --locale, -l        | Locale to use in date generation (default: en)                                                                                   |
-| --subname, --sn     | Add date as sub name (default: true)                                                                                             |
 | --version           | Show version number                                                                                                              |
+| --backup, -b        | Optional - Create an additional backup (default: false)                                                                          |
+| --channel, -c       | Required - Channel name which owns the videos                                                                                    |
+| --identity, -i      | Optional - Channel id / Room id. (required if channel is not in database)                                                        |
+| --locale, -l        | Optional - Locale to use in date generation and log messages (default: en)                                                       |
+| --log               | Optional - Show logs in CLI (default: true)                                                                                      |
+| --subname, --sn     | Optional - Add date as sub name (default: true)                                                                                  |
 
 Example execution: `$ node import-videos-folder.js -c InsanityMeetsHH`
 
@@ -232,9 +232,11 @@ The Script only imports videos which are not in the database.
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
-| --direction, -d     | Migration direction (default: up)                                                                                                |
-| --file, -f          | Execute one specific migration file (e.g.: -f version-1.0.0)                                                                     |
 | --version           | Show version number                                                                                                              |
+| --direction, -d     | Optional - Migration direction (default: up)                                                                                     |
+| --file, -f          | Optional - Execute one specific migration file (e.g.: -f version-1.0.0)                                                          |
+| --locale, -l        | Optional - Locale for log messages (default: en)                                                                                 |
+| --log               | Optional - Show logs in CLI (default: true)                                                                                      |
 
 Example execution: `$ node migration.js -d up`
 
