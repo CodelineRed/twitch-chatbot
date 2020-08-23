@@ -8,7 +8,7 @@
         props: {
             drop: {
                 type: String,
-                default: 'dropup'
+                default: 'up'
             }
         },
         data: function() {
@@ -47,7 +47,7 @@
                 }, 250);
             },
             getButtonClass: function() {
-                return this.drop;
+                return 'drop' + this.drop;
             }
         }
     };

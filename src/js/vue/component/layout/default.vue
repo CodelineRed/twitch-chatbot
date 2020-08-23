@@ -15,7 +15,7 @@
         <header>
             <div class="container">
                 <div class="form-row">
-                    <c-langswitch ref="langswitch" drop="dropdown"></c-langswitch>
+                    <c-langswitch ref="langswitch" drop="down"></c-langswitch>
                     <c-navigation ref="navigation"></c-navigation>
                 </div>
             </div>

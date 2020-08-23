@@ -1,37 +1,66 @@
-const database     = require('./database');
-const linkify      = require('linkifyjs');
-const linkifyHtml  = require('linkifyjs/html');
-const moment       = require('moment');
-const request      = require('request');
-const {v4: uuidv4} = require('uuid');
-
-database.open();
+const database    = require('./database');
+const emote       = require('./emote');
+const linkify     = require('linkifyjs');
+const linkifyHtml = require('linkifyjs/html');
+const moment      = require('moment');
+const request     = require('request');
+const {v4: uuidv4, validate: uuidValid} = require('uuid');
 
 const chat = {
     bttvEmotes: {},
     ffzEmotes: {},
-    encodeBttvEmotes: function(message, channel) {
-        let emoteCodes = Object.keys(chat.bttvEmotes[channel]);
+    encodeBttvEmotes: function(message, args) {
+        let emoteCodes = Object.keys(chat.bttvEmotes[args.channel]);
         for (let i = 0; i < emoteCodes.length; i++) {
             let regex = new RegExp(emoteCodes[i], 'g');
-            message = message.replace(regex, chat.generateEmoteImage(chat.bttvEmotes[channel][emoteCodes[i]], emoteCodes[i]));
+
+            if (regex.test(message)) {
+                if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
+                    for (let j = 0; j < (message.match(regex) || []).length; j++) {
+                        let emoteArgs = {
+                            uuid: args.uuid,
+                            code: emoteCodes[i],
+                            type: 'bttv'
+                        };
+
+                        emote.addEmote(emoteArgs);
+                    }
+                }
+
+                message = message.replace(regex, chat.generateEmoteImage(chat.bttvEmotes[args.channel][emoteCodes[i]], emoteCodes[i]));
+            }
         }
         return message;
     },
-    encodeFfzEmotes: function(message, channel) {
-        let emoteCodes = Object.keys(chat.ffzEmotes[channel]);
+    encodeFfzEmotes: function(message, args) {
+        let emoteCodes = Object.keys(chat.ffzEmotes[args.channel]);
         for (let i = 0; i < emoteCodes.length; i++) {
             let regex = new RegExp(emoteCodes[i], 'g');
-            message = message.replace(regex, chat.generateEmoteImage(chat.ffzEmotes[channel][emoteCodes[i]], emoteCodes[i]));
+
+            if (regex.test(message)) {
+                if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
+                    for (let j = 0; j < (message.match(regex) || []).length; j++) {
+                        let emoteArgs = {
+                            uuid: args.uuid,
+                            code: emoteCodes[i],
+                            type: 'ffz'
+                        };
+
+                        emote.addEmote(emoteArgs);
+                    }
+                }
+
+                message = message.replace(regex, chat.generateEmoteImage(chat.ffzEmotes[args.channel][emoteCodes[i]], emoteCodes[i]));
+            }
         }
         return message;
     },
-    encodeTwitchEmotes: function(message, emotes) {
+    encodeTwitchEmotes: function(message, args) {
         let splitText = message.split('');
 
-        for (let i in emotes) {
-            if (Object.prototype.hasOwnProperty.call(emotes, i)) {
-                let emoteCodes = emotes[i];
+        for (let i in args.emotes ){
+            if (Object.prototype.hasOwnProperty.call(args.emotes, i)) {
+                let emoteCodes = args.emotes[i];
 
                 for (let j in emoteCodes) {
                     if (Object.prototype.hasOwnProperty.call(emoteCodes, j)) {
@@ -44,9 +73,19 @@ const chat = {
                             let empty = Array.apply(null, new Array(length + 1)).map(function() {
                                 return '';
                             });
-                            let emote = message.slice(emoteCode[0], emoteCode[1] + 1);
+                            let ttvEmote = message.slice(emoteCode[0], emoteCode[1] + 1);
                             splitText = splitText.slice(0, emoteCode[0]).concat(empty).concat(splitText.slice(emoteCode[1] + 1, splitText.length));
-                            splitText.splice(emoteCode[0], 1, chat.generateEmoteImage('http://static-cdn.jtvnw.net/emoticons/v1/' + i + '/1.0', emote));
+                            splitText.splice(emoteCode[0], 1, chat.generateEmoteImage('http://static-cdn.jtvnw.net/emoticons/v1/' + i + '/1.0', ttvEmote));
+                            
+                            if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
+                                let emoteArgs = {
+                                    uuid: args.uuid,
+                                    code: ttvEmote,
+                                    type: 'ttv'
+                                };
+
+                                emote.addEmote(emoteArgs);
+                            }
                         }
                     }
                 }
@@ -96,17 +135,17 @@ const chat = {
     },
     formatMessage: function(args) {
         let message = args.message;
-        message = chat.encodeTwitchEmotes(message, args.emotes);
-        message = chat.encodeBttvEmotes(message, args.channel);
-        message = chat.encodeFfzEmotes(message, args.channel);
+        message = chat.encodeTwitchEmotes(message, args);
+        message = chat.encodeBttvEmotes(message, args);
+        message = chat.encodeFfzEmotes(message, args);
         message = linkifyHtml(message, {
             defaultProtocol: 'https'
         });
 
         return message;
     },
-    generateEmoteImage: function(url, emote) {
-        return '<img class="emote lazy img-fluid" src="img/empty-emote.png" data-src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + emote + '">';
+    generateEmoteImage: function(url, title) {
+        return '<img class="emote lazy img-fluid" src="img/empty-emote.png" data-src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
     },
     getMessage: function(chatbot, args) {
         chat.prepareMessages(chatbot, args, true);
@@ -118,13 +157,14 @@ const chat = {
         };
 
         let formatMessage = {
+            uuid: typeof args.userstate.id === 'undefined' ? uuidv4() : args.userstate.id,
             channel: args.channel,
             emotes: args.userstate.emotes,
             message: args.message
         };
 
         let values = {
-            uuid: typeof args.userstate.id === 'undefined' ? uuidv4() : args.userstate.id,
+            uuid: formatMessage.uuid,
             badges: chat.formatBadges(chatbot, formatBadges),
             badgeInfo: formatBadges.badgeInfo === null || typeof formatBadges.badgeInfo === 'undefined' ? '' : formatBadges.badgeInfo,
             roomId: typeof args.userstate['room-id'] === 'undefined' ? '' : args.userstate['room-id'],
