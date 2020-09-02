@@ -9,7 +9,7 @@ function adminer_object() {
     }
 
     $plugins = array(
-        new AdminerLoginIp(['::1', '172.21.0.1'], []),
+        new AdminerLoginIp(['::1', '172.20.0.1', '172.20.0.2', '172.21.0.1', '172.21.0.2'], []),
     );
 
     /* It is possible to combine customization and plugins: */

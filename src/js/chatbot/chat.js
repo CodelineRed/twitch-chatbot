@@ -81,6 +81,7 @@ const chat = {
                                 let emoteArgs = {
                                     uuid: args.uuid,
                                     code: ttvEmote,
+                                    typeId: i,
                                     type: 'ttv'
                                 };
 
@@ -417,6 +418,13 @@ const chat = {
 
                 for (let i = 0; i < body.emotes.length; i++) {
                     chat.bttvEmotes[channel][body.emotes[i].code] = 'https://cdn.betterttv.net/emote/' + body.emotes[i].id + '/1x';
+                    let emoteArgs = {
+                        code: body.emotes[i].code,
+                        typeId: body.emotes[i].id,
+                        type: 'bttv'
+                    };
+
+                    emote.addEmote(emoteArgs);
                 }
             });
 
@@ -429,6 +437,13 @@ const chat = {
                 if (typeof body.emotes !== 'undefined') {
                     for (let i = 0; i < body.emotes.length; i++) {
                         chat.bttvEmotes[channel][body.emotes[i].code] = 'https://cdn.betterttv.net/emote/' + body.emotes[i].id + '/1x';
+                        let emoteArgs = {
+                            code: body.emotes[i].code,
+                            typeId: body.emotes[i].id,
+                            type: 'bttv'
+                        };
+
+                        emote.addEmote(emoteArgs);
                     }
                 }
             });
@@ -447,6 +462,13 @@ const chat = {
                 let set = body.default_sets[0];
                 for (let i = 0; i < body.sets[set].emoticons.length; i++) {
                     chat.ffzEmotes[channel][body.sets[set].emoticons[i].name] = body.sets[set].emoticons[i].urls['1'];
+                    let emoteArgs = {
+                        code: body.sets[set].emoticons[i].name,
+                        typeId: body.sets[set].emoticons[i].id,
+                        type: 'ffz'
+                    };
+
+                    emote.addEmote(emoteArgs);
                 }
             });
 
@@ -460,6 +482,13 @@ const chat = {
                     let set = body.room.set;
                     for (let i = 0; i < body.sets[set].emoticons.length; i++) {
                         chat.ffzEmotes[channel][body.sets[set].emoticons[i].name] = body.sets[set].emoticons[i].urls['1'];
+                        let emoteArgs = {
+                            code: body.sets[set].emoticons[i].name,
+                            typeId: body.sets[set].emoticons[i].id,
+                            type: 'ffz'
+                        };
+
+                        emote.addEmote(emoteArgs);
                     }
                 }
             });
