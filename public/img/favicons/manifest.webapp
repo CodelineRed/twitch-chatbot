@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "name": "Twitch Chatbot",
+  "description": "Twitch Chatbot made with Vue Skeleton",
+  "icons": {
+    "60": "img/favicons/firefox_app_60x60.png",
+    "128": "img/favicons/firefox_app_128x128.png",
+    "512": "img/favicons/firefox_app_512x512.png"
+  },
+  "developer": {
+    "name": "InsanityMeetsHH",
+    "url": "https://insanitymeetshh.net/"
+  }
+}

@@ -1,16 +1,5 @@
 /data/backup/*.*
 /data/chatbot.sqlite3
-/public/audio/
-/public/css/styles.css
-/public/css/styles.css.map
-/public/font/
-/public/img/
-/public/js/scripts.js
-/public/js/scripts.js.map
-/public/js/require/
-/public/js/vue/
-/public/json/
-/public/svg/
 gulpfile.json
 gulpfile-config.json
 chatbot.json
