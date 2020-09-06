@@ -3,6 +3,12 @@ const moment   = require('moment');
 const request  = require('request');
 
 const channel = {
+    /**
+     * Sends all configured channels to frontend
+     * 
+     * @param {object} chatbot
+     * @returns {undefined}
+     */
     getChannels: function(chatbot) {
         if (chatbot.socket !== null) {
             const call = {
@@ -17,6 +23,13 @@ const channel = {
             chatbot.socket.write(JSON.stringify(call));
         }
     },
+    /**
+     * Returns channel display name
+     * 
+     * @param {type} chatbot
+     * @param {type} channelName
+     * @returns {string}
+     */
     getChannelDisplayName: function(chatbot, channelName) {
         channelName = channelName.toLowerCase();
 
@@ -28,6 +41,13 @@ const channel = {
 
         return channelName;
     },
+    /**
+     * Saves OAuth token to channel and sends status to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     saveChannelToken: function(chatbot, args) {
         if (chatbot.config.clientIdToken.length) {
             let options = {

@@ -136,7 +136,7 @@ const en = {
     'title-command-tooltip': 'From this video, change channel title to',
     'to': 'To',
     'token-text': '"{0}" has been updated.<br>You can now close this page.',
-    'token-twitch': 'Connect Twitch-Account with Chatbot',
+    'token-twitch': 'Connect Twitch Account with Chatbot',
     'twitch-clip': 'Twitch Clip',
     'twitch-clip-placeholder': 'Twitch Clip Slug',
     'twitch-video': 'Twitch Video',

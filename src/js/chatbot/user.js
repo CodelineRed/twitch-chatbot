@@ -4,6 +4,12 @@ const moment   = require('moment');
 const user = {
     newUsers: [],
     newUserJoins: [],
+    /**
+     * Adds an user and/or channel_user_join to database
+     * 
+     * @param {object} args
+     * @returns {undefined}
+     */
     addUser: function(chatbot, args, callback) {
         // if is message from own chatbot
         if (args.userstate['display-name'].toLowerCase() === chatbot.config.username.toLowerCase()) {

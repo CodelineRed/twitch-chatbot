@@ -127,7 +127,7 @@
                                             <thead>
                                                 <tr>
                                                     <th scope="col">#</th>
-                                                    <th scope="col">{{ $t('component') }}</th>
+                                                    <th scope="col">{{ $tc('component', 2) }}</th>
                                                     <th scope="col">{{ $t('show') }}</th>
                                                     <th scope="col" colspan="2">{{ $t('smartphone') }}</th>
                                                     <th scope="col">{{ $t('tablet') }}</th>

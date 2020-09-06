@@ -9,6 +9,13 @@ const {v4: uuidv4, validate: uuidValid} = require('uuid');
 const chat = {
     bttvEmotes: {},
     ffzEmotes: {},
+    /**
+     * Returns message with BTTV emote images
+     * 
+     * @param {string} message
+     * @param {object} args
+     * @returns {string}
+     */
     encodeBttvEmotes: function(message, args) {
         let emoteCodes = Object.keys(chat.bttvEmotes[args.channel]);
         for (let i = 0; i < emoteCodes.length; i++) {
@@ -32,6 +39,13 @@ const chat = {
         }
         return message;
     },
+    /**
+     * Returns message with FFZ emote images
+     * 
+     * @param {string} message
+     * @param {object} args
+     * @returns {string}
+     */
     encodeFfzEmotes: function(message, args) {
         let emoteCodes = Object.keys(chat.ffzEmotes[args.channel]);
         for (let i = 0; i < emoteCodes.length; i++) {
@@ -55,6 +69,13 @@ const chat = {
         }
         return message;
     },
+    /**
+     * Returns message with Twitch emote images
+     * 
+     * @param {string} message
+     * @param {object} args
+     * @returns {string}
+     */
     encodeTwitchEmotes: function(message, args) {
         let splitText = message.split('');
 
@@ -94,6 +115,13 @@ const chat = {
         }
         return splitText.join('');
     },
+    /**
+     * Formats badges to fontawesome icon
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {object}
+     */
     formatBadges: function(chatbot, args) {
         if (args.badges === null) {
             args.badges = {};
@@ -134,6 +162,12 @@ const chat = {
 
         return badges;
     },
+    /**
+     * Returns formated message
+     * 
+     * @param {object} args
+     * @returns {string}
+     */
     formatMessage: function(args) {
         let message = args.message;
         message = chat.encodeTwitchEmotes(message, args);
@@ -145,9 +179,23 @@ const chat = {
 
         return message;
     },
+    /**
+     * Returns emote image
+     * 
+     * @param {string} url
+     * @param {string} title
+     * @returns {string}
+     */
     generateEmoteImage: function(url, title) {
         return '<img class="emote lazy img-fluid" src="img/empty-emote.png" data-src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
     },
+    /**
+     * Sends formated message to frontend
+     * 
+     * @param {string} chatbot
+     * @param {string} args
+     * @returns {undefined}
+     */
     getMessage: function(chatbot, args) {
         chat.prepareMessages(chatbot, args, true);
 
@@ -217,6 +265,13 @@ const chat = {
             database.insert('chat', [values]);
         }
     },
+    /**
+     * Sends latest 100 messages to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getMessages: function(chatbot, args) {
         chat.prepareMessages(chatbot, args, false);
 
@@ -295,6 +350,13 @@ const chat = {
             }
         });
     },
+    /**
+     * Sends chat notification to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getNotification: function(chatbot, args) {
         chat.prepareMessages(chatbot, args, true);
 
@@ -354,6 +416,13 @@ const chat = {
             database.insert('chat', [values]);
         }
     },
+    /**
+     * Saves message purge
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getPurge: function(chatbot, args) {
         chat.prepareMessages(chatbot, args, false);
 
@@ -406,6 +475,12 @@ const chat = {
             });
         }
     },
+    /**
+     * Loads BTTV emotes over API to database und bttvEmotes array
+     * 
+     * @param {string} channel
+     * @returns {undefined}
+     */
     prepareBttvEmotes: function(channel) {
         if (typeof chat.bttvEmotes[channel] === 'undefined') {
             chat.bttvEmotes[channel] = {};
@@ -449,6 +524,12 @@ const chat = {
             });
         }
     },
+    /**
+     * Loads FFZ emotes over API to database und ffzEmotes array
+     * 
+     * @param {string} channel
+     * @returns {undefined}
+     */
     prepareFfzEmotes: function(channel) {
         if (typeof chat.ffzEmotes[channel] === 'undefined') {
             chat.ffzEmotes[channel] = {};
@@ -494,6 +575,14 @@ const chat = {
             });
         }
     },
+    /**
+     * Prepares messages array
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @param {boolean} shift
+     * @returns {undefined}
+     */
     prepareMessages: function(chatbot, args, shift) {
         if (typeof chatbot.messages[args.channel] === 'undefined') {
             chatbot.messages[args.channel] = [];

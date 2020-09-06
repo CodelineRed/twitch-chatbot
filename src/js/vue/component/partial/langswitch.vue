@@ -34,12 +34,9 @@
                 $this.currentLocale = lang;
                 window.localStorage.setItem('currentLocale', lang);
 
-                // workaround: initSlider() is called, but it's not right translated
-                // if you slide to the left, after language has changed
                 setTimeout(function() {
                     if ($this.init) {
                         $this.initDataTable();
-                        $this.initSlider();
                     }
                     $this.initTooltip();
                     $this.initPopover();

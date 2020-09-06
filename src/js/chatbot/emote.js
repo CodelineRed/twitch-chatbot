@@ -4,6 +4,12 @@ const {v4: uuidv4, validate: uuidValid} = require('uuid');
 
 const emote = {
     newEmotes: [],
+    /**
+     * Adds an emote and/or chat_emote_join to database
+     * 
+     * @param {object} args
+     * @returns {undefined}
+     */
     addEmote: function(args) {
         let time = moment().unix();
         let from = 'emote';

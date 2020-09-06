@@ -2,6 +2,13 @@ const database = require('./database');
 const moment   = require('moment');
 
 const counter = {
+    /**
+     * Sends coutner dataset to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getCounter: function(chatbot, args) {
         let select = 'id, channel_id AS channelId, name, streak, victory, ';
         select += 'updated_at AS updatedAt, created_at AS createdAt';
@@ -29,8 +36,14 @@ const counter = {
                 }
             }
         });
-
     },
+    /**
+     * Updates counter victory
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     updateCounter: function(chatbot, args) {
         args.counter.streak = 0;
         args.counter.updatedAt = moment().unix();

@@ -4,6 +4,13 @@ const moment       = require('moment');
 const {v4: uuidv4} = require('uuid');
 
 const poll = {
+    /**
+     * Adds an active poll
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     addPoll: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let time = moment().unix();
@@ -50,6 +57,13 @@ const poll = {
             });
         }
     },
+    /**
+     * Adds user choice to poll
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     addUserChoice: function(chatbot, args) {
         if (typeof chatbot.activePolls[args.channel].options[args.choice - 1] !== 'undefined') {
             let select = 'uc.uuid';
@@ -90,6 +104,13 @@ const poll = {
             });
         }
     },
+    /**
+     * Sends an annoucement to the chat
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     announcePollToChat: function(chatbot, args) {
         if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
             let name = chatbot.activePolls[args.channel].name;
@@ -105,6 +126,13 @@ const poll = {
             chatbot.client.say('#' + args.channel, locales.t('poll-announcement', [name, results, multipleChoice, raffle]));
         }
     },
+    /**
+     * Closes active poll
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     closePoll: function(chatbot, args) {
         if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
             let from = 'poll';
@@ -121,6 +149,13 @@ const poll = {
             });
         }
     },
+    /**
+     * Sends active poll to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getActivePoll: function(chatbot, args) {
         let select = 'p.id, p.name, p.active, p.multiple_choice, p.start, p.end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, winner, COUNT(uc.option_id) AS o_votes, ';
         select += 'pa.id AS pa_id, pa.name AS pa_name, pa.file AS pa_file, pa.duration AS pa_duration, p.audio_volume AS pa_volume, ';
@@ -200,6 +235,13 @@ const poll = {
             }
         });
     },
+    /**
+     * Sends all past polls to frontend
+     * 
+     * @param {type} chatbot
+     * @param {type} args
+     * @returns {undefined}
+     */
     getPolls: function(chatbot, args) {
         let select = 'p.id, p.name, p.active, p.multiple_choice, p.start, p.end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, winner, COUNT(uc.option_id) AS o_votes, ';
         select += 'pa.id AS pa_id, pa.name AS pa_name, pa.file AS pa_file, pa.duration AS pa_duration, p.audio_volume AS pa_volume, ';
@@ -295,6 +337,13 @@ const poll = {
             }
         });
     },
+    /**
+     * Picks a random poll winner and sends to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getPollWinner: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let winner = {
@@ -371,6 +420,13 @@ const poll = {
             }
         }
     },
+    /**
+     * Sends result from active poll to chat
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     pollResultToChat: function(chatbot, args) {
         if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
             let name = chatbot.activePolls[args.channel].name;
@@ -386,6 +442,13 @@ const poll = {
             chatbot.client.say('#' + args.channel, locales.t('poll-result', [name, results, attendees, votes]));
         }
     },
+    /**
+     * Removes a poll
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     removePoll: function(chatbot, args) {
         if (args.poll.active === false) {
             database.remove('poll', ['id = ?'], [args.poll.id], function(remove) {
@@ -396,6 +459,13 @@ const poll = {
             });
         }
     },
+    /**
+     * Starts a poll instantly
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     startPoll: function(chatbot, args) {
         if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
             let from = 'poll';

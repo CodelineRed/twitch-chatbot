@@ -36,7 +36,7 @@ $ node migration.js
 $ node chatbot.js
 $ gulp (in development)
 ```
-Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/gulpfile.js), if you want to use Docker as server.
+Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/gulpfile.js), if you want to use Docker as server.
 
 ## Project Commands
 |                     | Description                                                                                                                      |
@@ -48,17 +48,17 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 | gulp font           | copy font files                                                                                                                  |
 | gulp img            | copy and compress images                                                                                                         |
 | gulp js             | uglify, minify and concat js files                                                                                               |
-| gulp jsLint         | checks js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/js-lint.json)               | 
+| gulp jsLint         | checks js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/js-lint.json)               | 
 | gulp jsRequire      | copy, uglify and rename files for requirejs                                                                                      |
 | gulp json           | copy and minify json files                                                                                                       |
 | gulp scss           | compile, minify and concat scss files                                                                                            |
-| gulp scssLint       | checks scss follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/scss-lint.json)           |
+| gulp scssLint       | checks scss follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/scss-lint.json)           |
 | gulp svg            | copy and compress svg files                                                                                                      |
 | gulp vue            | transpile vue files                                                                                                              |
-| gulp vueLint        | checks vue follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/vue-lint.json)             |
+| gulp vueLint        | checks vue follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/vue-lint.json)             |
 | gulp vueJs          | transpile vue js files                                                                                                           |
-| gulp vueJsLint      | checks vue js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/import-lint.json)       |
-| gulp chatbotLint    | checks chatbot js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/import-lint.json)   |
+| gulp vueJsLint      | checks vue js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/import-lint.json)       |
+| gulp chatbotLint    | checks chatbot js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/import-lint.json)   |
 | gulp watch          | watch scss, js, json, vue, chatbot, img, font and svg files                                                                      |
 
 ## Ports
@@ -75,7 +75,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 | 3140                | Poll Window (Skateboard Socket for Web UI)                                                                                       |
 | 3150                | Counter Window (Skateboard Socket for Web UI)                                                                                    |
 
-## [`chatbot.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/chatbot.dist.json)
+## [`chatbot.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/chatbot.dist.json)
 |                     | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | username            | Required - Twitch User Name                                                                                                      |
@@ -86,7 +86,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 | locale              | Required - German and English are presetted                                                                                      |
 | channels            | Required - List of Channels to connect                                                                                           |
 
-## [`gulpfile.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/gulpfile.dist.json)
+## [`gulpfile.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/gulpfile.dist.json)
 |                     | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | browserSyncConfig   | Required - Defines which config is used for [BrowserSync](https://www.npmjs.com/package/browser-sync) (default: browserSyncDev)  |
@@ -130,7 +130,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Popout URL `/channel/[channel]/counter` to use browser source in OBS (Pixel recommendation: 400x400px)
 
 ### Playlist
-* Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.local-videos.yml`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/docker-compose.local-videos.yml))
+* Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.local-videos.yml`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.local-videos.yml))
 * Play Twitch Clips and Videos (past broadcasts, highlights and video uploads)
 * Play YouTube Videos
 * Add Video
@@ -207,7 +207,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Preset of 5 Bots (Mod4YouBot, Moobot, Nightbot, StreamElements, Streamlabs)
 * Bot autofilling with BetterTTV API
 
-## [import-videos-folder.js](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/import-videos-folder.js)
+## [import-videos-folder.js](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/import-videos-folder.js)
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
@@ -222,13 +222,13 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 Example execution: `$ node import-videos-folder.js -c InsanityMeetsHH`
 
 ### Import Requirements:
-* `videosFolder` in [`chatbot.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/app/chatbot.dist.json) points to existing folder
+* `videosFolder` in [`chatbot.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/chatbot.dist.json) points to existing folder
 * each folder under `videosFolder` corresponds to a playlist
 * only MP4 files are allowed
 
 The Script only imports videos which are not in the database.
 
-## [migration.js](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/migration.js)
+## [migration.js](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/migration.js)
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
@@ -241,9 +241,9 @@ The Script only imports videos which are not in the database.
 Example execution: `$ node migration.js -d up`
 
 ## Localization
-* Web UI: [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/app/i18n-locales.js)
-* Web UI: [`langswitch.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/vue/component/partial/langswitch.vue)
-* Node: [`locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/develop/src/js/chatbot/locales.js)
+* Web UI: [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/app/i18n-locales.js)
+* Web UI: [`langswitch.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/partial/langswitch.vue)
+* Node: [`locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/locales.js)
 
 ## Installation with [Docker](https://www.docker.com/)
 * Get project via `$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git` or [zip download](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/develop.zip)
@@ -280,9 +280,14 @@ Example execution: `$ node migration.js -d up`
 * [Moment Parsing (Date Format)](https://momentjs.com/docs/#/parsing/)
 * [SCSS Confetti](https://codepen.io/Event_Horizon/pen/wBKVQN)
 
-## Freesound
+## Audio Files
+* Airy by InsanityMeetsHH
+* Ambi EP by InsanityMeetsHH
 * [Big Clap](https://freesound.org/people/kellieskitchen/sounds/209991/)
+* Brassy by InsanityMeetsHH
+* C-Space by InsanityMeetsHH
 * [Cheering and Clapping](https://freesound.org/people/AlaskaRobotics/sounds/221568/)
+* Ensemble by InsanityMeetsHH
 * [Fan Fare 1](https://freesound.org/people/Suburbanwizard/sounds/423293/)
 * [Fan Fare 2](https://freesound.org/people/humanoide9000/sounds/466133/)
 * [Fan Fare 3](https://freesound.org/people/plasterbrain/sounds/397355/)
@@ -292,3 +297,4 @@ Example execution: `$ node migration.js -d up`
 
 ## Known Issues
 - Sometimes user are not inserted in channel_user_join. This is under investigation.
+- Emotes in Chat component kann flicker after new message was added

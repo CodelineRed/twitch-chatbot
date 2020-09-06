@@ -5,6 +5,13 @@ const request      = require('request');
 const {v4: uuidv4} = require('uuid');
 
 const raffle = {
+    /**
+     * Adds attendee to raffle
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     addAttendee: function(chatbot, args) {
         let select = 'DISTINCT u.name';
         let from = 'attendee AS a';
@@ -82,6 +89,13 @@ const raffle = {
             }
         });
     },
+    /**
+     * Adds an active raffle
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     addRaffle: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let time = moment().unix();
@@ -112,6 +126,13 @@ const raffle = {
             });
         }
     },
+    /**
+     * Sends an annoucement to the chat
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     announceRaffleToChat: function(chatbot, args) {
         if (typeof chatbot.activeRaffles[args.channel].id !== 'undefined') {
             let keyword = '!raffle';
@@ -124,6 +145,13 @@ const raffle = {
             chatbot.client.say('#' + args.channel, locales.t('raffle-announcement', [name, keyword]));
         }
     },
+    /**
+     * Closes active raffle
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     closeRaffle: function(chatbot, args) {
         if (typeof chatbot.activeRaffles[args.channel].id !== 'undefined') {
             let from = 'raffle';
@@ -140,6 +168,13 @@ const raffle = {
             });
         }
     },
+    /**
+     * Sends active raffle to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getActiveRaffle: function(chatbot, args) {
         let select = 'r.id, r.name, r.keyword, r.active, r.start, r.end, r.updated_at, r.created_at, ';
         select += 'r.multiplicator_partner, r.multiplicator_moderator, r.multiplicator_vip, r.multiplicator_subscriber, ';
@@ -216,6 +251,13 @@ const raffle = {
             }
         });
     },
+    /**
+     * Sends all past raffles to frontend
+     * 
+     * @param {type} chatbot
+     * @param {type} args
+     * @returns {undefined}
+     */
     getRaffles: function(chatbot, args) {
         let select = 'r.id, r.name, r.keyword, r.active, r.start, r.end, r.updated_at, r.created_at, ';
         select += 'r.multiplicator_partner, r.multiplicator_moderator, r.multiplicator_vip, r.multiplicator_subscriber, ';
@@ -288,6 +330,13 @@ const raffle = {
             }
         });
     },
+    /**
+     * Picks a random raffle winner and sends to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getRaffleWinner: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let winner = {
@@ -382,6 +431,13 @@ const raffle = {
             }
         }
     },
+    /**
+     * Sends result from active raffle to chat
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     raffleResultToChat: function(chatbot, args) {
         if (typeof chatbot.activeRaffles[args.channel].id !== 'undefined') {
             let name = chatbot.activeRaffles[args.channel].name;
@@ -406,6 +462,13 @@ const raffle = {
             });
         }
     },
+    /**
+     * Removes a raffle
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     removeRaffle: function(chatbot, args) {
         if (args.raffle.active === false) {
             database.remove('raffle', ['id = ?'], [args.raffle.id], function(remove) {
@@ -415,6 +478,13 @@ const raffle = {
             });
         }
     },
+    /**
+     * Starts a raffle instantly
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     startRaffle: function(chatbot, args) {
         if (typeof chatbot.activeRaffles[args.channel].id !== 'undefined') {
             let from = 'raffle';

@@ -11,7 +11,7 @@ const user        = require('./src/js/chatbot/user');
 chatbot.config = config;
 
 // define configuration options
-const opts = {
+const options = {
     connection: {
         maxReconnectAttempts: 300,
         reconnect: true,
@@ -25,7 +25,7 @@ const opts = {
 };
 
 // create a client with options
-const client = new tmi.client(opts); // eslint-disable-line new-cap
+const client = new tmi.client(options); // eslint-disable-line new-cap
 
 function onAnonGiftPaidUpgrade(channel, username, userstate) {
     const args = {

@@ -7,6 +7,13 @@ const request      = require('request');
 const {v4: uuidv4} = require('uuid');
 
 const playlist = {
+    /**
+     * Adds active playlist
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     addPlaylist: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let time = moment().unix();
@@ -37,6 +44,13 @@ const playlist = {
             });
         }
     },
+    /**
+     * Adds a video
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     addVideo: function(chatbot, args) {
         if (chatbot.socket !== null) {
             delete args.video.durationHours;
@@ -131,6 +145,13 @@ const playlist = {
             });
         }
     },
+    /**
+     * Removes all videos from playlisz
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     clearActivePlaylist: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let from = 'playlist_video_join';
@@ -143,6 +164,13 @@ const playlist = {
             });
         }
     },
+    /**
+     * Sends active playlist to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getActivePlaylist: function(chatbot, args) {
         let select = 'p.id AS p_id, p.name AS p_name, p.updated_at AS p_updated_at, p.created_at AS p_created_at, ';
         select += 'v.id, v.name, v.sub_name, v.file, v.duration, v.player, v.updated_at, v.created_at, ';
@@ -255,6 +283,13 @@ const playlist = {
             }
         });
     },
+    /**
+     * Sends meta information from local file to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getLocalVideoMeta: function(chatbot, args) {
         let localRegExp = /(.*)(\.mp4)$/i;
         let call = {
@@ -311,6 +346,13 @@ const playlist = {
             chatbot.socket.write(JSON.stringify(call));
         }
     },
+    /**
+     * Sends playlist to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getPlaylist: function(chatbot, args) {
         let selectedPlaylist = {};
         let select = 'id, name, active, updated_at AS updatedAt, created_at AS createdAt';
@@ -351,6 +393,13 @@ const playlist = {
             }
         });
     },
+    /**
+     * Sends information about tokens and video folder to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getPlaylistConfig: function(chatbot, args) {
         if (chatbot.socket !== null) {
             const call = {
@@ -370,6 +419,13 @@ const playlist = {
             chatbot.socket.write(JSON.stringify(call));
         }
     },
+    /**
+     * Sends all playlists to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getPlaylists: function(chatbot, args) {
         let select = 'p.id, p.name, p.active, p.updated_at AS updatedAt, ';
         select += 'p.created_at AS createdAt, COUNT(pvj.playlist_id) AS videoQuantity';
@@ -397,6 +453,13 @@ const playlist = {
             }
         });
     },
+    /**
+     * Sends playlists by given playlistSearch to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getPlaylistSearchResults: function(chatbot, args) {
         let search = args.playlistSearch.replace(/ /g, '%');
         let select = 'p.id, p.name, p.active, p.updated_at AS updatedAt, ';
@@ -424,6 +487,13 @@ const playlist = {
             }
         });
     },
+    /**
+     * Sends meta information from twitch clip to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getTwitchClipMeta: function(chatbot, args) {
         let call = {
             args: {
@@ -479,6 +549,13 @@ const playlist = {
             chatbot.socket.write(JSON.stringify(call));
         }
     },
+    /**
+     * Sends meta information from twitch video to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getTwitchVideoMeta: function(chatbot, args) {
         let call = {
             args: {
@@ -534,6 +611,13 @@ const playlist = {
             chatbot.socket.write(JSON.stringify(call));
         }
     },
+    /**
+     * Sends the next video to frontend and changes stream title and/or game
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getVideo: function(chatbot, args) {
         if (chatbot.socketVideo !== null) {
             let match = false;
@@ -669,6 +753,13 @@ const playlist = {
             }
         }
     },
+    /**
+     * Returns index of given video in videos
+     * 
+     * @param {object} videos
+     * @param {object} video
+     * @returns {number}
+     */
     getVideoIndexFromVideos: function(videos, video) {
         for (let i = 0; i < videos.length; i++) {
             if (video.uuid === videos[i].uuid) {
@@ -677,6 +768,13 @@ const playlist = {
         }
         return -1;
     },
+    /**
+     * Sends video by given videoSearch to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getVideoSearchResults: function(chatbot, args) {
         let search = args.videoSearch.replace(/ /g, '%');
         let select = 'id, name, sub_name AS subName, file, ';
@@ -700,6 +798,13 @@ const playlist = {
             }
         });
     },
+    /**
+     * Sends meta information from youtube video to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getYoutubeVideoMeta: function(chatbot, args) {
         let call = {
             args: {
@@ -760,6 +865,13 @@ const playlist = {
             chatbot.socket.write(JSON.stringify(call));
         }
     },
+    /**
+     * Merges 2 playlists
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     mergePlaylists: function(chatbot, args) {
         let select = 'v.id, v.name, v.file, v.duration, v.player, ';
         select += 'v.updated_at AS updatedAt, v.created_at AS createdAt, v.sub_name AS subName, ';
@@ -859,6 +971,13 @@ const playlist = {
             });
         });
     },
+    /**
+     * Moves a video in sorting order
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     moveVideo: function(chatbot, args) {
         let time = moment().unix();
         let from = 'playlist_video_join';
@@ -899,6 +1018,13 @@ const playlist = {
             });
         });
     },
+    /**
+     * Resets all videos in active playlist
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     resetActivePlaylist: function(chatbot, args) {
         if (chatbot.socket !== null) {
             chatbot.currentVideoStart[args.channel] = 0;
@@ -917,6 +1043,13 @@ const playlist = {
             });
         }
     },
+    /**
+     * Removes playlist
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     removePlaylist: function(chatbot, args) {
         if (chatbot.socket !== null && args.playlist.name.toLowerCase() !== 'general') {
             database.remove('playlist', ['id = ?'], [args.playlist.id], function(remove) {
@@ -946,6 +1079,13 @@ const playlist = {
             });
         }
     },
+    /**
+     * Removes video
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     removeVideo: function(chatbot, args) {
         database.remove('playlist_video_join', ['uuid = ?'], [args.video.uuid], function(remove) {
             playlist.getPlaylists(chatbot, args);
@@ -959,6 +1099,13 @@ const playlist = {
             console.log(locales.t('video-removed', [args.video.name, args.playlist.name]));
         });
     },
+    /**
+     * Removes videos from active playlist which flaged as "skipped" or "played"
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     removeVideosByFlagFromActivePlaylist: function(chatbot, args) {
         let uuidArray = [];
         let videos = chatbot.activePlaylists[args.channel].videos;
@@ -980,6 +1127,13 @@ const playlist = {
             playlist.getActivePlaylist(chatbot, args);
         }
     },
+    /**
+     * Switches the active playlist
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     switchPlaylist: function(chatbot, args) {
         let time = moment().unix();
 
@@ -993,6 +1147,13 @@ const playlist = {
             });
         });
     },
+    /**
+     * Updates playlist name
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     updatePlaylist: function(chatbot, args) {
         if (args.playlist.name.toLowerCase() !== 'general') {
             let set = {
@@ -1014,6 +1175,13 @@ const playlist = {
             });
         }
     },
+    /**
+     * Updates video properties
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     updateVideo: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let reloadActivePlaylist = false;

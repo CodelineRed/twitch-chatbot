@@ -5,6 +5,13 @@ const raffle   = require('./raffle');
 const moment   = require('moment');
 
 const command = {
+    /**
+     * Sends all commands to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     getCommands: function(chatbot, args) {
         let select = 'cmd.id, cmd.name, cmd.created_at AS createdAt, ccj.cooldown, ';
         select += 'ccj.active, ccj.last_exec AS lastExec, ccj.updated_at AS updatedAt';
@@ -42,11 +49,24 @@ const command = {
             }
         });
     },
+    /**
+     * Logs commands execution to CLI
+     * 
+     * @param {type} args
+     * @returns {undefined}
+     */
     logCommand: function(args) {
         // extract command from message
         args.message = args.message.replace(/^(![a-z0-9]+)(.*)/, '$1');
         console.log(locales.t('command-executed', [args.message, args.userstate['display-name'], args.channel]));
     },
+    /**
+     * Updates command
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
     updateCommand: function(chatbot, args) {
         chatbot.commands[args.channel][args.commandIndex] = args.command;
 
@@ -64,6 +84,13 @@ const command = {
 
         database.update('channel_command_join', set, where);
     },
+    /**
+     * Updates command last execution
+     * 
+     * @param {type} chatbot
+     * @param {type} args
+     * @returns {undefined}
+     */
     updateCommandLastExec: function(chatbot, args) {
         chatbot.commands[args.channel][args.commandIndex].lastExec = moment().unix();
 
@@ -89,7 +116,17 @@ const command = {
             chatbot.socket.write(JSON.stringify(call));
         }
     },
+    /**
+     * List of default commands
+     */
     commandList: {
+        /**
+         * Sends information about chatbot to chat
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
         about: function(chatbot, args) {
             if (/^!(about|chatbot|cb|bugs?|help)/i.test(args.message)) {
                 const version = require('../../../package.json')['version'];
@@ -102,6 +139,13 @@ const command = {
                 command.updateCommandLastExec(chatbot, args);
             }
         },
+        /**
+         * Sends list of commands to chat
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
         commands: function(chatbot, args) {
             if (/^!(commands|cc)/i.test(args.message)) {
                 chatbot.client.say('#' + args.channel, locales.t('command-commands'));
@@ -109,6 +153,13 @@ const command = {
                 command.updateCommandLastExec(chatbot, args);
             }
         },
+        /**
+         * Checks if chat is counting in a streak and sends change to frontend
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
         counter: function(chatbot, args) {
             if (/^\d\d?$/.test(args.message)) {
                 const number = parseInt(args.message);
@@ -136,6 +187,13 @@ const command = {
                 }
             }
         },
+        /**
+         * Sends playlist information to chat
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
         playlistInfo: function(chatbot, args) {
             if (/^!(info|(sende)?plan|programm|playlist|video)/i.test(args.message)) {
                 let currentVideo = '';
@@ -186,6 +244,13 @@ const command = {
                 command.updateCommandLastExec(chatbot, args);
             }
         },
+        /**
+         * Executes addUserChoice if possible
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
         poll: function(chatbot, args) {
             if (typeof chatbot.activePolls[args.channel] !== 'undefined' && /^!vote ([0-99])$/i.test(args.message)) {
                 args.choice = parseInt(args.message.toLowerCase().match(/^!vote ([0-99])$/)[1]);
@@ -199,6 +264,13 @@ const command = {
                 command.updateCommandLastExec(chatbot, args);
             }
         },
+        /**
+         * Executes addAttendee if possible
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
         raffle: function(chatbot, args) {
             if (typeof chatbot.activeRaffles[args.channel] !== 'undefined' 
                 && chatbot.activeRaffles[args.channel].keyword === args.message) {
@@ -211,6 +283,13 @@ const command = {
                 command.updateCommandLastExec(chatbot, args);
             }
         },
+        /**
+         * Sends result of rolled dice to chat
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
         rollDice: function(chatbot, args) {
             if (/^!d([1-9]+)(w([1-9]))?/.test(args.message)) {
                 const matches = args.message.match(/^!d([1-9]+)(w([1-9]))?/);

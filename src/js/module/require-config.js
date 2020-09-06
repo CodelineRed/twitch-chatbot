@@ -11,6 +11,6 @@ require = { // eslint-disable-line no-global-assign
         '@fortawesome/free-brands-svg-icons': 'js/require/free-brands-svg-icons.js?v=5.14.0',
         '@fortawesome/free-regular-svg-icons': 'js/require/free-regular-svg-icons.js?v=5.14.0',
         '@fortawesome/free-solid-svg-icons': 'js/require/free-solid-svg-icons.js?v=5.14.0',
-        '@fortawesome/vue-fontawesome': 'js/require/vue-fontawesome.js?v=0.1.10'
+        '@fortawesome/vue-fontawesome': 'js/require/vue-fontawesome.js?v=2.0.0'
     }
 };
