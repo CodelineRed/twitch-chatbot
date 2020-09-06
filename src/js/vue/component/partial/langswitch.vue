@@ -1,10 +1,9 @@
 <script>
     import bsComponent from '../../method/bs-component';
     import dataTable from '../../method/data-table';
-    import slider from '../../method/slider';
 
     export default {
-        mixins: [bsComponent, dataTable, slider],
+        mixins: [bsComponent, dataTable],
         props: {
             drop: {
                 type: String,

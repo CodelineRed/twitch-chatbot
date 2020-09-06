@@ -59,6 +59,8 @@ function cleanUp() {
             config.publicPath + 'css/styles.*',
             config.publicPath + 'font/**/*',
             config.publicPath + 'img/**/*',
+            config.publicPath + 'js/require/**/*',
+            config.publicPath + 'js/vue/**/*',
             config.publicPath + 'js/scripts.*',
             config.publicPath + 'json/**/*',
             config.publicPath + 'svg/**/*'
