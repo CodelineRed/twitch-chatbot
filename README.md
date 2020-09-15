@@ -21,13 +21,12 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
 * [Node.js](http://nodejs.org/en/download/)
 * [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 * [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
-* [Docker](https://www.docker.com/) ([for installation with Docker](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/develop#installation-with-docker))
+* [Docker](https://www.docker.com/) ([for installation with Docker](https://github.com/InsanityMeetsHH/twitch-chatbot#installation-with-docker))
 
 ## Installation (Recommended)
 ```bash
 $ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git [app-name]
 $ cd [app-name]
-$ git checkout develop
 $ (optional) rm -rf .git (unix) / rmdir .git /s (windows)
 $ npm i
 $ gulp build
@@ -246,9 +245,8 @@ Example execution: `$ node migration.js -d up`
 * Node: [`locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/locales.js)
 
 ## Installation with [Docker](https://www.docker.com/)
-* Get project via `$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git` or [zip download](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/develop.zip)
+* Get project via `$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git` or [zip download](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/master.zip)
 * Open a command prompt on your OS (if not already open) and navigate to the project folder
-* `$ git checkout develop`
 * `$ npm i`
 * `$ gulp build`
 * `$ -- Add username, tmiToken and channels to src/app/chatbot.json ---

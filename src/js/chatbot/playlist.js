@@ -513,8 +513,8 @@ const playlist = {
                 url: `https://api.twitch.tv/kraken/clips/${args.file}`,
                 method: 'GET',
                 headers: {
-                    'Client-ID': chatbot.config.clientIdToken,
-                    'Accept': 'application/vnd.twitchtv.v5+json'
+                    'Accept': 'application/vnd.twitchtv.v5+json',
+                    'Client-ID': chatbot.config.clientIdToken
                 }
             };
 
@@ -575,8 +575,8 @@ const playlist = {
                 url: `https://api.twitch.tv/kraken/videos/${args.file}`,
                 method: 'GET',
                 headers: {
-                    'Client-ID': chatbot.config.clientIdToken,
-                    'Accept': 'application/vnd.twitchtv.v5+json'
+                    'Accept': 'application/vnd.twitchtv.v5+json',
+                    'Client-ID': chatbot.config.clientIdToken
                 }
             };
 
