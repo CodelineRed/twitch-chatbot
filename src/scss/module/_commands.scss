@@ -1,6 +1,5 @@
 .commands {
-    background-color: $theme-color-4;
-    border-radius: 5px;
+    @extend .tile-background;
 
     .fa-sync {
         cursor: pointer;

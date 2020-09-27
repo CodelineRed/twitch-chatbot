@@ -58,7 +58,7 @@ const database = {
     },
     /**
      * @param {string} select required
-     * @param {string} from required
+     * @param {string} from optional
      * @param {string} join optional "JOIN" is prepending by default if no join/ left join/ right join is defined
      * @param {array} where optional
      * @param {string} group optional
@@ -73,7 +73,11 @@ const database = {
         if (database.connection !== null) {
             this.backup();
             database.connection.serialize(() => {
-                let query = `SELECT ${select} FROM ${from} `;
+                let query = `SELECT ${select} `;
+
+                if (typeof from !== 'undefined' && from.length) {
+                    query += `FROM ${from} `;
+                }
 
                 if (typeof join === 'string' && join.length) {
                     if (/^(join|left join|right join)/i.test(join)) {
@@ -228,7 +232,7 @@ const database = {
      * Loads channel records. 
      * 
      * @param {object} chatbot required
-     * @param {string} channel required
+     * @param {object} channelState required
      * @returns {undefined}
      */
     prepareChannelTable: function(chatbot, channelState) {

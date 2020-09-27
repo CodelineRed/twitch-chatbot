@@ -122,6 +122,7 @@ function js() {
 //            'node_modules/@fortawesome/fontawesome-free/js/all.js',
             'node_modules/skateboard/skateboard.min.js',
             'node_modules/moment/moment.js',
+            'node_modules/chart.js/dist/Chart.bundle.js',
             config.sourcePath + 'js/lib/**/*.js',
             'node_modules/cssuseragent/cssua.js',
             'node_modules/datatables.net/js/jquery.dataTables.js',

@@ -1,6 +1,5 @@
 .playlist {
-    background-color: $theme-color-4;
-    border-radius: 5px;
+    @extend .tile-background;
     position: relative;
 
     .dropdown-menu {

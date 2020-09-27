@@ -5,6 +5,7 @@ import Counter from '../component/partial/counter';
 import Player from '../component/partial/player';
 import Poll from '../component/partial/poll';
 import Raffle from '../component/partial/raffle';
+import Statistic from '../component/page/statistic';
 import Token from '../component/page/token';
 import ErrorPage from '../component/page/error-page';
 
@@ -70,6 +71,15 @@ const routes = [
         meta: {
             title: 'router.param-channel - i18n.raffle',
             layout: 'empty'
+        }
+    },
+    {
+        component: Statistic,
+        name: 'statistic',
+        path: '/channel/:channel/statistic',
+        meta: {
+            title: 'router.param-channel - i18n.statistic',
+            layout: 'default'
         }
     },
     {

@@ -5,8 +5,9 @@
     outline: 0 !important; // sass-lint:disable-line no-important
 }
 
-.transition-all {
-    @include transition(.5s ease)
+.btn-fs1rem {
+    font-size: 1rem;
+    margin-top: -6px;
 }
 
 .hyphenate {
@@ -17,6 +18,15 @@
     //word-break: break-word;
 
     hyphens: auto;
+}
+
+.tile-background {
+    background-color: $theme-color-4;
+    border-radius: 5px;
+}
+
+.transition-all {
+    @include transition(.5s ease)
 }
 
 footer {

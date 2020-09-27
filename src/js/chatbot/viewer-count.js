@@ -11,7 +11,8 @@ const viewerCount = {
 
         // get oauthToken by any channel
         for (let i = 0; i < channels.length; i++) {
-            if (chatbot.channels[channels[i]].oauthToken.length && !oauthToken.length) {
+            if (typeof chatbot.channels[channels[i]].oauthToken === 'string' 
+                && chatbot.channels[channels[i]].oauthToken.length && !oauthToken.length) {
                 oauthToken = chatbot.channels[channels[i]].oauthToken;
             }
 
@@ -30,7 +31,7 @@ const viewerCount = {
                 }
             };
 
-            // get single twitch video
+            // get list of live streamers from query
             request(options, (err, res, body) => {
                 if (err) {
                     return console.log(err);
@@ -51,19 +52,19 @@ const viewerCount = {
                             }
                         };
 
-                        // change stream game and/ or title
-                        request(options, (err, res, body) => {
-                            if (err) {
-                                return console.log(err);
+                        // get current game from live stream
+                        request(options, (errGame, resGame, bodyGame) => {
+                            if (errGame) {
+                                return console.log(errGame);
                             }
-                            body = JSON.parse(body);
+                            bodyGame = JSON.parse(bodyGame);
 
-                            if (typeof body.error === 'undefined') {
+                            if (typeof bodyGame.error === 'undefined') {
                                 let values = {
                                     uuid: uuidv4(),
                                     channelId: channelId,
                                     count: count,
-                                    game: body.game,
+                                    game: bodyGame.game,
                                     updatedAt: time,
                                     createdAt: time
                                 };

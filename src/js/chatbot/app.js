@@ -1,12 +1,13 @@
-const audio    = require('./audio');
-const chat     = require('./chat');
-const channel  = require('./channel');
-const command  = require('./command');
-const counter  = require('./counter');
-const database = require('./database');
-const playlist = require('./playlist');
-const poll     = require('./poll');
-const raffle   = require('./raffle');
+const audio     = require('./audio');
+const chat      = require('./chat');
+const channel   = require('./channel');
+const command   = require('./command');
+const counter   = require('./counter');
+const database  = require('./database');
+const playlist  = require('./playlist');
+const poll      = require('./poll');
+const raffle    = require('./raffle');
+const statistic = require('./statistic');
 
 /**
  * Chatbot Object
@@ -53,16 +54,21 @@ const chatbot = {
     getActivePoll: poll.getActivePoll,
     getActiveRaffle: raffle.getActiveRaffle,
     getAudios: audio.getAudios,
+    getChart: statistic.getChart,
     getLocalVideoMeta: playlist.getLocalVideoMeta,
     getMessages: chat.getMessages,
+    getMisc: statistic.getMisc,
     getPlaylist: playlist.getPlaylist,
     getPlaylistConfig: playlist.getPlaylistConfig,
     getPlaylists: playlist.getPlaylists,
     getPlaylistSearchResults: playlist.getPlaylistSearchResults,
     getPolls: poll.getPolls,
+    getPurges: statistic.getPurges,
     getRaffles: raffle.getRaffles,
     getPollWinner: poll.getPollWinner,
     getRaffleWinner: raffle.getRaffleWinner,
+    getSubs: statistic.getSubs,
+    getTopEmotes: statistic.getTopEmotes,
     getTwitchClipMeta: playlist.getTwitchClipMeta,
     getTwitchVideoMeta: playlist.getTwitchVideoMeta,
     getVideo: playlist.getVideo,

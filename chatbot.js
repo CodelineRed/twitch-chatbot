@@ -6,6 +6,7 @@ const config      = require('./src/app/chatbot.json');
 const chatbot     = require('./src/js/chatbot/app');
 const chat        = require('./src/js/chatbot/chat');
 const database    = require('./src/js/chatbot/database');
+const locales     = require('./src/js/chatbot/locales');
 const user        = require('./src/js/chatbot/user');
 const viewerCount = require('./src/js/chatbot/viewer-count');
 
@@ -381,6 +382,7 @@ function onRoomState(channel, state) {
     countLoadedChannels++;
     if (!connected && countLoadedChannels === config.channels.length) {
         connected = true;
+        console.log(locales.t('channels-loaded'));
 
         // wait for chatbot.warmUpDatabase(state)
         setTimeout(function() {

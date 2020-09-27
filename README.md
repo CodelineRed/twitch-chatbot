@@ -206,6 +206,36 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Preset of 5 Bots (Mod4YouBot, Moobot, Nightbot, StreamElements, Streamlabs)
 * Bot autofilling with BetterTTV API
 
+### Statistics
+* Display Viewer Count as Chart
+* Top 15 Emotes All
+* Top 15 Twitch Emotes
+* Top 15 BTTV Emotes
+* Top 15 FFZ Emotes
+* Amount of Subs
+* Amount of New Subs
+* Amount of New Paid Subs
+* Amount of New Prime Subs
+* Amount of Gifted Directly Subs
+* Amount of Gifted Random Subs
+* Amount of Resubs
+* Amount of Paid Resubs
+* Amount of Prime Resubs
+* Amount of Purges
+* Amount of Deleted Messages
+* Amount of Timeout Meassages
+* Amount of Timeout Users
+* Amount of Banned Users
+* Amount of New Users
+* Amount of All Users
+* Amount of Chat Messages
+* Amount of Used Emotes
+* Amount of Cheers
+* Amount of Bits
+* Viewer Minimum
+* Viewer Maximum
+* Viewer Average
+
 ## [import-videos-folder.js](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/import-videos-folder.js)
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|

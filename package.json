@@ -42,6 +42,7 @@
         "babel-eslint": "^10.1.0",
         "bootstrap": "^4.5.2",
         "browser-sync": "^2.26.12",
+        "chart.js": "^2.9.3",
         "cssuseragent": "^2.1.31",
         "datatables.net": "^1.10.21",
         "datatables.net-bs4": "^1.10.21",
