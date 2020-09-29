@@ -19,7 +19,8 @@ const chat = {
     encodeBttvEmotes: function(message, args) {
         let emoteCodes = Object.keys(chat.bttvEmotes[args.channel]);
         for (let i = 0; i < emoteCodes.length; i++) {
-            let regex = new RegExp(emoteCodes[i], 'g');
+            let regexEmote = emoteCodes[i].replace(/(\(|\))/g, '\\$1');
+            let regex = new RegExp('^' + regexEmote + '| ' + regexEmote + '|' + regexEmote + '$', 'g');
 
             if (regex.test(message)) {
                 if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
@@ -34,7 +35,7 @@ const chat = {
                     }
                 }
 
-                message = message.replace(regex, chat.generateEmoteImage(chat.bttvEmotes[args.channel][emoteCodes[i]], emoteCodes[i]));
+                message = message.replace(regex, chat.generateEmoteImage(chat.bttvEmotes[args.channel][emoteCodes[i]], emoteCodes[i], args.lazy));
             }
         }
         return message;
@@ -49,7 +50,8 @@ const chat = {
     encodeFfzEmotes: function(message, args) {
         let emoteCodes = Object.keys(chat.ffzEmotes[args.channel]);
         for (let i = 0; i < emoteCodes.length; i++) {
-            let regex = new RegExp(emoteCodes[i], 'g');
+            let regexEmote = emoteCodes[i].replace(/(\(|\))/g, '\\$1');
+            let regex = new RegExp('^' + regexEmote + '| ' + regexEmote + '|' + regexEmote + '$', 'g');
 
             if (regex.test(message)) {
                 if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
@@ -64,7 +66,7 @@ const chat = {
                     }
                 }
 
-                message = message.replace(regex, chat.generateEmoteImage(chat.ffzEmotes[args.channel][emoteCodes[i]], emoteCodes[i]));
+                message = message.replace(regex, chat.generateEmoteImage(chat.ffzEmotes[args.channel][emoteCodes[i]], emoteCodes[i], args.lazy));
             }
         }
         return message;
@@ -96,7 +98,7 @@ const chat = {
                             });
                             let ttvEmote = message.slice(emoteCode[0], emoteCode[1] + 1);
                             splitText = splitText.slice(0, emoteCode[0]).concat(empty).concat(splitText.slice(emoteCode[1] + 1, splitText.length));
-                            splitText.splice(emoteCode[0], 1, chat.generateEmoteImage('http://static-cdn.jtvnw.net/emoticons/v1/' + i + '/1.0', ttvEmote));
+                            splitText.splice(emoteCode[0], 1, chat.generateEmoteImage('http://static-cdn.jtvnw.net/emoticons/v1/' + i + '/1.0', ttvEmote, args.lazy));
                             
                             if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
                                 let emoteArgs = {
@@ -184,10 +186,16 @@ const chat = {
      * 
      * @param {string} url
      * @param {string} title
+     * @param {boolean} lazy
      * @returns {string}
      */
-    generateEmoteImage: function(url, title) {
-        return '<img class="emote lazy img-fluid" src="img/empty-emote.png" data-src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
+    generateEmoteImage: function(url, title, lazy) {
+        lazy = typeof lazy === 'boolean' ? lazy : true;
+        let image = '<img class="emote" src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
+        if (lazy) {
+            image = '<img class="emote lazy" src="img/empty-emote.png" data-src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
+        }
+        return image;
     },
     /**
      * Sends formated message to frontend

@@ -21,13 +21,12 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
 * [Node.js](http://nodejs.org/en/download/)
 * [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 * [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
-* [Docker](https://www.docker.com/) ([for installation with Docker](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/develop#installation-with-docker))
+* [Docker](https://www.docker.com/) ([for installation with Docker](https://github.com/InsanityMeetsHH/twitch-chatbot#installation-with-docker))
 
 ## Installation (Recommended)
 ```bash
 $ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git [app-name]
 $ cd [app-name]
-$ git checkout develop
 $ (optional) rm -rf .git (unix) / rmdir .git /s (windows)
 $ npm i
 $ gulp build
@@ -207,6 +206,36 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 * Preset of 5 Bots (Mod4YouBot, Moobot, Nightbot, StreamElements, Streamlabs)
 * Bot autofilling with BetterTTV API
 
+### Statistics
+* Display Viewer Count as Chart
+* Top 15 Emotes All
+* Top 15 Twitch Emotes
+* Top 15 BTTV Emotes
+* Top 15 FFZ Emotes
+* Amount of Subs
+* Amount of New Subs
+* Amount of New Paid Subs
+* Amount of New Prime Subs
+* Amount of Gifted Directly Subs
+* Amount of Gifted Random Subs
+* Amount of Resubs
+* Amount of Paid Resubs
+* Amount of Prime Resubs
+* Amount of Purges
+* Amount of Deleted Messages
+* Amount of Timeout Meassages
+* Amount of Timeout Users
+* Amount of Banned Users
+* Amount of New Users
+* Amount of All Users
+* Amount of Chat Messages
+* Amount of Used Emotes
+* Amount of Cheers
+* Amount of Bits
+* Viewer Minimum
+* Viewer Maximum
+* Viewer Average
+
 ## [import-videos-folder.js](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/import-videos-folder.js)
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
@@ -246,9 +275,8 @@ Example execution: `$ node migration.js -d up`
 * Node: [`locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/locales.js)
 
 ## Installation with [Docker](https://www.docker.com/)
-* Get project via `$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git` or [zip download](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/develop.zip)
+* Get project via `$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git` or [zip download](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/master.zip)
 * Open a command prompt on your OS (if not already open) and navigate to the project folder
-* `$ git checkout develop`
 * `$ npm i`
 * `$ gulp build`
 * `$ -- Add username, tmiToken and channels to src/app/chatbot.json ---

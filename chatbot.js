@@ -6,8 +6,12 @@ const config      = require('./src/app/chatbot.json');
 const chatbot     = require('./src/js/chatbot/app');
 const chat        = require('./src/js/chatbot/chat');
 const database    = require('./src/js/chatbot/database');
+const locales     = require('./src/js/chatbot/locales');
 const user        = require('./src/js/chatbot/user');
+const viewerCount = require('./src/js/chatbot/viewer-count');
 
+let connected = false;
+let countLoadedChannels = 0;
 chatbot.config = config;
 
 // define configuration options
@@ -374,6 +378,21 @@ function onRoomState(channel, state) {
     chat.prepareBttvEmotes(channel.replace(/#/g, ''));
     chat.prepareFfzEmotes(channel.replace(/#/g, ''));
     chatbot.warmUpDatabase(state);
+
+    countLoadedChannels++;
+    if (!connected && countLoadedChannels === config.channels.length) {
+        connected = true;
+        console.log(locales.t('channels-loaded'));
+
+        // wait for chatbot.warmUpDatabase(state)
+        setTimeout(function() {
+            viewerCount.addViewerCount(chatbot);
+        }, 2000); // 2 seconds
+
+        setInterval(function() {
+            viewerCount.addViewerCount(chatbot);
+        }, 60000 * 5); // 5 mins
+    }
 }
 
 //onSubgift

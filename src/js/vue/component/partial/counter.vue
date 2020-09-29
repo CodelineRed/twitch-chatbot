@@ -51,7 +51,7 @@
                 }
             },
             updateCounter: function() {
-                if (typeof socketWrite === 'function') {
+                if (typeof socketWrite === 'function' && typeof this.$root._route.params.channel === 'string') {
                     const call = {
                         method: 'updateCounter',
                         args: {

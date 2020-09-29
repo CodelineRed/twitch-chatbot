@@ -22,6 +22,13 @@ a {
     }
 }
 
+.top-emotes {
+    img {
+        max-height: 25px;
+        min-height: 25px;
+    }
+}
+
 [data-toggle='tooltip'],
 [data-toggle='popover'] {
     cursor: pointer;

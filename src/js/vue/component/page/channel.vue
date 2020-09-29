@@ -100,7 +100,9 @@
     <div class="row mb-5 channel">
         <div class="col-12 pb-3">
             <h3 class="text-center">
-                {{ $route.params.channel }} - {{ $t('app') }} <span class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Components Order"><button type="button" class="btn btn-sm btn-primary components-order" data-toggle="modal" data-target="#components-order"><font-awesome-icon :icon="['fas', 'th']" class="fa-fw" /></button></span>
+                {{ $route.params.channel }} - {{ $t('app') }}&nbsp;
+                <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('components-order')"><button type="button" class="btn btn-sm btn-primary btn-fs1rem" data-toggle="modal" data-target="#components-order"><font-awesome-icon :icon="['fas', 'th']" class="fa-fw" /></button></span>&nbsp;
+                <router-link class="btn btn-sm btn-primary btn-fs1rem" data-toggle="tooltip" data-placement="top" title="Statistic" :to="{name: 'statistic', params: {channel: $route.params.channel}}"><font-awesome-icon :icon="['fas', 'chart-pie']" class="fa-fw" /></router-link>
             </h3>
         </div>
         <!-- eslint-disable-next-line vue/require-v-for-key -->
@@ -113,7 +115,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 id="components-order-modal-title" class="modal-title">
-                                {{ $tc('component', 2) }} {{ $t('order') }}
+                                {{ $t('components-order') }}
                             </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>

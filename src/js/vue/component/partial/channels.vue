@@ -9,9 +9,6 @@
             this.getChannels();
         },
         methods: {
-            setChannels: function(args) {
-                this.channels = args.channels.split(';');
-            },
             getChannels: function() {
                 if (typeof socketWrite === 'function') {
                     const call = {
@@ -21,6 +18,9 @@
 
                     socketWrite(call);
                 }
+            },
+            setChannels: function(args) {
+                this.channels = args.channels.split(';');
             }
         }
     };
