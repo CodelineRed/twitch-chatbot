@@ -1,5 +1,7 @@
 const database = require('./database');
 const chat     = require('./chat');
+const moment   = require('moment');
+const request  = require('request');
 
 const statistic = {
     /**
@@ -25,13 +27,14 @@ const statistic = {
         };
 
         database.find(select, from, '', where, '', '', 0, prepare, function(rows) {
+            let backgroundColor = [];
+            let data = [];
+            let labels = [];
+
             if (rows.length) {
-                let backgroundColor = [];
                 let colors = ['#2e97bf', '#fff'];
                 let colorState = true;
                 let currentGame = rows[0].game;
-                let data = [];
-                let labels = [];
 
                 for (let i = 0; i < rows.length; i++) {
                     labels.push(rows[i].game);
@@ -46,22 +49,22 @@ const statistic = {
 
                     backgroundColor.push(colorState ? colors[0] : colors[1]);
                 }
+            }
 
-                if (chatbot.socket !== null) {
-                    const call = {
-                        args: {
-                            channel: args.channel,
-                            backgroundColor: backgroundColor,
-                            data: data,
-                            labels: labels
-                        },
-                        method: 'setChart',
-                        ref: 'statistic',
-                        env: 'browser'
-                    };
+            if (chatbot.socket !== null) {
+                const call = {
+                    args: {
+                        channel: args.channel,
+                        backgroundColor: backgroundColor,
+                        data: data,
+                        labels: labels
+                    },
+                    method: 'setChart',
+                    ref: 'statistic',
+                    env: 'browser'
+                };
 
-                    chatbot.socket.write(JSON.stringify(call));
-                }
+                chatbot.socket.write(JSON.stringify(call));
             }
         });
     },
@@ -81,7 +84,7 @@ const statistic = {
         select += '(SELECT MIN(vc.count) FROM viewer_count AS vc WHERE vc.channel_id = $id AND vc.created_at >= strftime($format, $start) AND vc.created_at <= strftime($format, $end) GROUP BY vc.channel_id) AS minViewer, ';
         select += '(SELECT MAX(vc.count) FROM viewer_count AS vc WHERE vc.channel_id = $id AND vc.created_at >= strftime($format, $start) AND vc.created_at <= strftime($format, $end) GROUP BY vc.channel_id) AS maxViewer, ';
         select += '(SELECT ROUND(AVG(vc.count), 0) FROM viewer_count AS vc WHERE vc.channel_id = $id AND vc.created_at >= strftime($format, $start) AND vc.created_at <= strftime($format, $end) GROUP BY vc.channel_id) AS avgViewer';
-        
+
         let prepare = {
             $id: chatbot.channels[args.channel].id,
             $format: '%s',
@@ -98,7 +101,7 @@ const statistic = {
                 'ch.created_at >= strftime($format, $start)',
                 'ch.created_at <= strftime($format, $end)'
             ];
-            
+
             database.find(select, from, '', where, '', '', 0, prepare, function(cheerRows) {
                 // calculate total of all bits
                 if (cheerRows.length) {
@@ -160,6 +163,92 @@ const statistic = {
                 chatbot.socket.write(JSON.stringify(call));
             }
         });
+    },
+    /**
+     * Sends stream dates to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
+    getStreamDates: function(chatbot, args) {
+        let channels = Object.keys(chatbot.channels);
+        let oauthToken = '';
+
+        // get oauthToken by any channel
+        for (let i = 0; i < channels.length; i++) {
+            if (typeof chatbot.channels[channels[i]].oauthToken === 'string' 
+                && chatbot.channels[channels[i]].oauthToken.length && !oauthToken.length) {
+                oauthToken = chatbot.channels[channels[i]].oauthToken;
+            }
+        }
+
+        // if oauthToken found
+        if (oauthToken.length) {
+            let options = {
+                url: `https://api.twitch.tv/helix/videos?user_id=${chatbot.channels[args.channel].id}&type=archive`,
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.twitchtv.v5+json',
+                    'Authorization': `Bearer ${oauthToken}`,
+                    'Client-ID': chatbot.config.clientIdToken
+                }
+            };
+
+            // get list of past broadcasts and live stream
+            request(options, (err, res, body) => {
+                if (err) {
+                    return console.log(err);
+                }
+                body = JSON.parse(body);
+                let streamDates = [];
+
+                if (typeof body.error === 'undefined') {
+                    for (let i = 0; i < body.data.length; i++) {
+                        let durationArr = body.data[i].duration.replace('s', '').replace(/([hm])/g, '-').split('-').reverse();
+                        let dateObj = {
+                            id: body.data[i].id,
+                            title: body.data[i].title,
+                            start: moment(body.data[i].created_at).unix(),
+                            end: moment(body.data[i].created_at).add({
+                                hours: typeof durationArr[2] !== 'undefined' ? durationArr[2] : 0,
+                                minutes: typeof durationArr[1] !== 'undefined' ? durationArr[1] : 0,
+                                seconds: typeof durationArr[0] !== 'undefined' ? durationArr[0] : 0
+                            }).unix()
+                        };
+                        streamDates.push(dateObj);
+                    }
+                }
+
+                if (chatbot.socket !== null) {
+                    const call = {
+                        args: {
+                            channel: args.channel,
+                            streamDates: streamDates
+                        },
+                        method: 'setStreamDates',
+                        ref: 'statistic',
+                        env: 'browser'
+                    };
+
+                    chatbot.socket.write(JSON.stringify(call));
+                }
+            });
+        } else {
+            if (chatbot.socket !== null) {
+                const call = {
+                    args: {
+                        channel: args.channel,
+                        streamDates: []
+                    },
+                    method: 'setStreamDates',
+                    ref: 'statistic',
+                    env: 'browser'
+                };
+
+                chatbot.socket.write(JSON.stringify(call));
+            }
+        }
     },
     /**
      * Sends sub numbers to frontend
@@ -233,12 +322,12 @@ const statistic = {
             $end: args.end
         };
         args.lazy = false;
-        
+
         database.find(select, from, join, where, group, order, limit, prepare, function(rows) {
             // get emote image
             for (let i = 0; i < rows.length; i++) {
                 rows[i].image = '';
-                
+
                 if (rows[i].type === 'bttv') {
                     rows[i].image = chat.encodeBttvEmotes(rows[i].code, args);
                 } else if (rows[i].type === 'ffz') {

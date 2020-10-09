@@ -10,6 +10,7 @@
         mixins: [bsComponent, imageLazyLoad],
         data: function() {
             return {
+                completed: 9,
                 datetimePicker: {
                     start: moment().format('YYYY-MM-DDT00:00'),
                     end: moment().format('YYYY-MM-DDT23:59:59')
@@ -17,6 +18,8 @@
                 hasChart: false,
                 misc: {},
                 purges: {},
+                streamDate: -1,
+                streamDates: [],
                 subs: {},
                 topEmotesAll: [],
                 topEmotesBttv: [],
@@ -29,6 +32,19 @@
                 if (typeof this.misc.minViewer !== 'number') {
                     this.hasChart = false;
                 }
+            },
+            'streamDate': function() {
+                if (this.streamDate >= 0) {
+                    this.datetimePicker = {
+                        start: moment(this.streamDates[this.streamDate].start * 1000).format('YYYY-MM-DDTHH:mm'),
+                        end: moment(this.streamDates[this.streamDate].end * 1000).format('YYYY-MM-DDTHH:mm')
+                    };
+                } else {
+                    this.datetimePicker = {
+                        start: moment().format('YYYY-MM-DDT00:00'),
+                        end: moment().format('YYYY-MM-DDT23:59:59')
+                    };
+                }
             }
         },
         mounted: function() {
@@ -37,6 +53,7 @@
         methods: {
             getAllStats: function() {
                 let $this = this;
+                this.completed = 0;
                 this.getTopEmotes('\'ttv\',\'bttv\',\'ffz\'', 'All', 15);
                 this.getTopEmotes('\'ttv\'', 'Twitch', 15);
                 this.getTopEmotes('\'bttv\'', 'Bttv', 15);
@@ -44,6 +61,7 @@
                 this.getChart();
                 this.getMisc();
                 this.getPurges();
+                this.getStreamDates();
                 this.getSubs();
 
                 setTimeout(function() {
@@ -96,6 +114,19 @@
                     socketWrite(call);
                 }
             },
+            getStreamDates: function() {
+                if (typeof socketWrite === 'function') {
+                    const call = {
+                        method: 'getStreamDates',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase()
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
             getSubs: function() {
                 if (typeof socketWrite === 'function') {
                     const call = {
@@ -131,78 +162,91 @@
             },
             setChart: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.hasChart = true;
-                    let config = {
-                        type: 'line',
-                        data: {
-                            labels: args.labels,
-                            datasets: [{
-                                backgroundColor: args.backgroundColor,
-                                borderColor: '#2e97bf',
-                                data: args.data,
-                                fill: false,
-                                fontColor: '#fff',
-                                label: this.$t('viewer-count')
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            legend: {
-                                labels: {
-                                    fontColor: '#fff'
-                                }
+                    this.completed++;
+                    if (args.data.length) {
+                        this.hasChart = true;
+                        let config = {
+                            type: 'line',
+                            data: {
+                                labels: args.labels,
+                                datasets: [{
+                                    backgroundColor: args.backgroundColor,
+                                    borderColor: '#2e97bf',
+                                    data: args.data,
+                                    fill: false,
+                                    fontColor: '#fff',
+                                    label: this.$t('viewer-count')
+                                }]
                             },
-                            scales: {
-                                yAxes: [{
-                                    gridLines: {
-                                        color: '#212121'
-                                    },
-                                    ticks: {
-                                        fontColor: '#fff',
-                                        min: 0
-                                    }
-                                }],
-                                xAxes: [{
-                                    gridLines: {
-                                        color: '#212121'
-                                    },
-                                    ticks: {
+                            options: {
+                                responsive: true,
+                                legend: {
+                                    labels: {
                                         fontColor: '#fff'
                                     }
-                                }]
+                                },
+                                scales: {
+                                    yAxes: [{
+                                        gridLines: {
+                                            color: '#212121'
+                                        },
+                                        ticks: {
+                                            fontColor: '#fff',
+                                            min: 0
+                                        }
+                                    }],
+                                    xAxes: [{
+                                        gridLines: {
+                                            color: '#212121'
+                                        },
+                                        ticks: {
+                                            fontColor: '#fff'
+                                        }
+                                    }]
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    setTimeout(function() {
-                        if (typeof window.viewerCountChart !== 'undefined') {
-                            window.viewerCountChart.destroy();
-                        }
+                        setTimeout(function() {
+                            if (typeof window.viewerCountChart !== 'undefined') {
+                                window.viewerCountChart.destroy();
+                            }
 
-                        if (jQuery('#canvas').is(':visible')) {
-                            let ctx = document.getElementById('canvas').getContext('2d');
-                            window.viewerCountChart = new Chart(ctx, config);
-                        }
-                    }, 200);
+                            if (jQuery('#canvas').is(':visible')) {
+                                let ctx = document.getElementById('canvas').getContext('2d');
+                                window.viewerCountChart = new Chart(ctx, config);
+                            }
+                        }, 200);
+                    }
                 }
             },
             setMisc: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.completed++;
                     this.misc = args.misc;
                 }
             },
             setPurges: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.completed++;
                     this.purges = args.purges;
+                }
+            },
+            setStreamDates: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.completed++;
+                    this.streamDates = args.streamDates;
                 }
             },
             setSubs: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.completed++;
                     this.subs = args.subs;
                 }
             },
             setTopEmotes: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.completed++;
                     this['topEmotes' + args.array] = args.emotes;
                 }
             }
@@ -233,7 +277,15 @@
                                 <c-datetime id="end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm:ss" label="" :no-label="true" :no-header="true"></c-datetime>
                             </div>
                             <div class="col-auto">
-                                <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('update')"><button type="button" class="btn btn-primary" @click="getAllStats()"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" /></button></span>
+                                <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('update')"><button type="button" class="btn btn-primary" :disabled="completed < 9" @click="getAllStats()"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" :class="{'fa-spin': completed < 9}" /></button></span>
+                            </div>
+                            <div class="col-12 pt-2">
+                                <select id="stream-dates" v-model.number="streamDate" class="custom-select">
+                                    <option value="-1">{{ $t('past-streams') }}</option>
+                                    <option v-for="(streamDateItem, index) in streamDates" :key="streamDateItem.id" :value="index">
+                                        {{ streamDateItem.start|formatDateTime($t('streamdate')) }} - {{ streamDateItem.end|formatDateTime($t('streamdate')) }} / {{ streamDateItem.title }}
+                                    </option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -501,7 +553,7 @@
                             <tr>
                                 <td>{{ $t('total') }}</td>
                                 <td>
-                                    <span v-if="purges.deleted + purges.timeoutedMessages + purges.bannned">{{ purges.deleted + purges.timeoutedMessages + purges.bannned }}</span>
+                                    <span v-if="purges.deletedMessages + purges.timeoutedMessages + purges.bannnedUsers">{{ purges.deletedMessages + purges.timeoutedMessages + purges.bannnedUsers }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
