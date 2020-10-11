@@ -5,6 +5,12 @@ const raffle   = require('./raffle');
 const moment   = require('moment');
 
 const command = {
+    translation: {
+        about: '!about',
+        commands: '!cc',
+        playlistInfo: '!plan',
+        rollDice: '!d[0-99](w[0-9])'
+    },
     /**
      * Sends all commands to frontend
      * 
@@ -148,7 +154,16 @@ const command = {
          */
         commands: function(chatbot, args) {
             if (/^!(commands|cc)/i.test(args.message)) {
-                chatbot.client.say('#' + args.channel, locales.t('command-commands'));
+                let activeCommands = [];
+                let commands = chatbot.commands[args.channel];
+                for (let i = 0; i < commands.length; i++) {
+                    // if command is active and tranlation exists
+                    if (commands[i].active && typeof command.translation[commands[i].name] !== 'undefined') {
+                        activeCommands.push(command.translation[commands[i].name]);
+                    }
+                }
+
+                chatbot.client.say('#' + args.channel, locales.t('command-commands', [activeCommands.join(', ')]));
                 command.logCommand(args);
                 command.updateCommandLastExec(chatbot, args);
             }

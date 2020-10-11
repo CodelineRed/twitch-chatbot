@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 'off');
+
 function adminer_object() {
     // required to run any plugin
     include_once '../adminer/plugins/plugin.php';
@@ -8,8 +10,14 @@ function adminer_object() {
         include_once '../adminer/' . $filename;
     }
 
+    $allowedIps = ['::1'];
+    for ($i = 0; $i < 256; $i++) {
+        $allowedIps[] = '172.' . $i . '.0.1';
+        $allowedIps[] = '172.' . $i . '.0.2';
+    }
+
     $plugins = array(
-        new AdminerLoginIp(['::1', '172.20.0.1', '172.20.0.2', '172.21.0.1', '172.21.0.2'], []),
+        new AdminerLoginIp($allowedIps, []),
     );
 
     /* It is possible to combine customization and plugins: */

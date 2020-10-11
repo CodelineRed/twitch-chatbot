@@ -279,7 +279,7 @@
                             <div class="col-auto">
                                 <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('update')"><button type="button" class="btn btn-primary" :disabled="completed < 9" @click="getAllStats()"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" :class="{'fa-spin': completed < 9}" /></button></span>
                             </div>
-                            <div class="col-12 pt-2">
+                            <div v-if="streamDates.length" class="col-12 pt-2">
                                 <select id="stream-dates" v-model.number="streamDate" class="custom-select">
                                     <option value="-1">{{ $t('past-streams') }}</option>
                                     <option v-for="(streamDateItem, index) in streamDates" :key="streamDateItem.id" :value="index">

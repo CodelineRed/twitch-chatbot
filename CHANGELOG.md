@@ -16,7 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `getChart()` in [`chatbot/statistic.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/statistic.js)
+- `commands()` to show only active commands in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
 - [`chatbot/app.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/app.js)
+- [`public/adminer.php`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/public/adminer.php)
 - @fortawesome/fontawesome-free 5.14.0 to 5.15.1
 - @fortawesome/fontawesome-svg-core 1.2.30 to 1.2.32
 - @fortawesome/free-brands-svg-icons 5.14.0 to 5.15.1
