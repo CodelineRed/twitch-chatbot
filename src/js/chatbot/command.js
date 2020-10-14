@@ -1,13 +1,16 @@
-const database = require('./database');
-const locales  = require('./locales');
-const poll     = require('./poll');
-const raffle   = require('./raffle');
-const moment   = require('moment');
+const database     = require('./database');
+const locales      = require('./locales');
+const poll         = require('./poll');
+const raffle       = require('./raffle');
+const moment       = require('moment');
+const {v4: uuidv4} = require('uuid');
 
 const command = {
+    diceDuels: {},
     translation: {
         about: '!about',
         commands: '!cc',
+        diceDuel: '!dd[0-99](w[0-9]) @user',
         playlistInfo: '!plan',
         rollDice: '!d[0-99](w[0-9])'
     },
@@ -203,6 +206,93 @@ const command = {
             }
         },
         /**
+         * Sends dice duel information to chat
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        diceDuel: function(chatbot, args) {
+            if (/^!dd([1-9]+)(w([1-9]))? (@)?([0-9a-z_]+)/i.test(args.message)) {
+                const matches = args.message.match(/^!dd([1-9]+)(w([1-9]))? (@)?([0-9a-z_]+)/i);
+                let ddKeys = Object.keys(command.diceDuels);
+                let userExists = false;
+                let index = 0;
+
+                for (let i = 0; i < ddKeys.length; i++) {
+                    if (command.diceDuels[ddKeys[i]].user1 === args.userstate['display-name']) {
+                        userExists = true;
+                        break;
+                    }
+                }
+
+                // if user has no active duel
+                if (!userExists) {
+                    args.message = args.message.replace('!dd', '!d');
+                    args.return = true;
+                    let uuid = uuidv4();
+
+                    command.diceDuels[uuid] = {
+                        dice: `!d${matches[1]}` + (typeof matches[2] === 'string' ? matches[2] : ''),
+                        user1: args.userstate['display-name'],
+                        result1: command.commandList.rollDice(chatbot, args),
+                        user2: matches[5].toLowerCase(),
+                        result2: 0
+                    };
+
+                    chatbot.client.say('#' + args.channel, locales.t('dice-duel-request', [matches[5], args.userstate['display-name']]));
+
+                    // remove duel after 2 mins
+                    setTimeout(function() {
+                        delete command.diceDuels[uuid];
+                    }, 120000);
+
+                    args.message = args.message.replace('!d', '!dd');
+                    command.logCommand(args);
+                    command.updateCommandLastExec(chatbot, args);
+                }
+            }
+
+            if (/^!dda/i.test(args.message)) {
+                let ddKeys = Object.keys(command.diceDuels);
+                for (let i = 0; i < ddKeys.length; i++) {
+                    if (command.diceDuels[ddKeys[i]].user2 === args.userstate['username']) {
+                        let even = true;
+                        let loser = '';
+                        let loserResult = 0;
+                        let winner = '';
+                        let winnerResult = 0;
+
+                        args.message = command.diceDuels[ddKeys[i]].dice;
+                        args.return = true;
+                        command.diceDuels[ddKeys[i]].user2 = args.userstate['display-name'];
+
+                        while (even) {
+                            command.diceDuels[ddKeys[i]].result2 = command.commandList.rollDice(chatbot, args);
+
+                            if (command.diceDuels[ddKeys[i]].result1 > command.diceDuels[ddKeys[i]].result2) {
+                                winner = command.diceDuels[ddKeys[i]].user1;
+                                winnerResult = command.diceDuels[ddKeys[i]].result1;
+                                loser = command.diceDuels[ddKeys[i]].user2;
+                                loserResult = command.diceDuels[ddKeys[i]].result2;
+                                even = false;
+                            } else if (command.diceDuels[ddKeys[i]].result1 < command.diceDuels[ddKeys[i]].result2) {
+                                winner = command.diceDuels[ddKeys[i]].user2;
+                                winnerResult = command.diceDuels[ddKeys[i]].result2;
+                                loser = command.diceDuels[ddKeys[i]].user1;
+                                loserResult = command.diceDuels[ddKeys[i]].result1;
+                                even = false;
+                            }
+                        }
+
+                        chatbot.client.say('#' + args.channel, locales.t('dice-duel-result', [winner, winnerResult, loser, loserResult]));
+                        delete command.diceDuels[ddKeys[i]];
+                        break;
+                    }
+                }
+            }
+        },
+        /**
          * Sends playlist information to chat
          * 
          * @param {object} chatbot
@@ -268,7 +358,7 @@ const command = {
          */
         poll: function(chatbot, args) {
             if (typeof chatbot.activePolls[args.channel] !== 'undefined' && /^!vote ([0-99])$/i.test(args.message)) {
-                args.choice = parseInt(args.message.toLowerCase().match(/^!vote ([0-99])$/)[1]);
+                args.choice = parseInt(args.message.toLowerCase().match(/^!vote ([0-99])$/i)[1]);
 
                 // if poll is active
                 if (moment().unix() >= chatbot.activePolls[args.channel].start
@@ -306,8 +396,8 @@ const command = {
          * @returns {undefined}
          */
         rollDice: function(chatbot, args) {
-            if (/^!d([1-9]+)(w([1-9]))?/.test(args.message)) {
-                const matches = args.message.match(/^!d([1-9]+)(w([1-9]))?/);
+            if (/^!d([1-9]+)(w([1-9]))?/i.test(args.message)) {
+                const matches = args.message.match(/^!d([1-9]+)(w([1-9]))?/i);
                 const sides = parseInt(matches[1].slice(0, 2));
                 const dices = typeof matches[3] === 'undefined' ? 1 : parseInt(matches[3]) > 0 ? parseInt(matches[3]) : 1;
                 let results = [];
@@ -319,14 +409,18 @@ const command = {
                     results.push(eyes);
                 }
 
-                if (dices > 1) {
-                    chatbot.client.say('#' + args.channel, locales.t('command-roll-dice-1', [args.userstate['display-name'], locales.t('rolled'), sides, dices, results.join(' + '), result]));
+                if (typeof args.return === 'boolean' && args.return) {
+                    return result;
                 } else {
-                    chatbot.client.say('#' + args.channel, locales.t('command-roll-dice-2', [args.userstate['display-name'], locales.t('rolled'), sides, results.join(' + '), result]));
-                }
+                    if (dices > 1) {
+                        chatbot.client.say('#' + args.channel, locales.t('command-roll-dice-1', [args.userstate['display-name'], locales.t('rolled'), sides, dices, results.join(' + '), result]));
+                    } else {
+                        chatbot.client.say('#' + args.channel, locales.t('command-roll-dice-2', [args.userstate['display-name'], locales.t('rolled'), sides, results.join(' + '), result]));
+                    }
 
-                command.logCommand(args);
-                command.updateCommandLastExec(chatbot, args);
+                    command.logCommand(args);
+                    command.updateCommandLastExec(chatbot, args);
+                }
             }
         }
     }

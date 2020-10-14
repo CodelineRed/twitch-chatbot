@@ -8,22 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.0]
 ### Added
+- `diceDuel()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
 - stream dates select box in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
 - `getStreamDates()` in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
 - `setStreamDates()` in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
 - `getStreamDates()` in [`chatbot/statistic.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/statistic.js)
 - translations in [`app/i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/app/i18n-locales.js)
+- translations in [`chatbot/locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/locales.js)
 
 ### Changed
 - `getChart()` in [`chatbot/statistic.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/statistic.js)
 - `commands()` to show only active commands in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- `rollDice()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
 - [`chatbot/app.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/app.js)
 - [`public/adminer.php`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/public/adminer.php)
+- [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
 - @fortawesome/fontawesome-free 5.14.0 to 5.15.1
 - @fortawesome/fontawesome-svg-core 1.2.30 to 1.2.32
 - @fortawesome/free-brands-svg-icons 5.14.0 to 5.15.1
 - @fortawesome/free-regular-svg-icons 5.14.0 to 5.15.1
 - @fortawesome/free-solid-svg-icons 5.14.0 to 5.15.1
+- bootstrap 4.5.2 to 4.5.3
 - datatables.net 1.10.21 to 1.10.22
 - datatables.net-bs4 1.10.21 to 1.10.22
 - del 5.1.0 to 6.0.0

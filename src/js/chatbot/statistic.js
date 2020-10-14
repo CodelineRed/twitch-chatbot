@@ -186,7 +186,7 @@ const statistic = {
         // if oauthToken found
         if (oauthToken.length) {
             let options = {
-                url: `https://api.twitch.tv/helix/videos?user_id=${chatbot.channels[args.channel].id}&type=archive`,
+                url: `https://api.twitch.tv/helix/videos?user_id=${chatbot.channels[args.channel].id}&type=archive&first=100`,
                 method: 'GET',
                 headers: {
                     'Accept': 'application/vnd.twitchtv.v5+json',
