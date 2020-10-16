@@ -252,7 +252,15 @@ const command = {
                     command.updateCommandLastExec(chatbot, args);
                 }
             }
-
+        },
+        /**
+         * Accepts dice duel
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        diceDuelAccept: function(chatbot, args) {
             if (/^!dda/i.test(args.message)) {
                 let ddKeys = Object.keys(command.diceDuels);
                 for (let i = 0; i < ddKeys.length; i++) {
@@ -287,6 +295,8 @@ const command = {
 
                         chatbot.client.say('#' + args.channel, locales.t('dice-duel-result', [winner, winnerResult, loser, loserResult]));
                         delete command.diceDuels[ddKeys[i]];
+                        command.logCommand(args);
+                        command.updateCommandLastExec(chatbot, args);
                         break;
                     }
                 }

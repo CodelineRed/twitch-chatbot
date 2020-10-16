@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0]
 ### Added
 - `diceDuel()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- `diceDuelAccept()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
 - stream dates select box in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
 - `getStreamDates()` in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
 - `setStreamDates()` in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
@@ -23,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [`chatbot/app.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/app.js)
 - [`public/adminer.php`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/public/adminer.php)
 - [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
+- @babel/core 7.11.6 to 7.12.0
 - @fortawesome/fontawesome-free 5.14.0 to 5.15.1
 - @fortawesome/fontawesome-svg-core 1.2.30 to 1.2.32
 - @fortawesome/free-brands-svg-icons 5.14.0 to 5.15.1
@@ -44,6 +46,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - purges total calculation in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
+- tooltips and popovers which are visible after route change in [`app/router.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/app/router.js)
+- meta date format of videos in [`chatbot/playlist.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/playlist.js)
+- override of video name and sub name by autofill in [`partial/playlist.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/partial/playlist.vue)
 
 ## [1.1.0] - 2020-09-29
 ### Added

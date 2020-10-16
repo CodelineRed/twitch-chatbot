@@ -711,8 +711,8 @@
             setVideoMetaToForm: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.setVideoDurationToForm(args);
-                    this.video.name = args.name;
-                    this.video.subName = args.subName;
+                    this.video.name = this.video.name === '' ? args.name : this.video.name;
+                    this.video.subName = this.video.subName === '' ? args.subName : this.video.subName;
                 }
             },
             setVideoDurationToForm: function(args) {
