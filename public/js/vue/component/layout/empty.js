@@ -1,1 +1,1 @@
-define(["exports"],(function(e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0;e.default={template:'<div class="container-fluid"><router-view ref="view"></router-view></div>'}}));
+define(["exports"],(function(e){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0;e.default={template:'<div class="container-fluid"><router-view ref="view" /></div>'}}));
