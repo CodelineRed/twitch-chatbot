@@ -99,7 +99,7 @@ const chat = {
                             let ttvEmote = message.slice(emoteCode[0], emoteCode[1] + 1);
                             splitText = splitText.slice(0, emoteCode[0]).concat(empty).concat(splitText.slice(emoteCode[1] + 1, splitText.length));
                             splitText.splice(emoteCode[0], 1, chat.generateEmoteImage('http://static-cdn.jtvnw.net/emoticons/v1/' + i + '/1.0', ttvEmote, args.lazy));
-                            
+
                             if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
                                 let emoteArgs = {
                                     uuid: args.uuid,

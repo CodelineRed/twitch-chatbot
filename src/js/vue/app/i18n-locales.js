@@ -103,6 +103,7 @@ const en = {
     'ok': 'Ok',
     'option': 'Options | Option | Options',
     'order': 'Order',
+    'past-streams': 'Past Streams',
     'pause': 'Pause',
     'play-audio': 'Play Audio',
     'played': 'Played',
@@ -214,6 +215,7 @@ const en = {
     'time-long-suffix': 'hh:mm:ss a',
     'datetime': 'YYYY-MM-DD hh:mm:ss',
     'datetime-suffix': 'YYYY-MM-DD hh:mm:ss a',
+    'streamdate': 'MM-DD hh:mm a',
     'timezone': 'America/New_York',
 
     'month': '{0} month',
@@ -314,6 +316,7 @@ const de = {
     'none': 'Keiner',
     'option': 'Optionen | Option | Optionen',
     'order': 'Reihenfolge',
+    'past-streams': 'Vergangene Streams',
     'play-audio': 'Audio abspielen',
     'played': 'Abgespielt',
     'playlists-not-found': 'Playlisten nicht gefunden',
@@ -407,6 +410,7 @@ const de = {
     'time-long-suffix': 'HH:mm:ss \\U\\h\\r',
     'datetime': 'DD.MM.YYYY HH:mm:ss',
     'datetime-suffix': 'DD.MM.YYYY HH:mm:ss \\U\\h\\r',
+    'streamdate': 'DD.MM. HH:mm',
     'timezone': 'Europe/Berlin',
 
     'month': '{0} Monat',

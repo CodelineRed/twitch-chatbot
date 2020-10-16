@@ -67,6 +67,7 @@ const chatbot = {
     getRaffles: raffle.getRaffles,
     getPollWinner: poll.getPollWinner,
     getRaffleWinner: raffle.getRaffleWinner,
+    getStreamDates: statistic.getStreamDates,
     getSubs: statistic.getSubs,
     getTopEmotes: statistic.getTopEmotes,
     getTwitchClipMeta: playlist.getTwitchClipMeta,

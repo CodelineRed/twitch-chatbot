@@ -310,7 +310,7 @@ const playlist = {
                 if (data.length && typeof data[0].general !== 'undefined') {
                     // milliseconds to seconds
                     let duration = ((data[0].general.duration[0] / 1000) -.5).toFixed(0);
-                    let format = chatbot.t['date'];
+                    let format = locales.t('date');
                     let name = args.file
                         .split('/').pop()
                         .replace(localRegExp, '$1')
@@ -527,7 +527,7 @@ const playlist = {
 
                 if (typeof body.error === 'undefined') {
                     let duration = (body.duration -.5).toFixed(0);
-                    let format = chatbot.t['date'];
+                    let format = locales.t('date');
                     let name = body.title;
                     let subName = (body.game.length ? `${body.game} - ` : '') + 'Clip';
                     subName += ` (${moment(body.created_at).format(format)})`;
@@ -590,7 +590,7 @@ const playlist = {
                 if (typeof body.error === 'undefined' 
                     && body.status === 'recorded') {
                     let duration = body.length;
-                    let format = chatbot.t['date'];
+                    let format = locales.t('date');
                     let name = body.title;
                     let subName = body.game.length ? `${body.game} (${moment(body.created_at).format(format)})` : moment(body.created_at).format(format);
 

@@ -6,7 +6,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0]
+## [1.2.0]
+### Added
+- `diceDuel()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- `diceDuelAccept()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- stream dates select box in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
+- `getStreamDates()` in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
+- `setStreamDates()` in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
+- `getStreamDates()` in [`chatbot/statistic.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/statistic.js)
+- translations in [`app/i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/app/i18n-locales.js)
+- translations in [`chatbot/locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/locales.js)
+
+### Changed
+- `getChart()` in [`chatbot/statistic.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/statistic.js)
+- `commands()` to show only active commands in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- `rollDice()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- [`chatbot/app.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/app.js)
+- [`public/adminer.php`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/public/adminer.php)
+- [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
+- @babel/core 7.11.6 to 7.12.0
+- @fortawesome/fontawesome-free 5.14.0 to 5.15.1
+- @fortawesome/fontawesome-svg-core 1.2.30 to 1.2.32
+- @fortawesome/free-brands-svg-icons 5.14.0 to 5.15.1
+- @fortawesome/free-regular-svg-icons 5.14.0 to 5.15.1
+- @fortawesome/free-solid-svg-icons 5.14.0 to 5.15.1
+- bootstrap 4.5.2 to 4.5.3
+- datatables.net 1.10.21 to 1.10.22
+- datatables.net-bs4 1.10.21 to 1.10.22
+- del 5.1.0 to 6.0.0
+- eslint-plugin-import 2.22.0 to 2.22.1
+- eslint-plugin-vue 6.2.2 to 7.0.1
+- gulp-vue-single-file-component 1.0.12 to 1.0.14
+- i18next 19.7.0 to 19.8.2
+- moment 2.28.0 to 2.29.1
+- uuid 8.3.0 to 8.3.1
+- vue-i18n 8.21.1 to 8.22.0
+- vue-router 3.4.3 to 3.4.6
+- yargs 15.4.1 to 16.0.3
+
+### Fixed
+- purges total calculation in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
+- tooltips and popovers which are visible after route change in [`app/router.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/app/router.js)
+- meta date format of videos in [`chatbot/playlist.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/playlist.js)
+- override of video name and sub name by autofill in [`partial/playlist.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/partial/playlist.vue)
+
+## [1.1.0] - 2020-09-29
 ### Added
 - [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
 - [`chatbot/statistic.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/statistic.js)

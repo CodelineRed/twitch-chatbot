@@ -20,10 +20,10 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
 ## Required
 * [Node.js](http://nodejs.org/en/download/)
 * [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
-* [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
+* [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g` (in development)
 * [Docker](https://www.docker.com/) ([for installation with Docker](https://github.com/InsanityMeetsHH/twitch-chatbot#installation-with-docker))
 
-## Installation (Recommended)
+## Installation (from master branch)
 ```bash
 $ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git [app-name]
 $ cd [app-name]
@@ -35,7 +35,8 @@ $ node migration.js
 $ node chatbot.js
 $ gulp (in development)
 ```
-Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/gulpfile.js), if you want to use Docker as server.
+
+Alternative you can checkout [production](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/production) branch, `npm i --only=prod` and skip all gulp commands.
 
 ## Project Commands
 |                     | Description                                                                                                                      |
@@ -99,6 +100,7 @@ Change `browserSyncInit` task in [`gulpfile.js`](https://github.com/InsanityMeet
 | about               | !about, !chatbot, !cb, !bug, !bugs, !help                                                                                        |
 | commands            | !commands, !cc                                                                                                                   |
 | counter             | counter increased if users counts from 1 - X without interruption                                                                |
+| diceDuel            | e.g. !dd6 @User or !dd56w6 @User - first digit can be from 1 - 99 and second from 1 - 9                                          |
 | playlistInfo        | !info, !plan, !programm, !sendeplan, !playlist, !video                                                                           |
 | poll                | !vote 1 - X                                                                                                                      |
 | raffle              | custom keyword (default: !raffle)                                                                                                |
@@ -282,6 +284,7 @@ Example execution: `$ node migration.js -d up`
 * `$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
 * `$ node migration.js
 * `$ node chatbot.js
+* (optional) `$ systemctl start docker` (unix)
 * `$ docker-compose up -d`
 * Open [localhost:3050](http://localhost:3050) for website or [localhost:3050/adminer.php](http://localhost:3050/adminer.php) for database gui
 * If you want to remove the container `$ docker rm twitch-chatbot -f`
