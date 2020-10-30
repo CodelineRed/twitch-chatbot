@@ -6,7 +6,7 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
 * [jQuery 3](http://jquery.com)
 * [Bootstrap 4](https://getbootstrap.com)
 * [Font Awesome 5](https://fontawesome.com)
-* [LazyLoad 17](https://www.andreaverlicchi.eu/lazyload/)
+* [LazyLoad 17](https://www.andreaverlicchi.eu/vanilla-lazyload/)
 * [CSS User Agent 2](https://www.npmjs.com/package/cssuseragent)
 * [Moment 2](https://momentjs.com/docs/)
 * [Datatables 1](https://datatables.net)
@@ -36,7 +36,7 @@ $ node chatbot.js
 $ gulp (in development)
 ```
 
-Alternative you can checkout [production](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/production) branch, `npm i --only=prod` and skip all gulp commands.
+As an aternative you can checkout [production](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/production) branch, `npm i --only=prod` and skip all gulp commands.
 
 ## Project Commands
 |                     | Description                                                                                                                      |
@@ -101,6 +101,7 @@ Alternative you can checkout [production](https://github.com/InsanityMeetsHH/twi
 | commands            | !commands, !cc                                                                                                                   |
 | counter             | counter increased if users counts from 1 - X without interruption                                                                |
 | diceDuel            | e.g. !dd6 @User or !dd56w6 @User - first digit can be from 1 - 99 and second from 1 - 9                                          |
+| diceDuelAccept      | !dda - accepting a dice duel request                                                                                             |
 | playlistInfo        | !info, !plan, !programm, !sendeplan, !playlist, !video                                                                           |
 | poll                | !vote 1 - X                                                                                                                      |
 | raffle              | custom keyword (default: !raffle)                                                                                                |
@@ -295,7 +296,7 @@ Example execution: `$ node migration.js -d up`
 * [Twitch TMI Token](https://twitchapps.com/tmi/)
 * [Twitch API Token](https://dev.twitch.tv/)
 * [YouTube API Token](https://console.developers.google.com)
-* [BetterTTV API](https://community.nightdev.com/t/is-there-a-bettertwitchtv-api/5223/3)
+* [BetterTTV API](https://github.com/pajbot/pajbot/issues/495)
 * [FrankerFaceZ API](https://www.frankerfacez.com/developers)
 * [Spotify with Snip](https://github.com/dlrudie/Snip/releases)
 * [Twitch Clip API](https://dev.twitch.tv/docs/v5/reference/clips#get-clip)

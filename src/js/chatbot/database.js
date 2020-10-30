@@ -179,10 +179,10 @@ const database = {
      * Loads bot records for all channels. 
      * 
      * @param {object} chatbot required
-     * @param {string} channel required
+     * @param {object} channelState required
      * @returns {undefined}
      */
-    prepareBotTable: function(chatbot, channel) {
+    prepareBotTable: function(chatbot, channelState) {
         if (database.connection !== null) {
             database.connection.all('SELECT name FROM bot', (errAll, rows) => {
                 if (errAll) {
@@ -193,8 +193,14 @@ const database = {
                     chatbot.bots.push(row.name);
                 });
 
+                let options = {
+                    url: 'https://api.betterttv.net/3/cached/users/twitch/' + channelState['room-id'],
+                    method: 'GET',
+                    json: true
+                };
+
                 // get channel bots from BTTV
-                request('https://api.betterttv.net/2/channels/' + channel, { json: true }, (err, res, body) => {
+                request(options, (err, res, body) => {
                     if (err) {
                         return console.log(err);
                     }

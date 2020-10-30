@@ -24,6 +24,7 @@ const viewerCount = {
             let options = {
                 url: `https://api.twitch.tv/helix/streams?${query}`,
                 method: 'GET',
+                json: true,
                 headers: {
                     'Accept': 'application/vnd.twitchtv.v5+json',
                     'Authorization': `Bearer ${oauthToken}`,
@@ -36,9 +37,8 @@ const viewerCount = {
                 if (err) {
                     return console.log(err);
                 }
-                body = JSON.parse(body);
 
-                if (typeof body.error === 'undefined') {
+                if (typeof body.data !== 'undefined') {
                     for (let i = 0; i < body.data.length; i++) {
                         let time = moment().unix();
                         let count = body.data[i].viewer_count;
@@ -46,6 +46,7 @@ const viewerCount = {
                         options = {
                             url: `https://api.twitch.tv/kraken/channels/${body.data[i].user_id}`,
                             method: 'GET',
+                            json: true,
                             headers: {
                                 'Accept': 'application/vnd.twitchtv.v5+json',
                                 'Client-ID': chatbot.config.clientIdToken
@@ -57,9 +58,8 @@ const viewerCount = {
                             if (errGame) {
                                 return console.log(errGame);
                             }
-                            bodyGame = JSON.parse(bodyGame);
 
-                            if (typeof bodyGame.error === 'undefined') {
+                            if (typeof bodyGame.game !== 'undefined') {
                                 let values = {
                                     uuid: uuidv4(),
                                     channelId: channelId,

@@ -486,43 +486,60 @@ const chat = {
     /**
      * Loads BTTV emotes over API to database und bttvEmotes array
      * 
-     * @param {string} channel
+     * @param {object} args
      * @returns {undefined}
      */
-    prepareBttvEmotes: function(channel) {
+    prepareBttvEmotes: function(args) {
+        let channelId = args['room-id'];
+        let channel = args.channel.slice(1);
+
         if (typeof chat.bttvEmotes[channel] === 'undefined') {
             chat.bttvEmotes[channel] = {};
 
+            let options = {
+                url: 'https://api.betterttv.net/3/cached/emotes/global',
+                method: 'GET',
+                json: true
+            };
+
             // get global emotes
-            request('https://api.betterttv.net/2/emotes', { json: true }, (err, res, body) => {
+            request(options, (err, res, body) => {
                 if (err) {
                     return console.log(err);
                 }
 
-                for (let i = 0; i < body.emotes.length; i++) {
-                    chat.bttvEmotes[channel][body.emotes[i].code] = 'https://cdn.betterttv.net/emote/' + body.emotes[i].id + '/1x';
-                    let emoteArgs = {
-                        code: body.emotes[i].code,
-                        typeId: body.emotes[i].id,
-                        type: 'bttv'
-                    };
+                if (typeof body[0].id !== 'undefined') {
+                    for (let i = 0; i < body.length; i++) {
+                        chat.bttvEmotes[channel][body[i].code] = 'https://cdn.betterttv.net/emote/' + body[i].id + '/1x';
+                        let emoteArgs = {
+                            code: body[i].code,
+                            typeId: body[i].id,
+                            type: 'bttv'
+                        };
 
-                    emote.addEmote(emoteArgs);
+                        emote.addEmote(emoteArgs);
+                    }
                 }
             });
 
+            options = {
+                url: `https://api.betterttv.net/3/cached/users/twitch/${channelId}`,
+                method: 'GET',
+                json: true
+            };
+
             // get channel emotes
-            request('https://api.betterttv.net/2/channels/' + channel, { json: true }, (err, res, body) => {
+            request(options, (err, res, body) => {
                 if (err) {
                     return console.log(err);
                 }
 
-                if (typeof body.emotes !== 'undefined') {
-                    for (let i = 0; i < body.emotes.length; i++) {
-                        chat.bttvEmotes[channel][body.emotes[i].code] = 'https://cdn.betterttv.net/emote/' + body.emotes[i].id + '/1x';
+                if (typeof body.sharedEmotes !== 'undefined') {
+                    for (let i = 0; i < body.sharedEmotes.length; i++) {
+                        chat.bttvEmotes[channel][body.sharedEmotes[i].code] = 'https://cdn.betterttv.net/emote/' + body.sharedEmotes[i].id + '/1x';
                         let emoteArgs = {
-                            code: body.emotes[i].code,
-                            typeId: body.emotes[i].id,
+                            code: body.sharedEmotes[i].code,
+                            typeId: body.sharedEmotes[i].id,
                             type: 'bttv'
                         };
 
@@ -535,34 +552,50 @@ const chat = {
     /**
      * Loads FFZ emotes over API to database und ffzEmotes array
      * 
-     * @param {string} channel
+     * @param {object} args
      * @returns {undefined}
      */
-    prepareFfzEmotes: function(channel) {
+    prepareFfzEmotes: function(args) {
+        let channel = args.channel.slice(1);
+
         if (typeof chat.ffzEmotes[channel] === 'undefined') {
             chat.ffzEmotes[channel] = {};
 
+            let options = {
+                url: 'https://api.frankerfacez.com/v1/set/global',
+                method: 'GET',
+                json: true
+            };
+
             // get global emotes
-            request('https://api.frankerfacez.com/v1/set/global', { json: true }, (err, res, body) => {
+            request(options, (err, res, body) => {
                 if (err) {
                     return console.log(err);
                 }
 
-                let set = body.default_sets[0];
-                for (let i = 0; i < body.sets[set].emoticons.length; i++) {
-                    chat.ffzEmotes[channel][body.sets[set].emoticons[i].name] = body.sets[set].emoticons[i].urls['1'];
-                    let emoteArgs = {
-                        code: body.sets[set].emoticons[i].name,
-                        typeId: body.sets[set].emoticons[i].id,
-                        type: 'ffz'
-                    };
+                if (typeof body.default_sets !== 'undefined' && body.default_sets.length) {
+                    let set = body.default_sets[0];
+                    for (let i = 0; i < body.sets[set].emoticons.length; i++) {
+                        chat.ffzEmotes[channel][body.sets[set].emoticons[i].name] = body.sets[set].emoticons[i].urls['1'];
+                        let emoteArgs = {
+                            code: body.sets[set].emoticons[i].name,
+                            typeId: body.sets[set].emoticons[i].id,
+                            type: 'ffz'
+                        };
 
-                    emote.addEmote(emoteArgs);
+                        emote.addEmote(emoteArgs);
+                    }
                 }
             });
 
+            options = {
+                url: `https://api.frankerfacez.com/v1/room/${channel}`,
+                method: 'GET',
+                json: true
+            };
+
             // get channel emotes
-            request('https://api.frankerfacez.com/v1/room/' + channel, { json: true }, (err, res, body) => {
+            request(options, (err, res, body) => {
                 if (err) {
                     return console.log(err);
                 }

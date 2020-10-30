@@ -6,7 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.0]
+## [1.2.1]
+### Changed
+- `prepareBttvEmotes()` arguments in [`chatbot/chat.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/chat.js)
+- `prepareFfzEmotes()` arguments in [`chatbot/chat.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/chat.js)
+- `prepareBotTable()` arguments in [`chatbot/database.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/database.js)
+- all date picker locale to dynamic locale
+- all API request to one standard style
+
+### Fixed
+- BTTV API
+
+## [1.2.0] - 2020-10-16
 ### Added
 - `diceDuel()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
 - `diceDuelAccept()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)

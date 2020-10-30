@@ -375,8 +375,8 @@ function onReSub(channel, username, months, message, userstate, methods) {
 //  'subs-only': false,
 //  channel: '#insanitymeetshh' }
 function onRoomState(channel, state) {
-    chat.prepareBttvEmotes(channel.replace(/#/g, ''));
-    chat.prepareFfzEmotes(channel.replace(/#/g, ''));
+    chat.prepareBttvEmotes(state);
+    chat.prepareFfzEmotes(state);
     chatbot.warmUpDatabase(state);
 
     countLoadedChannels++;

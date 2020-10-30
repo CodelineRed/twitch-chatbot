@@ -39,6 +39,7 @@ const raffle = {
                 var options = {
                     url: `https://api.twitch.tv/kraken/users/${args.userstate['user-id']}/follows/channels/${args.userstate['room-id']}`,
                     method: 'GET',
+                    json: true,
                     headers: {
                         'Client-ID': chatbot.config.clientIdToken,
                         'Accept': 'application/vnd.twitchtv.v5+json'
@@ -50,7 +51,6 @@ const raffle = {
                     if (err) {
                         return console.log(err);
                     }
-                    body = JSON.parse(body);
 
                     if (typeof body.error === 'undefined') {
                         badges.follower = 'yes';

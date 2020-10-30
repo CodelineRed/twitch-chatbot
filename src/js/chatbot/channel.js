@@ -53,6 +53,7 @@ const channel = {
             let options = {
                 url: 'https://api.twitch.tv/kraken/user',
                 method: 'GET',
+                json: true,
                 headers: {
                     'Accept': 'application/vnd.twitchtv.v5+json',
                     'Authorization': `OAuth ${args.channel.token}`,
@@ -65,9 +66,8 @@ const channel = {
                 if (err) {
                     return console.log(err);
                 }
-                body = JSON.parse(body);
 
-                if (typeof body.error === 'undefined') {
+                if (typeof body._id !== 'undefined') {
                     let set = {
                         updatedAt: moment().unix()
                     };

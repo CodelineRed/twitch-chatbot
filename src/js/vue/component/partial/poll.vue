@@ -495,13 +495,13 @@
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
                             <label for="poll-start">{{ $t('start') }}:</label>
-                            <c-datetime id="poll-start" v-model="datetimePicker.start" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate"></c-datetime>
+                            <c-datetime id="poll-start" v-model="datetimePicker.start" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" :locale="$t('lang')"></c-datetime>
                         </div>
                     </div>
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
                             <label for="poll-end">{{ $t('end') }}:</label>
-                            <c-datetime id="poll-end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate"></c-datetime>
+                            <c-datetime id="poll-end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" :locale="$t('lang')"></c-datetime>
                         </div>
                     </div>
                     <div v-if="hasRaffle" class="col-12 mb-3 text-white">
