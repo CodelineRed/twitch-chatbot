@@ -512,6 +512,7 @@ const playlist = {
             let options = {
                 url: `https://api.twitch.tv/kraken/clips/${args.file}`,
                 method: 'GET',
+                json: true,
                 headers: {
                     'Accept': 'application/vnd.twitchtv.v5+json',
                     'Client-ID': chatbot.config.clientIdToken
@@ -523,9 +524,8 @@ const playlist = {
                 if (err) {
                     return console.log(err);
                 }
-                body = JSON.parse(body);
 
-                if (typeof body.error === 'undefined') {
+                if (typeof body.title !== 'undefined') {
                     let duration = (body.duration -.5).toFixed(0);
                     let format = locales.t('date');
                     let name = body.title;
@@ -574,6 +574,7 @@ const playlist = {
             let options = {
                 url: `https://api.twitch.tv/kraken/videos/${args.file}`,
                 method: 'GET',
+                json: true,
                 headers: {
                     'Accept': 'application/vnd.twitchtv.v5+json',
                     'Client-ID': chatbot.config.clientIdToken
@@ -585,9 +586,8 @@ const playlist = {
                 if (err) {
                     return console.log(err);
                 }
-                body = JSON.parse(body);
 
-                if (typeof body.error === 'undefined' 
+                if (typeof body.title !== 'undefined' 
                     && body.status === 'recorded') {
                     let duration = body.length;
                     let format = locales.t('date');
@@ -673,6 +673,7 @@ const playlist = {
                     let options = {
                         url: `https://api.twitch.tv/v5/channels/${chatbot.channels[args.channel].id}`,
                         method: 'PUT',
+                        json: true,
                         headers: {
                             'Accept': 'application/vnd.twitchtv.v5+json',
                             'Authorization': `OAuth ${chatbot.channels[args.channel].oauthToken}`,
@@ -686,7 +687,6 @@ const playlist = {
                         if (err) {
                             return console.log(err);
                         }
-                        body = JSON.parse(body);
 
                         if (typeof body.error === 'undefined') {
                             if (typeof set.channel.status !== 'undefined' && typeof set.channel.game !== 'undefined' ) {
@@ -820,13 +820,19 @@ const playlist = {
 
         // if file is 11 chars long, fits pattern and token is defined
         if (/^[a-z0-9_-]{11}$/i.test(args.file) && chatbot.config.youtubeToken.length) {
+            let options = {
+                url: `https://www.googleapis.com/youtube/v3/videos?id=${args.file}&key=${chatbot.config.youtubeToken}&part=snippet,contentDetails,statistics,status`,
+                method: 'GET',
+                json: true
+            };
+
             // get single youtube video
-            request(`https://www.googleapis.com/youtube/v3/videos?id=${args.file}&key=${chatbot.config.youtubeToken}&part=snippet,contentDetails,statistics,status`, {json: true}, (err, res, body) => {
+            request(options, (err, res, body) => {
                 if (err) {
                     return console.log(err);
                 }
 
-                if (body.items.length) {
+                if (typeof body.items !== 'undefined' && body.items.length) {
                     let duration = 0;
                     let durationRegExp = /^PT([0-9]+H)?([0-9]+M)?([0-9]+S)?/;
                     let durationString = body.items[0].contentDetails.duration;

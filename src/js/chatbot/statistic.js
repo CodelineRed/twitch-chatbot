@@ -188,6 +188,7 @@ const statistic = {
             let options = {
                 url: `https://api.twitch.tv/helix/videos?user_id=${chatbot.channels[args.channel].id}&type=archive&first=100`,
                 method: 'GET',
+                json: true,
                 headers: {
                     'Accept': 'application/vnd.twitchtv.v5+json',
                     'Authorization': `Bearer ${oauthToken}`,
@@ -200,10 +201,9 @@ const statistic = {
                 if (err) {
                     return console.log(err);
                 }
-                body = JSON.parse(body);
                 let streamDates = [];
 
-                if (typeof body.error === 'undefined') {
+                if (typeof body.data !== 'undefined') {
                     for (let i = 0; i < body.data.length; i++) {
                         let durationArr = body.data[i].duration.replace('s', '').replace(/([hm])/g, '-').split('-').reverse();
                         let dateObj = {

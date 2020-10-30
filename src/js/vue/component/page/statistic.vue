@@ -268,13 +268,13 @@
                     <div class="col-12 col-lg-8 col-xl-6 col-xxl-5">
                         <div class="form-row">
                             <div class="col">
-                                <c-datetime id="start" v-model="datetimePicker.start" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm:ss" label="" :no-label="true" :no-header="true"></c-datetime>
+                                <c-datetime id="start" v-model="datetimePicker.start" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm:ss" label="" :no-label="true" :no-header="true" :locale="$t('lang')"></c-datetime>
                             </div>
                             <div class="col-auto">
                                 -
                             </div>
                             <div class="col">
-                                <c-datetime id="end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm:ss" label="" :no-label="true" :no-header="true"></c-datetime>
+                                <c-datetime id="end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm:ss" label="" :no-label="true" :no-header="true" :locale="$t('lang')"></c-datetime>
                             </div>
                             <div class="col-auto">
                                 <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('update')"><button type="button" class="btn btn-primary" :disabled="completed < 9" @click="getAllStats()"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" :class="{'fa-spin': completed < 9}" /></button></span>

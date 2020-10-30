@@ -95,7 +95,7 @@ const chatbot = {
     updatePlaylist: playlist.updatePlaylist,
     updateVideo: playlist.updateVideo,
     warmUpDatabase: function(channelState) {
-        database.prepareBotTable(this, channelState.channel.slice(1));
+        database.prepareBotTable(this, channelState);
         database.prepareChannelTable(this, channelState);
     }
 };

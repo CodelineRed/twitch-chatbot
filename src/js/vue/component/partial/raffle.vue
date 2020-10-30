@@ -492,13 +492,13 @@
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
                             <label for="raffle-start">{{ $t('start') }}:</label>
-                            <c-datetime id="raffle-start" v-model="datetimePicker.start" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
+                            <c-datetime id="raffle-start" v-model="datetimePicker.start" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" :locale="$t('lang')"></c-datetime>
                         </div>
                     </div>
                     <div class="col-12 col-lg-6">
                         <div class="form-group">
                             <label for="raffle-end">{{ $t('end') }}:</label>
-                            <c-datetime id="raffle-end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" />
+                            <c-datetime id="raffle-end" v-model="datetimePicker.end" color="#2e97bf" :dark="true" format="YYYY-MM-DDTHH:mm" label="" :no-label="true" :no-header="true" :min-date="minDate" :max-date="maxDate" :locale="$t('lang')"></c-datetime>
                         </div>
                     </div>
                     <div v-if="hasMultiplicators" class="col-12">
