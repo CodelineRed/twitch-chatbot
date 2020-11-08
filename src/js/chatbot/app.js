@@ -80,6 +80,7 @@ const chatbot = {
     pollResultToChat: poll.pollResultToChat,
     raffleResultToChat: raffle.raffleResultToChat,
     resetActivePlaylist: playlist.resetActivePlaylist,
+    removeCustomCommand: command.removeCustomCommand,
     removePlaylist: playlist.removePlaylist,
     removePoll: poll.removePoll,
     removeRaffle: raffle.removeRaffle,

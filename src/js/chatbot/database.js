@@ -298,7 +298,7 @@ const database = {
      */
     prepareCommands: function(chatbot, channel) {
         if (database.connection !== null) {
-            database.connection.all('SELECT * FROM command', (errAll, rowsAll) => {
+            database.connection.all('SELECT * FROM command WHERE type = \'default\'', (errAll, rowsAll) => {
                 if (errAll) {
                     console.error(errAll.message);
                 }
@@ -339,6 +339,7 @@ const database = {
                     let where = `WHERE c.id = ${chatbot.channels[channel].id} `;
                     let order = 'ORDER BY cmd.name';
 
+                    // get current command joins of channel
                     database.connection.all(select + from + join + where + order, (errJoinCcj, rowsAllJoins) => {
                         if (errJoinCcj) {
                             console.error(errJoinCcj.message);
@@ -351,13 +352,14 @@ const database = {
                         });
 
                         select = 'SELECT * FROM command AS cmd ';
-                        where = '';
+                        where = 'WHERE cmd.type = \'default\'';
 
                         if (rowsAllJoins.length) {
                             // select lately added commands
-                            where += 'WHERE id NOT IN (' + currentCommandIds.join(',') + ') ';
+                            where += ' AND cmd.id NOT IN (' + currentCommandIds.join(',') + ') ';
                         }
 
+                        // get missing command joins
                         database.connection.all(select + where + order, (errCommand, rowsDifference) => {
                             values = [];
                             if (errCommand) {

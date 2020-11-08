@@ -100,12 +100,17 @@ As an aternative you can checkout [production](https://github.com/InsanityMeetsH
 | about               | !about, !chatbot, !cb, !bug, !bugs, !help                                                                                        |
 | commands            | !commands, !cc                                                                                                                   |
 | counter             | counter increased if users counts from 1 - X without interruption                                                                |
-| diceDuel            | e.g. !dd6 @User or !dd56w6 @User - first digit can be from 1 - 99 and second from 1 - 9                                          |
+| diceDuel            | !dd6 @User or !dd56w6 @User - first digit can be from 1 - 99 and second from 1 - 9                                               |
 | diceDuelAccept      | !dda - accepting a dice duel request                                                                                             |
 | playlistInfo        | !info, !plan, !programm, !sendeplan, !playlist, !video                                                                           |
 | poll                | !vote 1 - X                                                                                                                      |
 | raffle              | custom keyword (default: !raffle)                                                                                                |
-| rollDice            | e.g. !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                        |
+| rollDice            | !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                             |
+| customCommand       | wrapper for all custom command commands                                                                                          |
+| addCustomCommand    | !addcc !command[@cooldown] lorem ipsum e.g. !addcc !hw@10 hello world                                                            |
+| removeCustomCommand | !rmcc !command                                                                                                                   |
+| toggleCustomCommand | !tglcc !command                                                                                                                  |
+| updateCustomCommand | !updcc !command[@cooldown] lorem ipsum dolor e.g. !updcc !hw Hello World!                                                        |
 
 ## Web UI Features
 ### Chat
@@ -127,6 +132,12 @@ As an aternative you can checkout [production](https://github.com/InsanityMeetsH
 * Cooldown
 * Active State
 * Last Execution Time
+
+### Custom Commands
+* Add Command (only in chat)
+* Remove Command
+* Toggle Command
+* Update Command (only in chat)
 
 ### Counter
 * Popout URL `/channel/[channel]/counter` to use browser source in OBS (Pixel recommendation: 400x400px)
@@ -154,7 +165,7 @@ As an aternative you can checkout [production](https://github.com/InsanityMeetsH
 * Popout URL `/channel/[channel]/player` to use browser source in OBS (Pixel recommendation: 1920x1080px)
 * Video name overlay in player
 * Autofill video name, sub name and duration (Depence on `videosFolder`, `youtubeToken` and `clientIdToken` settings)
-* Change stream title and / or game dynamic over [Nightbot](https://nightbot.tv/) (or some similar Bot)
+* Change stream title and / or game dynamic (If at least one Twitch account is connected to "Insanity Meets - Chatbot" App on Twitch)
 
 ### Autofill
 | Player        | Name                               | Sub Name                | Duration |
@@ -239,7 +250,7 @@ As an aternative you can checkout [production](https://github.com/InsanityMeetsH
 * Viewer Maximum
 * Viewer Average
 
-## [import-videos-folder.js](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/import-videos-folder.js)
+## [`import-videos-folder.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/import-videos-folder.js)
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
@@ -260,7 +271,7 @@ Example execution: `$ node import-videos-folder.js -c InsanityMeetsHH`
 
 The Script only imports videos which are not in the database.
 
-## [migration.js](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/migration.js)
+## [`migration.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/migration.js)
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
@@ -282,9 +293,9 @@ Example execution: `$ node migration.js -d up`
 * Open a command prompt on your OS (if not already open) and navigate to the project folder
 * `$ npm i`
 * `$ gulp build`
-* `$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
-* `$ node migration.js
-* `$ node chatbot.js
+* `$ -- Add username, tmiToken and channels to src/app/chatbot.json ---`
+* `$ node migration.js`
+* `$ node chatbot.js`
 * (optional) `$ systemctl start docker` (unix)
 * `$ docker-compose up -d`
 * Open [localhost:3050](http://localhost:3050) for website or [localhost:3050/adminer.php](http://localhost:3050/adminer.php) for database gui
@@ -298,7 +309,6 @@ Example execution: `$ node migration.js -d up`
 * [YouTube API Token](https://console.developers.google.com)
 * [BetterTTV API](https://github.com/pajbot/pajbot/issues/495)
 * [FrankerFaceZ API](https://www.frankerfacez.com/developers)
-* [Spotify with Snip](https://github.com/dlrudie/Snip/releases)
 * [Twitch Clip API](https://dev.twitch.tv/docs/v5/reference/clips#get-clip)
 * [Twitch Clip Embed](https://dev.twitch.tv/docs/embed/video-and-clips/#non-interactive-iframes-for-clips)
 * [Twitch Video API](https://dev.twitch.tv/docs/v5/reference/videos#get-video)
@@ -329,4 +339,4 @@ Example execution: `$ node migration.js -d up`
 
 ## Known Issues
 - Sometimes user are not inserted in channel_user_join. This is under investigation.
-- Emotes in Chat component kann flicker after new message was added
+- Emotes in Chat component can flicker after new message was added

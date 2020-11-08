@@ -102,7 +102,7 @@
             <h3 class="text-center">
                 {{ $route.params.channel }} - {{ $t('app') }}&nbsp;
                 <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('components-order')"><button type="button" class="btn btn-sm btn-primary btn-fs1rem" data-toggle="modal" data-target="#components-order"><font-awesome-icon :icon="['fas', 'th']" class="fa-fw" /></button></span>&nbsp;
-                <router-link class="btn btn-sm btn-primary btn-fs1rem" data-toggle="tooltip" data-placement="top" title="Statistic" :to="{name: 'statistic', params: {channel: $route.params.channel}}"><font-awesome-icon :icon="['fas', 'chart-pie']" class="fa-fw" /></router-link>
+                <router-link class="btn btn-sm btn-primary btn-fs1rem" data-toggle="tooltip" data-placement="top" :title="$t('statistic')" :to="{name: 'statistic', params: {channel: $route.params.channel}}"><font-awesome-icon :icon="['fas', 'chart-pie']" class="fa-fw" /></router-link>
             </h3>
         </div>
         <!-- eslint-disable-next-line vue/require-v-for-key -->

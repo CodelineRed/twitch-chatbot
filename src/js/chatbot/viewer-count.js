@@ -1,9 +1,11 @@
-const database = require('./database');
-const moment   = require('moment');
-const request  = require('request');
-const {v4: uuidv4, validate: uuidValid} = require('uuid');
+const database     = require('./database');
+const locales      = require('./locales');
+const moment       = require('moment');
+const request      = require('request');
+const {v4: uuidv4} = require('uuid');
 
 const viewerCount = {
+    error: false,
     addViewerCount: function(chatbot) {
         let oauthToken = '';
         let query = '';
@@ -73,6 +75,9 @@ const viewerCount = {
                             }
                         });
                     }
+                } else if (!viewerCount.error) {
+                    viewerCount.error = true;
+                    console.log(locales.t('viewer-count-error', [body.message]));
                 }
             });
         }
