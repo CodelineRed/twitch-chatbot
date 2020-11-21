@@ -1,5 +1,7 @@
 # Twitch Chatbot - InsanityMeetsHH
 
+Visit [screenshots](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/master/screenshots) for an inside look.
+
 This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-skeleton).
 
 ## Included
@@ -323,16 +325,22 @@ Example execution: `$ node migration.js -d up`
 * [SCSS Confetti](https://codepen.io/Event_Horizon/pen/wBKVQN)
 
 ## Audio Files
-* Airy by InsanityMeetsHH
-* Ambi EP by InsanityMeetsHH
+* Airy by [InsanityMeetsHH](https://twitter.com/InsanityMeetsHH)
+* Ambi EP by [InsanityMeetsHH](https://twitter.com/InsanityMeetsHH)
 * [Big Clap](https://freesound.org/people/kellieskitchen/sounds/209991/)
-* Brassy by InsanityMeetsHH
-* C-Space by InsanityMeetsHH
+* Brassy by [InsanityMeetsHH](https://twitter.com/InsanityMeetsHH)
+* C-Space by [InsanityMeetsHH](https://twitter.com/InsanityMeetsHH)
 * [Cheering and Clapping](https://freesound.org/people/AlaskaRobotics/sounds/221568/)
-* Ensemble by InsanityMeetsHH
+* Ensemble by [InsanityMeetsHH](https://twitter.com/InsanityMeetsHH)
 * [Fan Fare 1](https://freesound.org/people/Suburbanwizard/sounds/423293/)
 * [Fan Fare 2](https://freesound.org/people/humanoide9000/sounds/466133/)
 * [Fan Fare 3](https://freesound.org/people/plasterbrain/sounds/397355/)
+* [Freedom](https://open.spotify.com/track/659q8BivbeVO80CFSL6TX8?si=UYgxjrv_SSKNPqoW6KMpVQ) by [Dracon](https://twitter.com/DraconTV)
+* [Hope](https://open.spotify.com/track/4U23RsK09mQSeD3X0cu9Nl?si=rcsT2PESTP-7eHT_ESZaaA) by [Dracon](https://twitter.com/DraconTV)
+* [Memory Palace](https://open.spotify.com/track/1h2TunOaZurxJ8SQi8mWzk?si=6svWgwWIQ_OUxfs8YP_1Cg) by [Dracon](https://twitter.com/DraconTV)
+* [Peace](https://open.spotify.com/track/0agYShWAvAjEQDVXTQTw5a?si=j9wucASfQAqHdE4-CY0rpw) by [Dracon](https://twitter.com/DraconTV)
+* [Valley](https://open.spotify.com/track/5GzLKIX57SZs36w0mzIqzT?si=wV9KcDdMRlqzeEB9Mo-Cvg) by [Dracon](https://twitter.com/DraconTV)
+* [Voice of Doubt](https://open.spotify.com/track/2GlCtPZGHy26aTWQa0iebD?si=PrFHrX6aSKeDU_pdgRDaLA) by [Dracon](https://twitter.com/DraconTV)
 * [Winner Deep Voice](https://freesound.org/people/dersuperanton/sounds/435878/)
 * [Winner Female Voice](https://freesound.org/people/tim.kahn/sounds/80618/)
 * [Winner Robot Voice](https://freesound.org/people/Ionicsmusic/sounds/196892/)

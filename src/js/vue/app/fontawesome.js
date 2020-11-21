@@ -22,6 +22,7 @@ import {
     faCommentDots as fasCommentDots,
     faCopy as fasCopy,
     faCrown as fasCrown,
+    faDragon as fasDragon,
     faEdit as fasEdit,
     faExternalLinkAlt as fasExternalLinkAlt,
     faGavel as fasGavel,
@@ -56,7 +57,7 @@ library.add(fabEthereum, fabFontAwesomeFlag, fabTwitch, fabYoutube);
 library.add(farSadCry, farQuestionCircle);
 library.add(
     fasAward, fasBolt, fasChartPie, fasCheckCircle, fasChevronRight, fasCogs, 
-    fasCommentDots, fasCopy, fasCrown, fasEdit, fasExternalLinkAlt, fasGavel, 
+    fasCommentDots, fasCopy, fasCrown, fasDragon, fasEdit, fasExternalLinkAlt, fasGavel, 
     fasGem, fasGift, fasGlobe, fasHammer, fasHdd, fasHome, fasMoneyBill, 
     fasPlay, fasRobot, fasSave, fasSnowflake, fasStar, fasStepForward, fasSync, 
     fasTerminal, fasTh, fasTicketAlt, fasTimes, fasTrain, fasTrashAlt, 

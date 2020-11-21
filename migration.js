@@ -71,34 +71,43 @@ function executeMigarationFilesRecursive(migrationFiles, index) {
     } else {
         let migration = require(migrationFiles[index]);
 
-        // if migration was not executed in the past
-        if (pastMigrations.indexOf(migrationFiles[index]) === -1 && argv.direction === 'up') {
-            migration[argv.direction](function() {
-                let time = moment().unix();
-                let values = {
-                    name: migrationFiles[index],
-                    updatedAt: time,
-                    createdAt: time
-                };
-
-                database.insert('migration', [values], function(migrationInsert) {
-                    log(locales.t('migration-executed', [migrationFiles[index].replace(versionExtract, '$1'), locales.t(argv.direction)]));
-                    executeMigarationFilesRecursive(migrationFiles, ++index);
-                });
-            });
-        }
-
         // if migration was executed in the past
-        if (pastMigrations.indexOf(migrationFiles[index]) !== -1 && argv.direction === 'down') {
-            migration[argv.direction](function() {
-                let where = ['name = ?'];
-                let prepare = [migrationFiles[index]];
+        if (pastMigrations.indexOf(migrationFiles[index]) > -1) {
+            if (typeof argv.file === 'string') {
+                log(locales.t('migration-file-executed', [migrationFiles[index].replace(versionExtract, '$1')]));
+            }
 
-                database.remove('migration', where, prepare, function(migrationRemove) {
-                    log(locales.t('migration-executed', [migrationFiles[index].replace(versionExtract, '$1'), locales.t(argv.direction)]));
-                    executeMigarationFilesRecursive(migrationFiles, ++index);
+            executeMigarationFilesRecursive(migrationFiles, ++index);
+        } else {
+            // if migration was not executed in the past and direction up
+            if (pastMigrations.indexOf(migrationFiles[index]) === -1 && argv.direction === 'up') {
+                migration[argv.direction](function() {
+                    let time = moment().unix();
+                    let values = {
+                        name: migrationFiles[index],
+                        updatedAt: time,
+                        createdAt: time
+                    };
+
+                    database.insert('migration', [values], function(migrationInsert) {
+                        log(locales.t('migration-executed', [migrationFiles[index].replace(versionExtract, '$1'), locales.t(argv.direction)]));
+                        executeMigarationFilesRecursive(migrationFiles, ++index);
+                    });
                 });
-            });
+            }
+
+            // if migration was not executed in the past and direction down
+            if (pastMigrations.indexOf(migrationFiles[index]) !== -1 && argv.direction === 'down') {
+                migration[argv.direction](function() {
+                    let where = ['name = ?'];
+                    let prepare = [migrationFiles[index]];
+
+                    database.remove('migration', where, prepare, function(migrationRemove) {
+                        log(locales.t('migration-executed', [migrationFiles[index].replace(versionExtract, '$1'), locales.t(argv.direction)]));
+                        executeMigarationFilesRecursive(migrationFiles, ++index);
+                    });
+                });
+            }
         }
     }
 }

@@ -370,9 +370,13 @@ const command = {
                     // if command is active and tranlation exists
                     if (commands[i].active && typeof command.translation[commands[i].name] !== 'undefined') {
                         activeCommands.push(command.translation[commands[i].name]);
+                    } else if (commands[i].active && commands[i].type === 'custom') {
+                        // if is custom command
+                        activeCommands.push(commands[i].name);
                     }
                 }
 
+                activeCommands.sort();
                 chatbot.client.say('#' + args.channel, locales.t('command-commands', [activeCommands.join(', ')]));
                 command.logCommand(args);
                 command.updateCommandLastExec(chatbot, args);

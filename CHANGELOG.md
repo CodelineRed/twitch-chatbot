@@ -11,27 +11,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - custom commands feature
 - viewer count error message
 - `removeCustomCommand()` in [`chatbot/app.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/app.js)
+- 6 audio files from [Dracon](https://twitter.com/DraconTV)
+- SCSS variables for badges and chat colors in [`scss/_variables.scss`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/scss/_variables.scss)
+- GlitchCon 2020 badge in [`chatbot/chat.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/chat.js) and [`module/_chat.scss`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/scss/module/_chat.scss)
+- translations in [`chatbot/locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/locales.js)
+- [`migration/version-1.3.0.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/data/migration/version-1.3.0.js)
+- [`UPGRADE.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/UPGRADE.md)
 
 ### Changed
 - `prepareCommands()` in [`chatbot/database.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/database.js)
 - [`partial/commands.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/partial/commands.vue)
+- [`data/chatbot.dist.sqlite3`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/data/chatbot.dist.sqlite3)
 - [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
-- @babel/core 7.12.0 to 7.12.3
+- @babel/core 7.12.0 to 7.12.7
 - @babel/plugin-transform-modules-amd 7.10.5 to 7.12.1
 - browser-sync 2.26.12 to 2.26.13
 - chart.js 2.9.3 to 2.9.4
 - eslint-plugin-vue 7.0.1 to 7.1.0
+- gulp-sourcemaps 2.6.5 to 3.0.0
 - gulp-vue-single-file-component 1.0.14 to 1.0.15
-- i18next 19.8.2 to 19.8.3
+- i18next 19.8.2 to 19.8.4
 - vanilla-lazyload 17.1.2 to 17.1.3
-- vue-i18n 8.22.0 to 8.22.1
+- vue-i18n 8.22.0 to 8.22.2
 - vue-router 3.4.6 to 3.4.9
-- yargs 16.0.3 to 16.1.0
+- yargs 16.0.3 to 16.1.1
 
 ### Fixed
 - commands save button tooltip translation in [`partial/commands.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/partial/commands.vue)
 - statistic button tooltip translation in [`page/channel.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/channel.vue)
 - commands search field size in [`module/_commands.scss`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/scss/module/_commands.scss)
+- logic bug in [`migration.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/migration.js)
 
 ## [1.2.1] - 2020-10-30
 ### Changed

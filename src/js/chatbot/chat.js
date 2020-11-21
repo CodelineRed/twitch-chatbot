@@ -158,6 +158,7 @@ const chat = {
             twitchconUSA2018: typeof args.badges.twitchcon2018 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2018', cssClass: 'tc-usa-2018'} : undefined,
             twitchconUSA2019: typeof args.badges.twitchconNA2019 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2019', cssClass: 'tc-usa-2019'} : undefined,
             twitchconUSA2020: typeof args.badges.twitchconNA2020 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2019', cssClass: 'tc-usa-2019'} : undefined,
+            twitchconTGC2020: typeof args.badges.glitchcon2020 === 'string' ? {style: 'fas', icon: 'dragon', transform: null, title: 'GlitchCon 2020', cssClass: 'tgc-2020'} : undefined,
             partner: typeof args.badges.partner === 'string' ? {style: 'fas', icon: 'check-circle', transform: null, title: 'Partner', cssClass: null} : undefined,
             bot: chatbot.bots.indexOf(args.user.toLowerCase()) > -1 ? {style: 'fas', icon: 'robot', transform: null, title: 'Bot', cssClass: null} : undefined
         };

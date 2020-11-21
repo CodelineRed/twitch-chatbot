@@ -22,7 +22,7 @@ const viewerCount = {
         }
 
         // if oauthToken found and query build
-        if (oauthToken.length && query.length) {
+        if (oauthToken.length && query.length && !viewerCount.error) {
             let options = {
                 url: `https://api.twitch.tv/helix/streams?${query}`,
                 method: 'GET',
@@ -34,7 +34,7 @@ const viewerCount = {
                 }
             };
 
-            // get list of live streamers from query
+            // get list of live streams from query
             request(options, (err, res, body) => {
                 if (err) {
                     return console.log(err);
@@ -78,6 +78,7 @@ const viewerCount = {
                 } else if (!viewerCount.error) {
                     viewerCount.error = true;
                     console.log(locales.t('viewer-count-error', [body.message]));
+                    console.log(locales.t('viewer-count-fix'));
                 }
             });
         }
