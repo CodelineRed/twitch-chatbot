@@ -1,9 +1,11 @@
-const database = require('./database');
-const moment   = require('moment');
-const request  = require('request');
-const {v4: uuidv4, validate: uuidValid} = require('uuid');
+const database     = require('./database');
+const locales      = require('./locales');
+const moment       = require('moment');
+const request      = require('request');
+const {v4: uuidv4} = require('uuid');
 
 const viewerCount = {
+    error: false,
     addViewerCount: function(chatbot) {
         let oauthToken = '';
         let query = '';
@@ -20,7 +22,7 @@ const viewerCount = {
         }
 
         // if oauthToken found and query build
-        if (oauthToken.length && query.length) {
+        if (oauthToken.length && query.length && !viewerCount.error) {
             let options = {
                 url: `https://api.twitch.tv/helix/streams?${query}`,
                 method: 'GET',
@@ -32,7 +34,7 @@ const viewerCount = {
                 }
             };
 
-            // get list of live streamers from query
+            // get list of live streams from query
             request(options, (err, res, body) => {
                 if (err) {
                     return console.log(err);
@@ -73,6 +75,10 @@ const viewerCount = {
                             }
                         });
                     }
+                } else if (!viewerCount.error) {
+                    viewerCount.error = true;
+                    console.log(locales.t('viewer-count-error', [body.message]));
+                    console.log(locales.t('viewer-count-fix'));
                 }
             });
         }

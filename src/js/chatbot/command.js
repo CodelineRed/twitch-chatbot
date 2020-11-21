@@ -11,8 +11,60 @@ const command = {
         about: '!about',
         commands: '!cc',
         diceDuel: '!dd[0-99](w[0-9]) @user',
+        diceDuelAccept: '!dda',
         playlistInfo: '!plan',
         rollDice: '!d[0-99](w[0-9])'
+    },
+    /**
+     * Adds custom command to database
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
+    addCustomCommand: function(chatbot, args) {
+        let select = 'cmd.id';
+        let from = 'command AS cmd';
+        let join = 'JOIN channel_command_join AS ccj ON cmd.id = ccj.command_id ';
+        let where = [
+            'ccj.channel_id = ?',
+            'cmd.name = ?'
+        ];
+        let prepare = [
+            chatbot.channels[args.channel].id,
+            args.name.toLowerCase()
+        ];
+        let time = moment().unix();
+        let value = {
+            name: args.name.toLowerCase(),
+            content: args.content,
+            type: 'custom',
+            updatedAt: time,
+            createdAt: time
+        };
+
+        database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
+            // if custom command not exists for channel
+            if (!rows.length) {
+                database.insert('command', [value], function(insert) {
+                    value = {
+                        channelId: chatbot.channels[args.channel].id,
+                        commandId: insert.lastID,
+                        cooldown: typeof args.cooldown === 'undefined' ? 30 : args.cooldown,
+                        active: 1,
+                        updatedAt: time,
+                        createdAt: time
+                    };
+
+                    database.insert('channel_command_join', [value], function(insertCcj) {
+                        command.getCommands(chatbot, args);
+                        if (args.say) {
+                            chatbot.client.say('#' + args.channel, locales.t('custom-command-added', [args.name.toLowerCase(), args.content]));
+                        }
+                    });
+                });
+            }
+        });
     },
     /**
      * Sends all commands to frontend
@@ -22,7 +74,7 @@ const command = {
      * @returns {undefined}
      */
     getCommands: function(chatbot, args) {
-        let select = 'cmd.id, cmd.name, cmd.created_at AS createdAt, ccj.cooldown, ';
+        let select = 'cmd.id, cmd.name, cmd.type, cmd.created_at AS createdAt, ccj.cooldown, ';
         select += 'ccj.active, ccj.last_exec AS lastExec, ccj.updated_at AS updatedAt';
         let from = 'channel AS c';
         let join = 'JOIN channel_command_join AS ccj ON c.id = ccj.channel_id ';
@@ -70,6 +122,84 @@ const command = {
         console.log(locales.t('command-executed', [args.message, args.userstate['display-name'], args.channel]));
     },
     /**
+     * Removes custom command in database
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
+    removeCustomCommand: function(chatbot, args) {
+        let select = 'cmd.id, ccj.active';
+        let from = 'command AS cmd';
+        let join = 'JOIN channel_command_join AS ccj ON cmd.id = ccj.command_id ';
+        let where = [
+            'ccj.channel_id = ?',
+            'cmd.name = ?'
+        ];
+        let prepare = [
+            chatbot.channels[args.channel].id,
+            args.name.toLowerCase()
+        ];
+
+        database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
+            // if custom command exists for channel
+            if (rows.length) {
+                where = ['command_id = ' + rows[0].id];
+
+                database.remove('channel_command_join', where, [], function(removeCcj) {
+                    where = ['id = ' + rows[0].id];
+
+                    database.remove('command', where, [], function(remove) {
+                        command.getCommands(chatbot, args);
+                        if (args.say) {
+                            chatbot.client.say('#' + args.channel, locales.t('custom-command-removed', [args.name.toLowerCase()]));
+                        }
+                    });
+                });
+            }
+        });
+    },
+    /**
+     * Toggles custom command in database
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
+    toggleCustomCommand: function(chatbot, args) {
+        let select = 'cmd.id, ccj.active';
+        let from = 'command AS cmd';
+        let join = 'JOIN channel_command_join AS ccj ON cmd.id = ccj.command_id ';
+        let where = [
+            'ccj.channel_id = ?',
+            'cmd.name = ?'
+        ];
+        let prepare = [
+            chatbot.channels[args.channel].id,
+            args.name.toLowerCase()
+        ];
+        let time = moment().unix();
+
+        database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
+            // if custom command exists for channel
+            if (rows.length) {
+                let set = {
+                    active: !rows[0].active,
+                    updatedAt: time
+                };
+                where = ['command_id = ' + rows[0].id];
+
+                database.update('channel_command_join', set, where, function(updateCcj) {
+                    command.getCommands(chatbot, args);
+                    if (args.say) {
+                        let suffix = set.active ? '1' : '0';
+                        chatbot.client.say('#' + args.channel, locales.t('custom-command-toggled-' + suffix, [args.name.toLowerCase()]));
+                    }
+                });
+            }
+        });
+    },
+    /**
      * Updates command
      * 
      * @param {object} chatbot
@@ -108,7 +238,17 @@ const command = {
             `command_id = ${chatbot.commands[args.channel][args.commandIndex].id}`
         ];
 
-        database.update('channel_command_join', {lastExec: chatbot.commands[args.channel][args.commandIndex].lastExec}, where);
+        database.update('channel_command_join', {lastExec: chatbot.commands[args.channel][args.commandIndex].lastExec}, where, function() {
+            // if custom command id exists
+            if (typeof args.customCommandId !== 'undefined') {
+                where = [
+                    `channel_id = '${chatbot.channels[args.channel].id}'`,
+                    `command_id = ${args.customCommandId}`
+                ];
+
+                database.update('channel_command_join', {lastExec: chatbot.commands[args.channel][args.commandIndex].lastExec}, where);
+            }
+        });
 
         if (chatbot.socket !== null) {
             const call = {
@@ -124,6 +264,53 @@ const command = {
 
             chatbot.socket.write(JSON.stringify(call));
         }
+    },
+    /**
+     * Updates custom command in database
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
+    updateCustomCommand: function(chatbot, args) {
+        let select = 'cmd.id';
+        let from = 'command AS cmd';
+        let join = 'JOIN channel_command_join AS ccj ON cmd.id = ccj.command_id ';
+        let where = [
+            'ccj.channel_id = ?',
+            'cmd.name = ?'
+        ];
+        let prepare = [
+            chatbot.channels[args.channel].id,
+            args.name.toLowerCase()
+        ];
+        let time = moment().unix();
+        let set = {
+            content: args.content,
+            updatedAt: time
+        };
+
+        database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
+            // if custom command exists for channel
+            if (rows.length) {
+                where = ['id = ' + rows[0].id];
+
+                database.update('command', set, where, function(update) {
+                    set = {
+                        cooldown: typeof args.cooldown === 'undefined' ? 30 : args.cooldown,
+                        updatedAt: time
+                    };
+                    where = ['command_id = ' + rows[0].id];
+
+                    database.update('channel_command_join', set, where, function(updateCcj) {
+                        command.getCommands(chatbot, args);
+                        if (args.say) {
+                            chatbot.client.say('#' + args.channel, locales.t('custom-command-updated', [args.name.toLowerCase(), args.content]));
+                        }
+                    });
+                });
+            }
+        });
     },
     /**
      * List of default commands
@@ -149,6 +336,26 @@ const command = {
             }
         },
         /**
+         * Adds custom command to database
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        addCustomCommand: function(chatbot, args) {
+            if (/^!addcc (![a-z0-9]+)@?([0-9]+)? (.*)/i.test(args.message) 
+                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                const matches = args.message.match(/^!addcc (![a-z0-9]+)@?([0-9]+)? (.*)/i);
+                args = Object.assign(args, {
+                    name: matches[1],
+                    cooldown: matches[2],
+                    content: matches[3],
+                    say: true
+                });
+                command.addCustomCommand(chatbot, args);
+            }
+        },
+        /**
          * Sends list of commands to chat
          * 
          * @param {object} chatbot
@@ -163,9 +370,13 @@ const command = {
                     // if command is active and tranlation exists
                     if (commands[i].active && typeof command.translation[commands[i].name] !== 'undefined') {
                         activeCommands.push(command.translation[commands[i].name]);
+                    } else if (commands[i].active && commands[i].type === 'custom') {
+                        // if is custom command
+                        activeCommands.push(commands[i].name);
                     }
                 }
 
+                activeCommands.sort();
                 chatbot.client.say('#' + args.channel, locales.t('command-commands', [activeCommands.join(', ')]));
                 command.logCommand(args);
                 command.updateCommandLastExec(chatbot, args);
@@ -203,6 +414,42 @@ const command = {
                         chatbot.socketCounter.write(JSON.stringify(call));
                     }
                 }
+            }
+        },
+        /**
+         * Sends custom command information to chat
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        customCommand: function(chatbot, args) {
+            if (/^(![a-z0-9]+)(.*)/i.test(args.message)) {
+                const matches = args.message.match(/^(![a-z0-9]+)(.*)/i);
+                let argsClone = Object.assign({}, args);
+                let select = 'cmd.id, cmd.content';
+                let from = 'command AS cmd';
+                let join = 'JOIN channel_command_join AS ccj ON cmd.id = ccj.command_id ';
+                let where = [
+                    'cmd.name = ?',
+                    'ccj.active = 1',
+                    'ccj.channel_id = ?',
+                    'ccj.last_exec + ccj.cooldown < ?'
+                ];
+                let prepare = [
+                    matches[1].toLowerCase(),
+                    chatbot.channels[argsClone.channel].id,
+                    moment().unix()
+                ];
+
+                database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
+                    // if command exists for channel
+                    if (rows.length) {
+                        argsClone['customCommandId'] = rows[0].id;
+                        chatbot.client.say('#' + args.channel, rows[0].content);
+                        command.updateCommandLastExec(chatbot, argsClone);
+                    }
+                });
             }
         },
         /**
@@ -399,6 +646,24 @@ const command = {
             }
         },
         /**
+         * Removes custom command in database
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        removeCustomCommand: function(chatbot, args) {
+            if (/^!rmcc (![a-z0-9]+)/i.test(args.message) 
+                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                const matches = args.message.match(/^!rmcc (![a-z0-9]+)/i);
+                args = Object.assign(args, {
+                    name: matches[1],
+                    say: true
+                });
+                command.removeCustomCommand(chatbot, args);
+            }
+        },
+        /**
          * Sends result of rolled dice to chat
          * 
          * @param {object} chatbot
@@ -431,6 +696,44 @@ const command = {
                     command.logCommand(args);
                     command.updateCommandLastExec(chatbot, args);
                 }
+            }
+        },
+        /**
+         * Toggles custom command activity in database
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        toggleCustomCommand: function(chatbot, args) {
+            if (/^!tglcc (![a-z0-9]+)/i.test(args.message) 
+                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                const matches = args.message.match(/^!tglcc (![a-z0-9]+)/i);
+                args = Object.assign(args, {
+                    name: matches[1],
+                    say: true
+                });
+                command.toggleCustomCommand(chatbot, args);
+            }
+        },
+        /**
+         * Updates custom command in database
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        updateCustomCommand: function(chatbot, args) {
+            if (/^!updcc (![a-z0-9]+)@?([0-9]+)? (.*)/i.test(args.message) 
+                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                const matches = args.message.match(/^!updcc (![a-z0-9]+)@?([0-9]+)? (.*)/i);
+                args = Object.assign(args, {
+                    name: matches[1],
+                    cooldown: matches[2],
+                    content: matches[3],
+                    say: true
+                });
+                command.updateCustomCommand(chatbot, args);
             }
         }
     }

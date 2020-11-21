@@ -3,6 +3,50 @@ $theme-color-2: #212121; // dark grey
 $theme-color-3: lighten($theme-color-2, 50%); // light grey
 $theme-color-4: lighten($theme-color-2, 5%); // grey
 
+$badge-gradient-founder-1: #9445fe;
+$badge-gradient-founder-2: #f71fd3;
+$badge-gradient-tc-eu-2020-2: #e82cb5;
+$badge-gradient-tc-eu-2020-3: #f4d684;
+$badge-gradient-tc-usa-2017-2: #2ba6de;
+
+$badge-bg-admin: #64a;
+$badge-bg-bits: #80f;
+$badge-bg-bits-charity: #c1e9ea;
+$badge-bg-bits-leader: #96f;
+$badge-bg-bot: #000;
+$badge-bg-broadcaster: #f00;
+$badge-bg-founder: linear-gradient(to bottom, $badge-gradient-founder-1 0%, $badge-gradient-founder-2 100%);
+$badge-bg-glhf-pledge: #6d6802;
+$badge-bg-global-mod: #036305;
+$badge-bg-hype-train: #660;
+$badge-bg-hype-train-former: #666;
+$badge-bg-mod: #00ad03;
+$badge-bg-partner: $badge-bg-admin;
+$badge-bg-prime: #00a0d6;
+$badge-bg-staff: $badge-bg-bot;
+$badge-bg-sub-gifter: #7b5207;
+$badge-bg-sub-gift-leader: #c78e26;
+$badge-bg-subscriber: #00f;
+$badge-bg-tc-eu-2019: $badge-bg-admin;
+$badge-bg-tc-eu-2020: linear-gradient(to bottom, $badge-bg-admin 0%, $badge-gradient-tc-eu-2020-2 50%, $badge-gradient-tc-eu-2020-3 100%);
+$badge-bg-tc-usa-2017: linear-gradient(135deg, $badge-bg-admin 0%, $badge-gradient-tc-usa-2017-2 100%);
+$badge-bg-tc-usa-2018: #fd5b5b;
+$badge-bg-tc-usa-2019: $badge-bg-admin;
+$badge-bg-tgc-2020: #cbacfe;
+$badge-bg-turbo: $badge-bg-admin;
+$badge-bg-vip: #e005b9;
+
+$badge-color-bits-charity: $theme-color-1;
+$badge-color-hype-train: #ff0;
+$badge-color-hype-train-former: #ccc;
+$badge-color-tgc-2020: #006357;
+
+$chat-color-action: #8df;
+$chat-color-message: #fff;
+$chat-color-notification: #fa0;
+$chat-color-purge: $chat-color-notification;
+$chat-color-user: $chat-color-action;
+
 // Font Awesome
 $fa-font-path: '../font';
 

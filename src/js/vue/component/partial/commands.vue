@@ -26,6 +26,21 @@
                     socketWrite(call);
                 }
             },
+            removeCustomCommand: function(commandIndex) {
+                if (typeof socketWrite === 'function' && this.commands[commandIndex].type === 'custom') {
+                    const call = {
+                        method: 'removeCustomCommand',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            name: this.commands[commandIndex].name,
+                            say: false
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
             setCommands: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.commands = args.commands;
@@ -79,6 +94,7 @@
                                 <th scope="col">{{ $t('cooldown') }}</th>
                                 <th scope="col">{{ $t('last-exec') }}</th>
                                 <th scope="col">{{ $t('active') }}</th>
+                                <th scope="col">{{ $t('type') }}</th>
                                 <th scope="col" class="text-center" data-orderable="false">
                                     <span class="d-none" data-toggle="tooltip" data-placement="top" title="Refresh" @click="getCommands()">
                                         <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" />
@@ -111,8 +127,12 @@
                                         <label class="custom-control-label" :for="'command-active-' + index">&nbsp;</label>
                                     </div>
                                 </td>
+                                <td>{{ command.type }}</td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-primary btn-animation" data-animation-success="success" data-animation-error="error" data-toggle="tooltip" data-placement="top" title="Save" @click="updateCommand(index)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
+                                    <span class="text-nowrap">
+                                        <button type="button" class="btn btn-sm btn-primary btn-animation mr-2" data-animation-success="success" data-animation-error="error" data-toggle="tooltip" data-placement="top" :title="$t('save')" @click="updateCommand(index)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
+                                        <button v-if="command.type == 'custom'" type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" :title="$t('remove')" @click="removeCustomCommand(index)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
+                                    </span>
                                 </td>
                             </tr>
                         </tbody>
