@@ -85,6 +85,7 @@ As an aternative you can checkout [production](https://github.com/InsanityMeetsH
 | clientIdToken       | Optional - [Twitch Client ID Token](https://dev.twitch.tv/) (is presetted)                                                       |
 | youtubeToken        | Optional - [YouTube API Token](https://console.developers.google.com)                                                            |
 | videosFolder        | Optional - Absolute path to videos folder with trailing slash                                                                    |
+| backup              | Optional - Daily backup yes or no                                                                                                |
 | locale              | Required - German and English are presetted                                                                                      |
 | channels            | Required - List of Channels to connect                                                                                           |
 

@@ -1,3 +1,4 @@
+const config  = require('../../app/chatbot.json');
 const locales = require('./locales');
 const fs      = require('fs');
 const moment  = require('moment');
@@ -29,8 +30,8 @@ const database = {
         let backupFile = 'chatbot.' + moment().format(format) + '.sqlite3';
         let backupFolder = './data/backup/';
 
-        // if database exists and backup databse not exists
-        if (fs.existsSync(this.file) && !fs.existsSync(backupFolder + backupFile)) {
+        // if database exists and backup databse not exists and backup is enabled
+        if (fs.existsSync(this.file) && !fs.existsSync(backupFolder + backupFile) && (typeof config.backup === 'boolean' && config.backup)) {
             fs.copyFile(this.file, backupFolder + backupFile, (err) => {
                 if (err) {
                     throw err;
