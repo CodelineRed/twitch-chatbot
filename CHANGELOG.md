@@ -6,7 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.3.0]
+## [1.4.0]
+### Added
+- `backup` in [`app/chatbot.dist.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/chatbot.dist.json)
+
+### Changed
+- `backup()` in [`chatbot/database.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/database.js)
+- [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
+- @babel/core 7.12.7 to 7.12.9
+- vanilla-lazyload 17.1.3 to 17.3.0
+
+## [1.3.0] - 2020-11-21
 ### Added
 - custom commands feature
 - viewer count error message
