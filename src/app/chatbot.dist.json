@@ -5,6 +5,7 @@
     "youtubeToken": "",
     "videosFolder": "C:/Users/USERNAME/Videos/",
     "backup": true,
+    "performance": 1,
     "locale": "en",
     "channels": [""]
 }

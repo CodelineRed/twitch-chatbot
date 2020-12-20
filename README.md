@@ -86,7 +86,8 @@ As an aternative you can checkout [production](https://github.com/InsanityMeetsH
 | youtubeToken        | Optional - [YouTube API Token](https://console.developers.google.com)                                                            |
 | videosFolder        | Optional - Absolute path to videos folder with trailing slash                                                                    |
 | backup              | Optional - Daily backup yes or no                                                                                                |
-| locale              | Required - German and English are presetted                                                                                      |
+| performance         | Optional - 0 = low / 1 = high                                                                                                |
+| locale              | Required - German (de) and English (en) are presetted                                                                                      |
 | channels            | Required - List of Channels to connect                                                                                           |
 
 ## [`gulpfile.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/gulpfile.dist.json)
