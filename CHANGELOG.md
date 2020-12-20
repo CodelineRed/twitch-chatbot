@@ -6,7 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.4.0]
+## [1.5.0]
+### Added
+- `performance` in [`app/chatbot.dist.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/chatbot.dist.json)
+- placeholder images for emotes
+
+### Changed
+- generateEmoteImage() in [`chatbot/chat.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/chat.js)
+- [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
+- @babel/core 7.12.9 to 7.12.10
+- @fortawesome/vue-fontawesome 2.0.0 to 2.0.2
+- datatables.net 1.10.22 to 1.10.23
+- datatables.net-bs4 1.10.22 to 1.10.23
+- eslint-plugin-vue 7.1.0 to 7.3.0
+- gulp-favicons 2.4.0 to 3.0.0
+- tmi.js 1.5.0 to 1.7.0
+- uuid 8.3.1 to 8.3.2
+- yargs 16.1.1 to 16.2.0
+
+## [1.4.0] - 2020-12-02
 ### Added
 - `backup` in [`app/chatbot.dist.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/chatbot.dist.json)
 

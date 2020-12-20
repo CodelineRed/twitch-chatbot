@@ -1,3 +1,4 @@
+const config      = require('../../app/chatbot.json');
 const database    = require('./database');
 const emote       = require('./emote');
 const linkify     = require('linkifyjs');
@@ -183,19 +184,30 @@ const chat = {
         return message;
     },
     /**
-     * Returns emote image
+     * Returns HTML emote image tag
      * 
      * @param {string} url
      * @param {string} title
-     * @param {boolean} lazy
+     * @param {boolean} lazy optional (default: true)
      * @returns {string}
      */
     generateEmoteImage: function(url, title, lazy) {
-        lazy = typeof lazy === 'boolean' ? lazy : true;
-        let image = '<img class="emote" src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
-        if (lazy) {
-            image = '<img class="emote lazy" src="img/empty-emote.png" data-src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
+        let lazyClass = typeof lazy === 'boolean' && lazy ? ' lazy' : '';
+        let image = '';
+        
+        if (typeof config.performance === 'number' && config.performance === 0) {
+            if (/betterttv/.test(url)) {
+                image += ' ';
+                url = 'img/bttv-placeholder-emote.png';
+            } else if (/frankerfacez/.test(url)) {
+                image += ' ';
+                url = 'img/ffz-placeholder-emote.png';
+            } else if (/\.gif$/.test(url)) {
+                url = 'img/placeholder-emote.png';
+            }
         }
+
+        image += '<img class="emote' + lazyClass + '" src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
         return image;
     },
     /**
@@ -218,6 +230,7 @@ const chat = {
             uuid: typeof args.userstate.id === 'undefined' ? uuidv4() : args.userstate.id,
             channel: args.channel,
             emotes: args.userstate.emotes,
+            lazy: true,
             message: args.message
         };
 
@@ -313,6 +326,7 @@ const chat = {
                 let formatMessage = {
                     channel: args.channel,
                     emotes: row.emotes.length ? JSON.parse(row.emotes) : {},
+                    lazy: true,
                     message: row.message
                 };
 
@@ -372,6 +386,7 @@ const chat = {
         let formatMessage = {
             channel: args.channel,
             emotes: {},
+            lazy: true,
             message: args.message
         };
 
