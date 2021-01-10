@@ -17,7 +17,8 @@
         },
         data: function() {
             return {
-                componentsOrder: window.localStorage.getItem('componentsOrder') ? JSON.parse(window.localStorage.getItem('componentsOrder')) : null
+                componentsOrder: window.localStorage.getItem('componentsOrder') ? JSON.parse(window.localStorage.getItem('componentsOrder')) : null,
+                oauthToken: ''
             };
         },
         mounted: function() {
@@ -50,8 +51,23 @@
                 };
                 this.saveComponentsOrder();
             }
+            this.getChannelToken('oauthToken');
         },
         methods: {
+            getChannelToken: function(name) {
+                if (typeof socketWrite === 'function') {
+                    const call = {
+                        method: 'getChannelToken',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            name: name
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
             getComponentClass: function(properties, index) {
                 let bp = Object.keys(properties.cols);
                 let cssClasses = '';
@@ -91,6 +107,11 @@
             },
             saveComponentsOrder: function() {
                 window.localStorage.setItem('componentsOrder', JSON.stringify(this.componentsOrder));
+            },
+            setChannelToken: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this[args.name] = args.token;
+                }
             }
         }
     };
@@ -102,6 +123,7 @@
             <h3 class="text-center">
                 {{ $route.params.channel }} - {{ $t('app') }}&nbsp;
                 <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('components-order')"><button type="button" class="btn btn-sm btn-primary btn-fs1rem" data-toggle="modal" data-target="#components-order"><font-awesome-icon :icon="['fas', 'th']" class="fa-fw" /></button></span>&nbsp;
+                <span v-if="oauthToken.length"><span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('oauth-token')"><button type="button" class="btn btn-sm btn-primary btn-fs1rem" data-toggle="modal" data-target="#oauth-token"><font-awesome-icon :icon="['fas', 'key']" class="fa-fw" /></button></span>&nbsp;</span>
                 <router-link class="btn btn-sm btn-primary btn-fs1rem" data-toggle="tooltip" data-placement="top" :title="$t('statistic')" :to="{name: 'statistic', params: {channel: $route.params.channel}}"><font-awesome-icon :icon="['fas', 'chart-pie']" class="fa-fw" /></router-link>
             </h3>
         </div>
@@ -170,6 +192,27 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="oauth-token" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="oauth-token-modal-title" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg modal-xl" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 id="oauth-token-modal-title" class="modal-title">
+                                {{ $t('oauth-token') }}
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center">
+                            {{ oauthToken }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
                         </div>
                     </div>
                 </div>

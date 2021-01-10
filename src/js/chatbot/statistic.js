@@ -294,6 +294,50 @@ const statistic = {
         });
     },
     /**
+     * Sends top cahtters to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
+    getTopChatters: function(chatbot, args) {
+        let select = 'u.name AS name, COUNT(ch.message) AS amount';
+        let from = 'chat AS ch';
+        let join = 'JOIN user AS u ON ch.user_id = u.id';
+        let where = [
+            'channel_id = $id',
+            'type IN (\'chat\', \'action\')',
+            `u.name COLLATE NOCASE NOT IN ('${chatbot.bots.join('\',\'')}')`,
+            'ch.created_at >= strftime($format, $start)',
+            'ch.created_at <= strftime($format, $end)'
+        ];
+        let group = 'ch.user_id';
+        let order = 'amount DESC';
+        let limit = args.limit;
+        let prepare = {
+            $id: chatbot.channels[args.channel].id,
+            $format: '%s',
+            $start: args.start,
+            $end: args.end
+        };
+
+        database.find(select, from, join, where, group, order, limit, prepare, function(rows) {
+            if (chatbot.socket !== null) {
+                const call = {
+                    args: {
+                        channel: args.channel,
+                        list: rows
+                    },
+                    method: 'setTopChatters',
+                    ref: 'statistic',
+                    env: 'browser'
+                };
+
+                chatbot.socket.write(JSON.stringify(call));
+            }
+        });
+    },
+    /**
      * Sends top emotes to frontend
      * 
      * @param {object} chatbot
@@ -308,7 +352,7 @@ const statistic = {
         join += 'JOIN emote AS e ON cej.emote_uuid = e.uuid';
         let where = [
             'channel_id = $id',
-            `e.type IN (${args.types})`,
+            `e.type IN (${args.select})`,
             'cej.created_at >= strftime($format, $start)',
             'cej.created_at <= strftime($format, $end)'
         ];
@@ -344,8 +388,8 @@ const statistic = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        array: args.array,
-                        emotes: rows
+                        type: args.type,
+                        list: rows
                     },
                     method: 'setTopEmotes',
                     ref: 'statistic',
@@ -355,6 +399,78 @@ const statistic = {
                 chatbot.socket.write(JSON.stringify(call));
             }
         });
+    },
+    /**
+     * Sends top words to frontend
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
+    getTopWords: function(chatbot, args) {
+        let select = 'DISTINCT lower(message) AS name, COUNT(*) AS amount';
+        let from = 'chat';
+        let where = [
+            'channel_id = $id',
+            `message GLOB '${args.prefix}[a-zA-Z]*'`,
+            'created_at >= strftime($format, $start)',
+            'created_at <= strftime($format, $end)'
+        ];
+        let group = 'message COLLATE NOCASE';
+        let order = 'message COLLATE NOCASE ASC';
+        let prepare = {
+            $id: chatbot.channels[args.channel].id,
+            $format: '%s',
+            $start: args.start,
+            $end: args.end
+        };
+
+        database.find(select, from, '', where, group, order, 0, prepare, function(rows) {
+            if (chatbot.socket !== null) {
+                const call = {
+                    args: {
+                        channel: args.channel,
+                        type: args.type,
+                        list: statistic.sumUpDirtyTopList(rows, args.prefix, args.limit)
+                    },
+                    method: 'setTopWords',
+                    ref: 'statistic',
+                    env: 'browser'
+                };
+
+                chatbot.socket.write(JSON.stringify(call));
+            }
+        });
+    },
+    /**
+     * Sums up list of dulicated items and merge to one clean list
+     * 
+     * @param {array} rows [{name: 'Lorem', amount: 1337}]
+     * @param {string} prefix
+     * @param {integer} limit
+     * @returns {array}
+     */
+    sumUpDirtyTopList: function(rows, prefix, limit) {
+        let topList = [];
+        let currentTopIndex = -1;
+        let regex = new RegExp('^(' + prefix + '[a-z]*) ?', 'i');
+
+        // sum up duplicate commands
+        for (let i = 0; i < rows.length; i++) {
+            let cleanName = rows[i].name.match(regex)[1];
+
+            // if topList not empty and commd already in list
+            if (currentTopIndex !== -1 && topList[currentTopIndex].name === cleanName) {
+                topList[currentTopIndex].amount += rows[i].amount;
+            } else {
+                topList.push({name: cleanName, amount: rows[i].amount});
+                currentTopIndex++;
+            }
+        }
+
+        // sort DESC and limit list
+        topList.sort((a,b) => (a.amount < b.amount) ? 1 : ((b.amount < a.amount) ? -1 : 0));
+        return topList.slice(0, limit);
     }
 };
 

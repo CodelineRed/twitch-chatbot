@@ -10,7 +10,7 @@
         mixins: [bsComponent, imageLazyLoad],
         data: function() {
             return {
-                completed: 9,
+                completed: 12,
                 datetimePicker: {
                     start: moment().format('YYYY-MM-DDT00:00'),
                     end: moment().format('YYYY-MM-DDT23:59:59')
@@ -21,10 +21,14 @@
                 streamDate: -1,
                 streamDates: [],
                 subs: {},
+                topChatters: [],
+                topCommands: [],
                 topEmotesAll: [],
                 topEmotesBttv: [],
                 topEmotesFfz: [],
-                topEmotesTwitch: []
+                topEmotesTwitch: [],
+                topHashtags: [],
+                topListLimit: 15
             };
         },
         watch: {
@@ -54,10 +58,13 @@
             getAllStats: function() {
                 let $this = this;
                 this.completed = 0;
-                this.getTopEmotes('\'ttv\',\'bttv\',\'ffz\'', 'All', 15);
-                this.getTopEmotes('\'ttv\'', 'Twitch', 15);
-                this.getTopEmotes('\'bttv\'', 'Bttv', 15);
-                this.getTopEmotes('\'ffz\'', 'Ffz', 15);
+                this.getTopChatters(this.topListLimit);
+                this.getTopEmotes('\'ttv\',\'bttv\',\'ffz\'', 'All', this.topListLimit);
+                this.getTopEmotes('\'ttv\'', 'Twitch', this.topListLimit);
+                this.getTopEmotes('\'bttv\'', 'Bttv', this.topListLimit);
+                this.getTopEmotes('\'ffz\'', 'Ffz', this.topListLimit);
+                this.getTopWords('#', 'Hashtags', this.topListLimit);
+                this.getTopWords('!', 'Commands', this.topListLimit);
                 this.getChart();
                 this.getMisc();
                 this.getPurges();
@@ -142,15 +149,49 @@
                     socketWrite(call);
                 }
             },
-            getTopEmotes: function(types, array, limit) {
+            getTopChatters: function(limit) {
+                if (typeof socketWrite === 'function') {
+                    const call = {
+                        method: 'getTopChatters',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            limit: limit,
+                            start: this.datetimePicker.start + moment().format('Z'),
+                            end: this.datetimePicker.end + moment().format('Z')
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
+            getTopEmotes: function(select, type, limit) {
                 if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getTopEmotes',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            types: types,
+                            select: select,
                             limit: limit,
-                            array: array,
+                            type: type,
+                            start: this.datetimePicker.start + moment().format('Z'),
+                            end: this.datetimePicker.end + moment().format('Z')
+                        },
+                        env: 'node'
+                    };
+
+                    socketWrite(call);
+                }
+            },
+            getTopWords: function(prefix, type, limit) {
+                if (typeof socketWrite === 'function') {
+                    const call = {
+                        method: 'getTopWords',
+                        args: {
+                            channel: this.$root._route.params.channel.toLowerCase(),
+                            limit: limit,
+                            prefix: prefix,
+                            type: type,
                             start: this.datetimePicker.start + moment().format('Z'),
                             end: this.datetimePicker.end + moment().format('Z')
                         },
@@ -244,10 +285,22 @@
                     this.subs = args.subs;
                 }
             },
+            setTopChatters: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.completed++;
+                    this.topChatters = args.list;
+                }
+            },
             setTopEmotes: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.completed++;
-                    this['topEmotes' + args.array] = args.emotes;
+                    this['topEmotes' + args.type] = args.list;
+                }
+            },
+            setTopWords: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.completed++;
+                    this['top' + args.type] = args.list;
                 }
             }
         }
@@ -306,122 +359,6 @@
                     </div>
                 </div>
                 <canvas id="canvas"></canvas>
-            </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
-            <div class="tile-background p-2">
-                <div class="h5 text-center pt-1">
-                    {{ $t('top-15-all') }}
-                </div>
-                <div v-if="topEmotesAll.length" class="table-responsive mb-3">
-                    <table class="table table-striped table-hover table-dark mb-0">
-                        <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                <th scope="col">{{ $t('code') }}</th>
-                                <th scope="col">{{ $t('amount') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="emote in topEmotesAll" :key="emote.uuid">
-                                <!-- eslint-disable-next-line vue/no-v-html -->
-                                <td><span v-html="emote.image"></span></td>
-                                <td>{{ emote.code }}</td>
-                                <td>{{ emote.amount }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div v-else class="text-center">
-                    {{ $t('no-emotes-used') }}
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
-            <div class="tile-background p-2">
-                <div class="h5 text-center pt-1">
-                    {{ $t('top-15-twitch') }}
-                </div>
-                <div v-if="topEmotesTwitch.length" class="table-responsive mb-3">
-                    <table class="table table-striped table-hover table-dark mb-0">
-                        <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                <th scope="col">{{ $t('code') }}</th>
-                                <th scope="col">{{ $t('amount') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="emote in topEmotesTwitch" :key="emote.uuid">
-                                <!-- eslint-disable-next-line vue/no-v-html -->
-                                <td><span v-html="emote.image"></span></td>
-                                <td>{{ emote.code }}</td>
-                                <td>{{ emote.amount }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div v-else class="text-center">
-                    {{ $t('no-emotes-used') }}
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
-            <div class="tile-background p-2">
-                <div class="h5 text-center pt-1">
-                    {{ $t('top-15-bttv') }}
-                </div>
-                <div v-if="topEmotesBttv.length" class="table-responsive mb-3">
-                    <table class="table table-striped table-hover table-dark mb-0">
-                        <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                <th scope="col">{{ $t('code') }}</th>
-                                <th scope="col">{{ $t('amount') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="emote in topEmotesBttv" :key="emote.uuid">
-                                <!-- eslint-disable-next-line vue/no-v-html -->
-                                <td><span v-html="emote.image"></span></td>
-                                <td>{{ emote.code }}</td>
-                                <td>{{ emote.amount }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div v-else class="text-center">
-                    {{ $t('no-emotes-used') }}
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
-            <div class="tile-background p-2">
-                <div class="h5 text-center pt-1">
-                    {{ $t('top-15-ffz') }}
-                </div>
-                <div v-if="topEmotesFfz.length" class="table-responsive mb-3">
-                    <table class="table table-striped table-hover table-dark mb-0">
-                        <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                <th scope="col">{{ $t('code') }}</th>
-                                <th scope="col">{{ $t('amount') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="emote in topEmotesFfz" :key="emote.uuid">
-                                <!-- eslint-disable-next-line vue/no-v-html -->
-                                <td><span v-html="emote.image"></span></td>
-                                <td>{{ emote.code }}</td>
-                                <td>{{ emote.amount }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div v-else class="text-center">
-                    {{ $t('no-emotes-used') }}
-                </div>
             </div>
         </div>
         <div class="col-12 col-md-4 mb-3">
@@ -635,6 +572,200 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
+            <div class="tile-background p-2">
+                <div class="h5 text-center pt-1">
+                    {{ $t('top-emotes-all', [topListLimit]) }}
+                </div>
+                <div v-if="topEmotesAll.length" class="table-responsive mb-3">
+                    <table class="table table-striped table-hover table-dark mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">{{ $t('code') }}</th>
+                                <th scope="col">{{ $t('amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="emote in topEmotesAll" :key="emote.uuid">
+                                <!-- eslint-disable-next-line vue/no-v-html -->
+                                <td><span v-html="emote.image"></span></td>
+                                <td>{{ emote.code }}</td>
+                                <td>{{ emote.amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else class="text-center">
+                    {{ $t('no-top-emotes') }}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
+            <div class="tile-background p-2">
+                <div class="h5 text-center pt-1">
+                    {{ $t('top-emotes-twitch', [topListLimit]) }}
+                </div>
+                <div v-if="topEmotesTwitch.length" class="table-responsive mb-3">
+                    <table class="table table-striped table-hover table-dark mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">{{ $t('code') }}</th>
+                                <th scope="col">{{ $t('amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="emote in topEmotesTwitch" :key="emote.uuid">
+                                <!-- eslint-disable-next-line vue/no-v-html -->
+                                <td><span v-html="emote.image"></span></td>
+                                <td>{{ emote.code }}</td>
+                                <td>{{ emote.amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else class="text-center">
+                    {{ $t('no-top-emotes') }}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
+            <div class="tile-background p-2">
+                <div class="h5 text-center pt-1">
+                    {{ $t('top-emotes-bttv', [topListLimit]) }}
+                </div>
+                <div v-if="topEmotesBttv.length" class="table-responsive mb-3">
+                    <table class="table table-striped table-hover table-dark mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">{{ $t('code') }}</th>
+                                <th scope="col">{{ $t('amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="emote in topEmotesBttv" :key="emote.uuid">
+                                <!-- eslint-disable-next-line vue/no-v-html -->
+                                <td><span v-html="emote.image"></span></td>
+                                <td>{{ emote.code }}</td>
+                                <td>{{ emote.amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else class="text-center">
+                    {{ $t('no-top-emotes') }}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
+            <div class="tile-background p-2">
+                <div class="h5 text-center pt-1">
+                    {{ $t('top-emotes-ffz', [topListLimit]) }}
+                </div>
+                <div v-if="topEmotesFfz.length" class="table-responsive mb-3">
+                    <table class="table table-striped table-hover table-dark mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">{{ $t('code') }}</th>
+                                <th scope="col">{{ $t('amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="emote in topEmotesFfz" :key="emote.uuid">
+                                <!-- eslint-disable-next-line vue/no-v-html -->
+                                <td><span v-html="emote.image"></span></td>
+                                <td>{{ emote.code }}</td>
+                                <td>{{ emote.amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else class="text-center">
+                    {{ $t('no-top-emotes') }}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4 mb-3 top-chatter">
+            <div class="tile-background p-2">
+                <div class="h5 text-center pt-1">
+                    {{ $t('top-chatters', [topListLimit]) }}
+                </div>
+                <div v-if="topChatters.length" class="table-responsive mb-3">
+                    <table class="table table-striped table-hover table-dark mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">{{ $t('name') }}</th>
+                                <th scope="col">{{ $t('amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="chatter in topChatters" :key="chatter.name">
+                                <td>{{ chatter.name }}</td>
+                                <td>{{ chatter.amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else class="text-center">
+                    {{ $t('no-top-chatters') }}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4 mb-3 top-hashtags">
+            <div class="tile-background p-2">
+                <div class="h5 text-center pt-1">
+                    {{ $t('top-hashtags', [topListLimit]) }}
+                </div>
+                <div v-if="topHashtags.length" class="table-responsive mb-3">
+                    <table class="table table-striped table-hover table-dark mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">{{ $t('name') }}</th>
+                                <th scope="col">{{ $t('amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="hashtag in topHashtags" :key="hashtag.name">
+                                <td>{{ hashtag.name }}</td>
+                                <td>{{ hashtag.amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else class="text-center">
+                    {{ $t('no-top-hashtags') }}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4 mb-3 top-commands">
+            <div class="tile-background p-2">
+                <div class="h5 text-center pt-1">
+                    {{ $t('top-commands', [topListLimit]) }}
+                </div>
+                <div v-if="topCommands.length" class="table-responsive mb-3">
+                    <table class="table table-striped table-hover table-dark mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">{{ $tc('command', 2) }}</th>
+                                <th scope="col">{{ $t('amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="command in topCommands" :key="command.name">
+                                <td>{{ command.name }}</td>
+                                <td>{{ command.amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else class="text-center">
+                    {{ $t('no-top-commands') }}
                 </div>
             </div>
         </div>

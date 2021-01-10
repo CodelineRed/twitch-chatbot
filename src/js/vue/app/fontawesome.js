@@ -32,6 +32,7 @@ import {
     faHammer as fasHammer,
     faHdd as fasHdd,
     faHome as fasHome,
+    faKey as fasKey,
     faMoneyBill as fasMoneyBill,
     faPlay as fasPlay,
     faRobot as fasRobot,
@@ -58,7 +59,7 @@ library.add(farSadCry, farQuestionCircle);
 library.add(
     fasAward, fasBolt, fasChartPie, fasCheckCircle, fasChevronRight, fasCogs, 
     fasCommentDots, fasCopy, fasCrown, fasDragon, fasEdit, fasExternalLinkAlt, fasGavel, 
-    fasGem, fasGift, fasGlobe, fasHammer, fasHdd, fasHome, fasMoneyBill, 
+    fasGem, fasGift, fasGlobe, fasHammer, fasHdd, fasHome, fasKey, fasMoneyBill, 
     fasPlay, fasRobot, fasSave, fasSnowflake, fasStar, fasStepForward, fasSync, 
     fasTerminal, fasTh, fasTicketAlt, fasTimes, fasTrain, fasTrashAlt, 
     fasTrophy, fasVideo, fasWrench

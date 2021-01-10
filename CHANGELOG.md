@@ -6,13 +6,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.5.0]
+## [1.6.0]
+### Added
+- `addBot()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- `rmBot()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- top chatters statistic in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
+- top hashtags statistic in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
+- top commands statistic in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
+- button to show OAuth Token for channel in [`page/channel.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/channel.vue)
+
+### Changed
+- [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
+- some property names to have everything equal
+- eslint-plugin-vue 7.3.0 to 7.4.1
+- sqlite3 5.0.0 to 5.0.1
+- tmi.js 1.7.0 to 1.7.1
+- vue-i18n 8.22.2 to 8.22.3
+
+### Fixed
+- third party emote encoding in [`chatbot/chat.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/chat.js)
+
+## [1.5.0] - 2020-12-20
 ### Added
 - `performance` in [`app/chatbot.dist.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/chatbot.dist.json)
 - placeholder images for emotes
 
 ### Changed
-- generateEmoteImage() in [`chatbot/chat.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/chat.js)
+- `generateEmoteImage()` in [`chatbot/chat.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/chat.js)
 - [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
 - @babel/core 7.12.9 to 7.12.10
 - @fortawesome/vue-fontawesome 2.0.0 to 2.0.2

@@ -111,6 +111,8 @@ As an aternative you can checkout [production](https://github.com/InsanityMeetsH
 | raffle              | custom keyword (default: !raffle)                                                                                                |
 | rollDice            | !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                             |
 | customCommand       | wrapper for all custom command commands                                                                                          |
+| addBot              | !addbot name                                                                                                                     |
+| removeBot           | !rmbot name                                                                                                                      |
 | addCustomCommand    | !addcc !command[@cooldown] lorem ipsum e.g. !addcc !hw@10 hello world                                                            |
 | removeCustomCommand | !rmcc !command                                                                                                                   |
 | toggleCustomCommand | !tglcc !command                                                                                                                  |
@@ -230,6 +232,9 @@ As an aternative you can checkout [production](https://github.com/InsanityMeetsH
 * Top 15 Twitch Emotes
 * Top 15 BTTV Emotes
 * Top 15 FFZ Emotes
+* Top 15 Chatters
+* Top 15 Hashtags
+* Top 15 Commands
 * Amount of Subs
 * Amount of New Subs
 * Amount of New Paid Subs

@@ -1,6 +1,7 @@
 const config      = require('../../app/chatbot.json');
 const database    = require('./database');
 const emote       = require('./emote');
+const locales     = require('./locales');
 const linkify     = require('linkifyjs');
 const linkifyHtml = require('linkifyjs/html');
 const moment      = require('moment');
@@ -11,6 +12,37 @@ const chat = {
     bttvEmotes: {},
     ffzEmotes: {},
     /**
+     * Adds bot to database
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
+    addBot: function(chatbot, args) {
+        let select = 'id';
+        let from = 'bot';
+        let where = ['name = ?'];
+        let prepare = [args.name.toLowerCase()];
+        let time = moment().unix();
+        let value = {
+            name: args.name.toLowerCase(),
+            updatedAt: time,
+            createdAt: time
+        };
+
+        database.find(select, from, '', where, '', '', 0, prepare, function(rows) {
+            // if bot not exists for channel
+            if (!rows.length) {
+                database.insert('bot', [value], function(insert) {
+                    chatbot.bots.push(value.name);
+                    if (args.say) {
+                        chatbot.client.say('#' + args.channel, locales.t('bot-added', [value.name]));
+                    }
+                });
+            }
+        });
+    },
+    /**
      * Returns message with BTTV emote images
      * 
      * @param {string} message
@@ -18,28 +50,7 @@ const chat = {
      * @returns {string}
      */
     encodeBttvEmotes: function(message, args) {
-        let emoteCodes = Object.keys(chat.bttvEmotes[args.channel]);
-        for (let i = 0; i < emoteCodes.length; i++) {
-            let regexEmote = emoteCodes[i].replace(/(\(|\))/g, '\\$1');
-            let regex = new RegExp('^' + regexEmote + '| ' + regexEmote + '|' + regexEmote + '$', 'g');
-
-            if (regex.test(message)) {
-                if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
-                    for (let j = 0; j < (message.match(regex) || []).length; j++) {
-                        let emoteArgs = {
-                            uuid: args.uuid,
-                            code: emoteCodes[i],
-                            type: 'bttv'
-                        };
-
-                        emote.addEmote(emoteArgs);
-                    }
-                }
-
-                message = message.replace(regex, chat.generateEmoteImage(chat.bttvEmotes[args.channel][emoteCodes[i]], emoteCodes[i], args.lazy));
-            }
-        }
-        return message;
+        return chat.encodeThirdPartyEmote(message, args, 'bttv');
     },
     /**
      * Returns message with FFZ emote images
@@ -49,10 +60,25 @@ const chat = {
      * @returns {string}
      */
     encodeFfzEmotes: function(message, args) {
-        let emoteCodes = Object.keys(chat.ffzEmotes[args.channel]);
+        return chat.encodeThirdPartyEmote(message, args, 'ffz');
+    },
+    /**
+     * Returns message with third party emote images
+     * 
+     * @param {string} message
+     * @param {object} args
+     * @returns {string}
+     */
+    encodeThirdPartyEmote: function(message, args, type) {
+        let emoteCodes = Object.keys(chat[type + 'Emotes'][args.channel]);
         for (let i = 0; i < emoteCodes.length; i++) {
             let regexEmote = emoteCodes[i].replace(/(\(|\))/g, '\\$1');
-            let regex = new RegExp('^' + regexEmote + '| ' + regexEmote + '|' + regexEmote + '$', 'g');
+            let regex = new RegExp('\\b' + regexEmote + '\\b', 'g');
+            
+            // if special chars in emote
+            if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(regexEmote)) { // eslint-disable-line no-useless-escape
+                regex = new RegExp(regexEmote, 'g');
+            }
 
             if (regex.test(message)) {
                 if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
@@ -60,14 +86,14 @@ const chat = {
                         let emoteArgs = {
                             uuid: args.uuid,
                             code: emoteCodes[i],
-                            type: 'ffz'
+                            type: type
                         };
 
                         emote.addEmote(emoteArgs);
                     }
                 }
 
-                message = message.replace(regex, chat.generateEmoteImage(chat.ffzEmotes[args.channel][emoteCodes[i]], emoteCodes[i], args.lazy));
+                message = message.replace(regex, chat.generateEmoteImage(chat[type + 'Emotes'][args.channel][emoteCodes[i]], emoteCodes[i], args.lazy));
             }
         }
         return message;
@@ -646,6 +672,31 @@ const chat = {
         } else if (chatbot.messages[args.channel].length >= 100 && shift) {
             chatbot.messages[args.channel].shift();
         }
+    },
+    /**
+     * Removes bot in database
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @returns {undefined}
+     */
+    removeBot: function(chatbot, args) {
+        let select = 'id';
+        let from = 'bot';
+        let where = ['name = ?'];
+        let prepare = [args.name.toLowerCase()];
+
+        database.find(select, from, '', where, '', '', 0, prepare, function(rows) {
+            // if bot exists
+            if (rows.length) {
+                database.remove('bot', where, prepare, function(removeBot) {
+                    database.prepareBotTable(chatbot, {'room-id': 0});
+                    if (args.say) {
+                        chatbot.client.say('#' + args.channel, locales.t('bot-removed', [args.name.toLowerCase()]));
+                    }
+                });
+            }
+        });
     }
 };
 

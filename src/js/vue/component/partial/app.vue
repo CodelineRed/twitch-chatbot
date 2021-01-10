@@ -11,14 +11,14 @@
             jQuery('html').attr('lang', this.$t('lang'));
             jQuery('html').removeClass('no-js');
 
-            let oauthTokenRegExp = /access_token=([a-z0-9]+)/;
-            if (oauthTokenRegExp.test(document.location.hash)) {
+            let tokenRegExp = /access_token=([a-z0-9]+)/;
+            if (tokenRegExp.test(document.location.hash)) {
                 // redirect to token page
                 document.location.href = this.$router.resolve({
                     name: 'token',
                     params: {
-                        token: document.location.hash.match(oauthTokenRegExp)[1],
-                        property: 'oauthToken'
+                        token: document.location.hash.match(tokenRegExp)[1],
+                        name: 'oauthToken'
                     }
                 }).href;
             }
