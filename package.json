@@ -1,7 +1,7 @@
 {
     "name": "twitch-chatbot",
     "version": "1.6.0-dev",
-    "commitDate": "2021-01-10T13:15:00+01:00",
+    "commitDate": "2021-01-17T20:00:00+01:00",
     "description": "Twitch Chatbot made with Vue Skeleton",
     "keywords": [
         "gulp",
@@ -33,11 +33,11 @@
     "devDependencies": {
         "@babel/core": "^7.12.10",
         "@babel/plugin-transform-modules-amd": "^7.12.1",
-        "@fortawesome/fontawesome-free": "^5.15.1",
-        "@fortawesome/fontawesome-svg-core": "^1.2.32",
-        "@fortawesome/free-brands-svg-icons": "^5.15.1",
-        "@fortawesome/free-regular-svg-icons": "^5.15.1",
-        "@fortawesome/free-solid-svg-icons": "^5.15.1",
+        "@fortawesome/fontawesome-free": "^5.15.2",
+        "@fortawesome/fontawesome-svg-core": "^1.2.34",
+        "@fortawesome/free-brands-svg-icons": "^5.15.2",
+        "@fortawesome/free-regular-svg-icons": "^5.15.2",
+        "@fortawesome/free-solid-svg-icons": "^5.15.2",
         "@fortawesome/vue-fontawesome": "^2.0.2",
         "babel-eslint": "^10.1.0",
         "bootstrap": "^4.5.3",
@@ -70,7 +70,7 @@
         "vanilla-lazyload": "^17.3.0",
         "vue": "^2.6.12",
         "vue-ctk-date-time-picker": "2.5.0",
-        "vue-i18n": "^8.22.3",
+        "vue-i18n": "^8.22.4",
         "vue-router": "^3.4.9"
     },
     "dependencies": {

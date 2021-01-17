@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `addBot()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
 - `rmBot()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- `getTopWords()` in [`chatbot/statistic.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/statistic.js)
+- `sumUpDirtyTopList` in [`chatbot/statistic.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/statistic.js)
 - top chatters statistic in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
 - top hashtags statistic in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
 - top commands statistic in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
@@ -18,10 +20,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
 - some property names to have everything equal
+- @fortawesome/fontawesome-free 5.13.1 to 5.15.2
+- @fortawesome/fontawesome-svg-core 1.2.32 to 1.2.34
+- @fortawesome/free-brands-svg-icons 5.13.0 to 5.15.2
+- @fortawesome/free-regular-svg-icons 5.13.0 to 5.15.2
+- @fortawesome/free-solid-svg-icons 5.13.0 to 5.15.2
 - eslint-plugin-vue 7.3.0 to 7.4.1
 - sqlite3 5.0.0 to 5.0.1
 - tmi.js 1.7.0 to 1.7.1
-- vue-i18n 8.22.2 to 8.22.3
+- vue-i18n 8.22.2 to 8.22.4
 
 ### Fixed
 - third party emote encoding in [`chatbot/chat.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/chat.js)

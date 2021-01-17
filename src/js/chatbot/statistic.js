@@ -408,15 +408,14 @@ const statistic = {
      * @returns {undefined}
      */
     getTopWords: function(chatbot, args) {
-        let select = 'DISTINCT lower(message) AS name, COUNT(*) AS amount';
+        let select = 'lower(message) AS words';
         let from = 'chat';
         let where = [
             'channel_id = $id',
-            `message GLOB '${args.prefix}[a-zA-Z]*'`,
+            `lower(message) GLOB '*${args.prefix}[a-z0-9]*'`,
             'created_at >= strftime($format, $start)',
             'created_at <= strftime($format, $end)'
         ];
-        let group = 'message COLLATE NOCASE';
         let order = 'message COLLATE NOCASE ASC';
         let prepare = {
             $id: chatbot.channels[args.channel].id,
@@ -425,7 +424,7 @@ const statistic = {
             $end: args.end
         };
 
-        database.find(select, from, '', where, group, order, 0, prepare, function(rows) {
+        database.find(select, from, '', where, '', order, 0, prepare, function(rows) {
             if (chatbot.socket !== null) {
                 const call = {
                     args: {
@@ -443,7 +442,7 @@ const statistic = {
         });
     },
     /**
-     * Sums up list of dulicated items and merge to one clean list
+     * Sums up list of dulicated words and merge to one clean list
      * 
      * @param {array} rows [{name: 'Lorem', amount: 1337}]
      * @param {string} prefix
@@ -451,21 +450,30 @@ const statistic = {
      * @returns {array}
      */
     sumUpDirtyTopList: function(rows, prefix, limit) {
+        let topListObject = {};
         let topList = [];
-        let currentTopIndex = -1;
-        let regex = new RegExp('^(' + prefix + '[a-z]*) ?', 'i');
+        let regex = new RegExp(prefix + '[a-z0-9]+', 'gi');
 
-        // sum up duplicate commands
+        // sum up duplicate words
         for (let i = 0; i < rows.length; i++) {
-            let cleanName = rows[i].name.match(regex)[1];
+            let matches = rows[i].words.match(regex);
 
-            // if topList not empty and commd already in list
-            if (currentTopIndex !== -1 && topList[currentTopIndex].name === cleanName) {
-                topList[currentTopIndex].amount += rows[i].amount;
-            } else {
-                topList.push({name: cleanName, amount: rows[i].amount});
-                currentTopIndex++;
+            for (let j = 0; j < matches.length; j++) {
+                let cleanMatch = matches[j].replace(prefix, '');
+
+                // if cleanMatch not in topList
+                if (typeof topListObject[cleanMatch] === 'undefined') {
+                    topListObject[cleanMatch] = {word: matches[j], amount: 1};
+                } else {
+                    topListObject[cleanMatch].amount++;
+                }
             }
+        }
+
+        // convert object to array
+        let topListKeys = Object.keys(topListObject);
+        for (let i = 0; i < topListKeys.length; i++) {
+            topList.push(topListObject[topListKeys[i]]);
         }
 
         // sort DESC and limit list

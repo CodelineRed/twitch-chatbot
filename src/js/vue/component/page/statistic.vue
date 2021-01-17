@@ -726,13 +726,13 @@
                     <table class="table table-striped table-hover table-dark mb-0">
                         <thead>
                             <tr>
-                                <th scope="col">{{ $t('name') }}</th>
+                                <th scope="col">{{ $tc('hashtag', 1) }}</th>
                                 <th scope="col">{{ $t('amount') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="hashtag in topHashtags" :key="hashtag.name">
-                                <td>{{ hashtag.name }}</td>
+                                <td>{{ hashtag.word }}</td>
                                 <td>{{ hashtag.amount }}</td>
                             </tr>
                         </tbody>
@@ -752,13 +752,13 @@
                     <table class="table table-striped table-hover table-dark mb-0">
                         <thead>
                             <tr>
-                                <th scope="col">{{ $tc('command', 2) }}</th>
+                                <th scope="col">{{ $tc('command', 1) }}</th>
                                 <th scope="col">{{ $t('amount') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="command in topCommands" :key="command.name">
-                                <td>{{ command.name }}</td>
+                                <td>{{ command.word }}</td>
                                 <td>{{ command.amount }}</td>
                             </tr>
                         </tbody>
