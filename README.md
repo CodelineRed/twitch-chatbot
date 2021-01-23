@@ -38,7 +38,7 @@ $ node chatbot.js
 $ gulp (in development)
 ```
 
-As an aternative you can checkout [production](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/production) branch, `npm i --only=prod` and skip all gulp commands.
+As an alternative you can checkout [production](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/production) branch, `npm i --only=prod` and skip all gulp commands.
 
 ## Project Commands
 |                     | Description                                                                                                                      |
@@ -68,8 +68,8 @@ As an aternative you can checkout [production](https://github.com/InsanityMeetsH
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | 3000                | [BrowserSync](https://www.npmjs.com/package/browser-sync)                                                                        |
 | 3001                | [BrowserSync UI](https://www.npmjs.com/package/browser-sync)                                                                     |
-| 3050                | Docker Container [twitch-chatbot](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/docker-compose.yml)                     |
-| 3060                | Docker Container [twitch-chatbot-videos-folder](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/docker-compose.videos-folder.yml) |
+| 3050                | [twitch-chatbot](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.yml) (Docker Container)            |
+| 3060                | [twitch-chatbot-videos-folder](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.videos-folder.yml) (Docker Container) |
 | 3100                | Main Window (Skateboard Socket for Web UI)                                                                                       |
 | 3110                | Chat Window (Skateboard Socket for Web UI)                                                                                       |
 | 3120                | Player Window (Skateboard Socket for Web UI)                                                                                     |
@@ -111,6 +111,11 @@ As an aternative you can checkout [production](https://github.com/InsanityMeetsH
 | raffle              | custom keyword (default: !raffle)                                                                                                |
 | rollDice            | !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                             |
 | customCommand       | wrapper for all custom command commands                                                                                          |
+
+## Chatbot Commands for Broadcaster and Moderaors
+| Name                | Command                                                                                                                          |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| bots                | !bots [public]                                                                                                                   |
 | addBot              | !addbot name                                                                                                                     |
 | removeBot           | !rmbot name                                                                                                                      |
 | addCustomCommand    | !addcc !command[@cooldown] lorem ipsum e.g. !addcc !hw@10 hello world                                                            |

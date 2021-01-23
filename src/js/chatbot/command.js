@@ -375,6 +375,23 @@ const command = {
             }
         },
         /**
+         * Sends list of bots to console or chat
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        bots: function(chatbot, args) {
+            if (/^!bots/i.test(args.message) 
+                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                if (/^!bots public/i.test(args.message)) {
+                    chatbot.client.say('#' + args.channel, locales.t('bot-list', [chatbot.bots.length, chatbot.bots.join(', ')]));
+                } else {
+                    console.log('* ' + locales.t('bot-list', [chatbot.bots.length, chatbot.bots.join(', ')]));
+                }
+            }
+        },
+        /**
          * Sends list of commands to chat
          * 
          * @param {object} chatbot

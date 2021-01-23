@@ -1,5 +1,6 @@
 ### Upgrade in general
-- Stop chatbot
+- Stop chatbot (`CTRL + C`)
+- `$ npm install --only=prod` or `$ npm install`
 - Follow the instructions below
 - Start chatbot `$ node chatbot.js`
 

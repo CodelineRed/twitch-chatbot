@@ -1,7 +1,7 @@
 {
     "name": "twitch-chatbot",
     "version": "1.6.0-dev",
-    "commitDate": "2021-01-17T20:00:00+01:00",
+    "commitDate": "2021-01-23T17:30:00+01:00",
     "description": "Twitch Chatbot made with Vue Skeleton",
     "keywords": [
         "gulp",
@@ -40,7 +40,7 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.2",
         "@fortawesome/vue-fontawesome": "^2.0.2",
         "babel-eslint": "^10.1.0",
-        "bootstrap": "^4.5.3",
+        "bootstrap": "^4.6.0",
         "browser-sync": "^2.26.13",
         "chart.js": "^2.9.4",
         "cssuseragent": "^2.1.31",
@@ -48,7 +48,7 @@
         "datatables.net-bs4": "^1.10.23",
         "del": "^6.0.0",
         "eslint-plugin-import": "^2.22.1",
-        "eslint-plugin-vue": "^7.4.1",
+        "eslint-plugin-vue": "^7.5.0",
         "gulp": "^4.0.2",
         "gulp-autoprefixer": "^7.0.1",
         "gulp-babel": "^8.0.0",
