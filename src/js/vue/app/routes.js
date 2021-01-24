@@ -85,7 +85,7 @@ const routes = [
     {
         component: Token,
         name: 'token',
-        path: '/token/:token/:property',
+        path: '/token/:token/:name',
         meta: {
             title: 'i18n.nav-token - i18n.app',
             layout: 'default'

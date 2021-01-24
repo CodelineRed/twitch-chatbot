@@ -14,10 +14,8 @@
                     const call = {
                         method: 'saveChannelToken',
                         args: {
-                            channel: {
-                                token: this.$root._route.params.token,
-                                property: this.$root._route.params.property
-                            }
+                            token: this.$root._route.params.token,
+                            name: this.$root._route.params.name
                         },
                         env: 'node'
                     };
@@ -45,7 +43,7 @@
                     </p>
                     <p v-else-if="status === 1" class="text-center">
                         <!-- eslint-disable-next-line vue/no-v-html -->
-                        <span v-html="$t('token-text', [$route.params.property])"></span>
+                        <span v-html="$t('token-text', [$route.params.name, $route.params.token])"></span>
                     </p>
                     <p v-else class="text-center">
                         {{ $t('auth-failed') }}

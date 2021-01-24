@@ -4,6 +4,11 @@ const config  = require('../../app/chatbot.json');
 const en = {
     'attendee': 'Attendee',
     'attendee_plural': 'Attendees',
+    'bot': 'Bot',
+    'bot_plural': 'Bots',
+    'bot-added': 'Added bot "{{0}}"',
+    'bot-list': '$t(bot, {"count": {{0}} }): {{1}}',
+    'bot-removed': 'Removed bot "{{0}}"',
     'change-channel-1': 'Stream Title and Game has changed to "{{0}}" - "{{1}}"',
     'change-channel-2': 'Stream Title has changed to "{{0}}"',
     'change-channel-3': 'Stream Game has changed to "{{0}}"',
@@ -112,6 +117,8 @@ const en = {
 const de = {
     'attendee': 'Teilnehmer',
     'attendee_plural': 'Teilnehmer',
+    'bot-added': 'Bot "{{0}}" hinzugefügt',
+    'bot-removed': 'Bot "{{0}}" entfernt',
     'change-channel-1': 'Stream-Titel und Spiel wurde geändert in "{{0}}" - "{{1}}"',
     'change-channel-2': 'Stream-Titel wurde geändert in "{{0}}"',
     'change-channel-3': 'Stream-Spiel wurde geändert in "{{0}}"',

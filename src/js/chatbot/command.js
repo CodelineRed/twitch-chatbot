@@ -1,3 +1,4 @@
+const chat         = require('./chat');
 const database     = require('./database');
 const locales      = require('./locales');
 const poll         = require('./poll');
@@ -336,6 +337,24 @@ const command = {
             }
         },
         /**
+         * Adds bot to database
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        addBot: function(chatbot, args) {
+            if (/^!addbot ([a-z0-9]+)/i.test(args.message) 
+                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                const matches = args.message.match(/^!addbot ([a-z0-9]+)/i);
+                args = Object.assign(args, {
+                    name: matches[1],
+                    say: true
+                });
+                chat.addBot(chatbot, args);
+            }
+        },
+        /**
          * Adds custom command to database
          * 
          * @param {object} chatbot
@@ -353,6 +372,23 @@ const command = {
                     say: true
                 });
                 command.addCustomCommand(chatbot, args);
+            }
+        },
+        /**
+         * Sends list of bots to console or chat
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        bots: function(chatbot, args) {
+            if (/^!bots/i.test(args.message) 
+                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                if (/^!bots public/i.test(args.message)) {
+                    chatbot.client.say('#' + args.channel, locales.t('bot-list', [chatbot.bots.length, chatbot.bots.join(', ')]));
+                } else {
+                    console.log('* ' + locales.t('bot-list', [chatbot.bots.length, chatbot.bots.join(', ')]));
+                }
             }
         },
         /**
@@ -643,6 +679,24 @@ const command = {
                     raffle.addAttendee(chatbot, args);
                 }
                 command.updateCommandLastExec(chatbot, args);
+            }
+        },
+        /**
+         * Removes bot in database
+         * 
+         * @param {object} chatbot
+         * @param {object} args
+         * @returns {undefined}
+         */
+        removeBot: function(chatbot, args) {
+            if (/^!rmbot ([a-z0-9]+)/i.test(args.message) 
+                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                const matches = args.message.match(/^!rmbot ([a-z0-9]+)/i);
+                args = Object.assign(args, {
+                    name: matches[1],
+                    say: true
+                });
+                chat.removeBot(chatbot, args);
             }
         },
         /**

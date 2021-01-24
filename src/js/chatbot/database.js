@@ -190,9 +190,12 @@ const database = {
                     console.error(errAll.message);
                 }
 
-                rows.forEach(function(row) {
-                    chatbot.bots.push(row.name);
-                });
+                // if bots array empty
+                if (!chatbot.bots.length) {
+                    rows.forEach(function(row) {
+                        chatbot.bots.push(row.name);
+                    });
+                }
 
                 let options = {
                     url: 'https://api.betterttv.net/3/cached/users/twitch/' + channelState['room-id'],

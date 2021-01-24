@@ -42,6 +42,28 @@ const channel = {
         return channelName;
     },
     /**
+     * Sends token to frontend
+     * 
+     * @param {object} chatbot
+     * @returns {undefined}
+     */
+    getChannelToken: function(chatbot, args) {
+        if (chatbot.socket !== null) {
+            const call = {
+                args: {
+                    channel: args.channel,
+                    token: typeof chatbot.channels[args.channel][args.name] === 'string' ? chatbot.channels[args.channel][args.name] : '',
+                    name: args.name
+                },
+                method: 'setChannelToken',
+                ref: 'channel',
+                env: 'browser'
+            };
+
+            chatbot.socket.write(JSON.stringify(call));
+        }
+    },
+    /**
      * Saves OAuth token to channel and sends status to frontend
      * 
      * @param {object} chatbot
@@ -56,7 +78,7 @@ const channel = {
                 json: true,
                 headers: {
                     'Accept': 'application/vnd.twitchtv.v5+json',
-                    'Authorization': `OAuth ${args.channel.token}`,
+                    'Authorization': `OAuth ${args.token}`,
                     'Client-ID': chatbot.config.clientIdToken
                 }
             };
@@ -71,11 +93,11 @@ const channel = {
                     let set = {
                         updatedAt: moment().unix()
                     };
-                    set[args.channel.property] = args.channel.token;
+                    set[args.name] = args.token;
                     let where = [`id = '${body._id}'`];
 
                     database.update('channel', set, where, function(update) {
-                        chatbot.channels[body.name][args.channel.property] = args.channel.token;
+                        chatbot.channels[body.name][args.name] = args.token;
 
                         if (chatbot.socket !== null) {
                             const call = {
