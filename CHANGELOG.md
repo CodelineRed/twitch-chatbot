@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.6.0]
+## [1.6.1]
+### Fixed
+- missing bootstrap utilities `display` and `flex` in [`lib/boostrap.scss`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/scss/lib/boostrap.scss)
+
+## [1.6.0] - 2021-01-24
 ### Added
 - `bots()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
 - `addBot()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)

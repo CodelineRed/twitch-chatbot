@@ -4,7 +4,7 @@
 - Follow the instructions below
 - Start chatbot `$ node chatbot.js`
 
-### Upgrade from 1.5.0 to 1.6.0
+### Upgrade from 1.5.0 to 1.6.x
 Nothing you have to do.
 
 ### Upgrade from 1.4.0 to 1.5.0
