@@ -14,7 +14,7 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
 - [`chatbot.json`](#chatbotjson)
 - [`gulpfile.json`](#gulpfilejson)
 - [Chatbot Commands](#chatbot-commands)
-- [Chatbot Commands for Broadcaster and Moderaors](#chatbot-commands-for-broadcaster-and-moderaors)
+- [Chatbot Commands for Broadcaster and Moderators](#chatbot-commands-for-broadcaster-and-moderators)
 - [Web UI Features](#web-ui-features)
     - [Chat](#chat)
     - [Commands](#commands)
@@ -25,7 +25,6 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
     - [Raffle](#raffle)
     - [Bots](#bots)
     - [Statistics](#statistics)
-    - [Code](#included)
 - [`import-videos-folder.js`](#import-videos-folderjs)
 - [`migration.js`](#migrationjs)
 - [Localization](#localization)
@@ -160,8 +159,8 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 | youtubeToken        | Optional - [YouTube API Token](https://console.developers.google.com)                                                            |
 | videosFolder        | Optional - Absolute path to videos folder with trailing slash                                                                    |
 | backup              | Optional - Daily backup yes or no                                                                                                |
-| performance         | Optional - 0 = low / 1 = high                                                                                                |
-| locale              | Required - German (de) and English (en) are presetted                                                                                      |
+| performance         | Optional - 0 = low / 1 = high                                                                                                    |
+| locale              | Required - German (de) and English (en) are presetted                                                                            |
 | channels            | Required - List of Channels to connect                                                                                           |
 
 ## [`gulpfile.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/gulpfile.dist.json)
@@ -186,7 +185,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 | rollDice            | !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                             |
 | customCommand       | wrapper for all custom command commands                                                                                          |
 
-## Chatbot Commands for Broadcaster and Moderaors
+## Chatbot Commands for Broadcaster and Moderators
 | Name                | Command                                                                                                                          |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | bots                | !bots [public]                                                                                                                   |
