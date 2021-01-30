@@ -1,11 +1,33 @@
 /data/backup/*.*
 /data/chatbot.sqlite3*
+# /public/audio/
+# /public/css/styles.css
+# /public/css/styles.css.map
+# /public/font/
+# /public/img/
+# /public/js/scripts.js
+# /public/js/scripts.js.map
+# /public/js/require/
+# /public/js/vue/
+# /public/json/
+# /public/svg/
+.htpasswd
+adminer*.php
+chatbot.json
+composer-setup.php
 gulpfile.json
 gulpfile-config.json
-chatbot.json
 
-# Created by https://www.gitignore.io/api/node,linux,macos,windows,netbeans,phpstorm
-# Edit at https://www.gitignore.io/?templates=node,linux,macos,windows,netbeans,phpstorm
+# Created by https://www.toptal.com/developers/gitignore/api/node,macos,linux,windows,netbeans,phpstorm,composer
+# Edit at https://www.toptal.com/developers/gitignore?templates=node,macos,linux,windows,netbeans,phpstorm,composer
+
+### Composer ###
+composer.phar
+/vendor/
+
+# Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
+# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
+# composer.lock
 
 ### Linux ###
 *~
@@ -116,6 +138,15 @@ typings/
 # Optional eslint cache
 .eslintcache
 
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
 # Optional REPL history
 .node_repl_history
 
@@ -128,26 +159,24 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+.env*.local
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
+.parcel-cache
 
-# next.js build output
+# Next.js build output
 .next
 
-# nuxt.js build output
+# Nuxt.js build / generate output
 .nuxt
+dist
 
-# rollup.js default build output
-
-# Uncomment the public line if your project uses Gatsby
+# Gatsby files
+.cache/
+# Comment in the public line in if your project uses Gatsby and not Next.js
 # https://nextjs.org/blog/next-9-1#public-directory-support
-# https://create-react-app.dev/docs/using-the-public-folder/#docsNav
 # public
-
-# Storybook build outputs
-.out
-.storybook-out
 
 # vuepress build output
 .vuepress/dist
@@ -161,12 +190,14 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-# Temporary folders
-tmp/
-temp/
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
 
 ### PhpStorm ###
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
@@ -196,6 +227,9 @@ temp/
 # When using Gradle or Maven with auto-import, you should exclude module files,
 # since they will be recreated, and may cause churn.  Uncomment if using
 # auto-import.
+# .idea/artifacts
+# .idea/compiler.xml
+# .idea/jarRepositories.xml
 # .idea/modules.xml
 # .idea/*.iml
 # .idea/modules
@@ -244,14 +278,26 @@ fabric.properties
 # *.ipr
 
 # Sonarlint plugin
+# https://plugins.jetbrains.com/plugin/7973-sonarlint
 .idea/**/sonarlint/
 
 # SonarQube Plugin
+# https://plugins.jetbrains.com/plugin/7238-sonarqube-community-plugin
 .idea/**/sonarIssues.xml
 
 # Markdown Navigator plugin
+# https://plugins.jetbrains.com/plugin/7896-markdown-navigator-enhanced
 .idea/**/markdown-navigator.xml
+.idea/**/markdown-navigator-enh.xml
 .idea/**/markdown-navigator/
+
+# Cache file creation bug
+# See https://youtrack.jetbrains.com/issue/JBR-2257
+.idea/$CACHE_FILE$
+
+# CodeStream plugin
+# https://plugins.jetbrains.com/plugin/12206-codestream
+.idea/codestream.xml
 
 ### Windows ###
 # Windows thumbnail cache files
@@ -279,4 +325,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.gitignore.io/api/node,linux,macos,windows,netbeans,phpstorm
+# End of https://www.toptal.com/developers/gitignore/api/node,macos,linux,windows,netbeans,phpstorm,composer
