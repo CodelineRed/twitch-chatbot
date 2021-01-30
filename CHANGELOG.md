@@ -6,7 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.6.1]
+## [1.7.0]
+### Added
+- new install guides
+- index in [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
+- `html` at `watchAndReload()` in [`gulpfile.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/gulpfile.js)
+
+### Changed
+- [`public/adminer.php`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/public/adminer.php)
+- [`public/.htaccess`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/public/.htaccess)
+- [`.gitignore`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/.gitignore)
+- order of properties at `browserSyncDocker` in [`app/gulpfile.dist.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/gulpfile.dist.json)
+- browser-sync 2.26.13 to 2.26.14
+- i18next 19.8.4 to 19.8.5
+- vue-router 3.4.9 to 3.5.1
+
+### Removed
+- `adminer/adminer-4.6.2.php` and replaced with composer installation
+
+## [1.6.1] - 2021-01-24
 ### Fixed
 - missing bootstrap utilities `display` and `flex` in [`lib/boostrap.scss`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/scss/lib/boostrap.scss)
 

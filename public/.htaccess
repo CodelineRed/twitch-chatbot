@@ -1,5 +1,11 @@
 RewriteEngine on
 
+# Password protection for public folder
+#AuthType Basic
+#AuthName "Password protected area"
+#AuthUserFile /path/to/.htpasswd
+#Require valid-user
+
 # For some web hosts the next line has to be activated 
 #RewriteBase /
 
