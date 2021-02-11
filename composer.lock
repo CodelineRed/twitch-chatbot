@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "affc26819b4d7a056b8652084b76c987",
+    "content-hash": "ad920563c6a42f7eea2d89607f8b993f",
     "packages": [
         {
             "name": "vrana/adminer",
-            "version": "v4.6.2",
+            "version": "v4.7.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vrana/adminer.git",
-                "reference": "7cb3e768bbd34f4b01aa9a2b7fac1c7224a02b37"
+                "reference": "93c7fb248ca008e3247eb3a43812e1096e7b262c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vrana/adminer/zipball/7cb3e768bbd34f4b01aa9a2b7fac1c7224a02b37",
-                "reference": "7cb3e768bbd34f4b01aa9a2b7fac1c7224a02b37",
+                "url": "https://api.github.com/repos/vrana/adminer/zipball/93c7fb248ca008e3247eb3a43812e1096e7b262c",
+                "reference": "93c7fb248ca008e3247eb3a43812e1096e7b262c",
                 "shasum": ""
             },
             "type": "library",
@@ -47,7 +47,17 @@
                 "issues": "https://sourceforge.net/p/adminer/bugs-and-features/",
                 "source": "https://github.com/vrana/adminer/"
             },
-            "time": "2018-02-20T08:20:42+00:00"
+            "funding": [
+                {
+                    "url": "https://sourceforge.net/p/adminer/donate/",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/jakubvrana",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2021-02-07T17:25:18+00:00"
         }
     ],
     "packages-dev": [],
