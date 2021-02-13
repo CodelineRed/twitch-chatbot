@@ -319,8 +319,8 @@
                     this.resetPoll();
                     this.initTooltip();
 
-                    if (this.isPopout && this.activePoll.id && typeof this.audioNodes.background === 'undefined') {
-                        this.playAudio('background', this.activePoll.audio.file, this.activePoll.audio.volume / 100, true);
+                    if (this.isPopout && this.activePoll.id && typeof this.sound.background === 'undefined') {
+                        this.playAudio('background', this.activePoll.audio.file, this.activePoll.audio.volume, true);
                     } else if (!this.activePoll.id) {
                         this.stopAudio('background');
                     }
@@ -380,7 +380,7 @@
                         }, 100);
 
                         if (this.winner.audio.id) {
-                            this.playAudio('winner', this.winner.audio.file, this.winner.audio.volume / 100);
+                            this.playAudio('winner', this.winner.audio.file, this.winner.audio.volume);
                         } else {
                             this.stopAudio('winner');
                         }
@@ -549,7 +549,7 @@
                                 </div>
                             </div>
                             <div class="col-12 mb-3">
-                                <button type="button" class="btn btn-light mr-2" :disabled="!poll.audio.file.length" @click="playAudio('background', poll.audio.file, poll.audio.volume / 100, true)">{{ $t('play-audio') }}</button>
+                                <button type="button" class="btn btn-light mr-2" :disabled="!poll.audio.file.length" @click="playAudio('background', poll.audio.file, poll.audio.volume, true)">{{ $t('play-audio') }}</button>
                                 <button type="button" class="btn btn-light" @click="stopAudio('background')">{{ $t('stop-audio') }}</button>
                             </div>
                         </div>
@@ -681,7 +681,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" :disabled="!winner.audio.file.length" @click="playAudio('winner', winner.audio.file, winner.audio.volume / 100)">{{ $t('play-audio') }}</button>
+                        <button type="button" class="btn btn-light" :disabled="!winner.audio.file.length" @click="playAudio('winner', winner.audio.file, winner.audio.volume)">{{ $t('play-audio') }}</button>
                         <button type="button" class="btn btn-light" @click="stopAudio('winner')">{{ $t('stop-audio') }}</button>
                         <button type="button" class="btn btn-primary" @click="animatePollWinner()">{{ $t('ok') }}</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>

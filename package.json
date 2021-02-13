@@ -1,7 +1,7 @@
 {
     "name": "twitch-chatbot",
-    "version": "1.7.0",
-    "commitDate": "2021-01-30T13:15:00+01:00",
+    "version": "1.8.0",
+    "commitDate": "2021-02-13T13:15:00+01:00",
     "description": "Twitch Chatbot made with Vue Skeleton",
     "keywords": [
         "gulp",
@@ -31,8 +31,8 @@
         "url": "git://github.com/InsanityMeetsHH/twitch-chatbot.git"
     },
     "devDependencies": {
-        "@babel/core": "^7.12.10",
-        "@babel/plugin-transform-modules-amd": "^7.12.1",
+        "@babel/core": "^7.12.16",
+        "@babel/plugin-transform-modules-amd": "^7.12.13",
         "@fortawesome/fontawesome-free": "^5.15.2",
         "@fortawesome/fontawesome-svg-core": "^1.2.34",
         "@fortawesome/free-brands-svg-icons": "^5.15.2",
@@ -67,7 +67,7 @@
         "gulp-vue-single-file-component": "^1.0.15",
         "jquery": "^3.5.1",
         "requirejs": "^2.3.6",
-        "vanilla-lazyload": "^17.3.0",
+        "vanilla-lazyload": "^17.3.1",
         "vue": "^2.6.12",
         "vue-ctk-date-time-picker": "2.5.0",
         "vue-i18n": "^8.22.4",
@@ -75,7 +75,7 @@
     },
     "dependencies": {
         "glob": "^7.1.6",
-        "i18next": "^19.8.5",
+        "i18next": "^19.8.7",
         "linkifyjs": "^2.1.9",
         "mediainfo-wrapper": "^1.2.0",
         "moment": "^2.29.1",

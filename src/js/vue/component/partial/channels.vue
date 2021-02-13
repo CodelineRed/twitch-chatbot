@@ -20,7 +20,7 @@
                 }
             },
             setChannels: function(args) {
-                this.channels = args.channels.split(';');
+                this.channels = args.list.split(';');
             }
         }
     };

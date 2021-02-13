@@ -3,17 +3,18 @@ const moment   = require('moment');
 const request  = require('request');
 
 const channel = {
+    lists: {},
     /**
      * Sends all configured channels to frontend
      * 
      * @param {object} chatbot
      * @returns {undefined}
      */
-    getChannels: function(chatbot) {
+    getList: function(chatbot) {
         if (chatbot.socket !== null) {
             const call = {
                 args: {
-                    channels: chatbot.config.channels.join(';').replace(/#/g, '')
+                    list: chatbot.config.channels.join(';').replace(/#/g, '')
                 },
                 method: 'setChannels',
                 ref: 'channels',
@@ -30,7 +31,7 @@ const channel = {
      * @param {type} channelName
      * @returns {string}
      */
-    getChannelDisplayName: function(chatbot, channelName) {
+    getDisplayName: function(chatbot, channelName) {
         channelName = channelName.toLowerCase();
 
         for (let i = 0; i < chatbot.config.channels.length; i++) {
@@ -47,12 +48,12 @@ const channel = {
      * @param {object} chatbot
      * @returns {undefined}
      */
-    getChannelToken: function(chatbot, args) {
+    getToken: function(chatbot, args) {
         if (chatbot.socket !== null) {
             const call = {
                 args: {
                     channel: args.channel,
-                    token: typeof chatbot.channels[args.channel][args.name] === 'string' ? chatbot.channels[args.channel][args.name] : '',
+                    token: typeof channel.lists[args.channel][args.name] === 'string' ? channel.lists[args.channel][args.name] : '',
                     name: args.name
                 },
                 method: 'setChannelToken',
@@ -70,7 +71,7 @@ const channel = {
      * @param {object} args
      * @returns {undefined}
      */
-    saveChannelToken: function(chatbot, args) {
+    saveToken: function(chatbot, args) {
         if (chatbot.config.clientIdToken.length) {
             let options = {
                 url: 'https://api.twitch.tv/kraken/user',
@@ -97,7 +98,7 @@ const channel = {
                     let where = [`id = '${body._id}'`];
 
                     database.update('channel', set, where, function(update) {
-                        chatbot.channels[body.name][args.name] = args.token;
+                        channel.lists[body.name][args.name] = args.token;
 
                         if (chatbot.socket !== null) {
                             const call = {

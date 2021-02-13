@@ -2,6 +2,7 @@ const database = require('./database');
 const moment   = require('moment');
 
 const counter = {
+    lists: {},
     /**
      * Sends coutner dataset to frontend
      * 
@@ -9,20 +10,20 @@ const counter = {
      * @param {object} args
      * @returns {undefined}
      */
-    getCounter: function(chatbot, args) {
+    get: function(chatbot, args) {
         let select = 'id, channel_id AS channelId, name, streak, victory, ';
         select += 'updated_at AS updatedAt, created_at AS createdAt';
         let where = ['channel_id = ?'];
         let prepare = [chatbot.channels[args.channel].id];
 
         database.find(select, 'counter', '', where, '', '', 1, prepare, function(rows) {
-            chatbot.counters[args.channel] = rows[0];
+            counter.lists[args.channel] = rows[0];
 
             if (chatbot.socket !== null) {
                 const call = {
                     args: {
                         channel: args.channel,
-                        counter: chatbot.counters[args.channel]
+                        item: counter.lists[args.channel]
                     },
                     method: 'setCounter',
                     ref: 'counter',
@@ -44,10 +45,10 @@ const counter = {
      * @param {object} args
      * @returns {undefined}
      */
-    updateCounter: function(chatbot, args) {
+    update: function(chatbot, args) {
         args.counter.streak = 0;
         args.counter.updatedAt = moment().unix();
-        chatbot.counters[args.channel] = args.counter;
+        counter.lists[args.channel] = args.counter;
         database.update('counter', args.counter, [`channel_id = '${chatbot.channels[args.channel].id}'`]);
     }
 };

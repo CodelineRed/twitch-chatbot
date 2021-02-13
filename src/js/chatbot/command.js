@@ -1,12 +1,19 @@
-const chat         = require('./chat');
 const database     = require('./database');
+const attendee     = require('./attendee');
+const bot          = require('./bot');
+const chat         = require('./chat');
+const counter      = require('./counter');
 const locales      = require('./locales');
+const playlist     = require('./playlist');
 const poll         = require('./poll');
 const raffle       = require('./raffle');
+const userChoice   = require('./user-choice');
+const video        = require('./video');
 const moment       = require('moment');
 const {v4: uuidv4} = require('uuid');
 
 const command = {
+    lists: {},
     diceDuels: {},
     translation: {
         about: '!about',
@@ -58,7 +65,7 @@ const command = {
                     };
 
                     database.insert('channel_command_join', [value], function(insertCcj) {
-                        command.getCommands(chatbot, args);
+                        command.getList(chatbot, args);
                         if (args.say) {
                             chatbot.client.say('#' + args.channel, locales.t('custom-command-added', [args.name.toLowerCase(), args.content]));
                         }
@@ -74,7 +81,7 @@ const command = {
      * @param {object} args
      * @returns {undefined}
      */
-    getCommands: function(chatbot, args) {
+    getList: function(chatbot, args) {
         let select = 'cmd.id, cmd.name, cmd.type, cmd.created_at AS createdAt, ccj.cooldown, ';
         select += 'ccj.active, ccj.last_exec AS lastExec, ccj.updated_at AS updatedAt';
         let from = 'channel AS c';
@@ -85,22 +92,22 @@ const command = {
         let prepare = [chatbot.channels[args.channel].id];
 
         database.find(select, from, join, where, '', order, 0, prepare, function(rows) {
-            chatbot.commands[args.channel] = [];
+            command.lists[args.channel] = [];
 
             if (rows.length) {
-                chatbot.commands[args.channel] = rows;
+                command.lists[args.channel] = rows;
             }
 
-            for (let i = 0; i < chatbot.commands[args.channel].length; i++) {
+            for (let i = 0; i < command.lists[args.channel].length; i++) {
                 // convert to boolean
-                chatbot.commands[args.channel][i].active = !!chatbot.commands[args.channel][i].active;
+                command.lists[args.channel][i].active = !!command.lists[args.channel][i].active;
             }
 
             if (chatbot.socket !== null) {
                 const call = {
                     args: {
                         channel: args.channel,
-                        commands: chatbot.commands[args.channel]
+                        list: command.lists[args.channel]
                     },
                     method: 'setCommands',
                     ref: 'commands',
@@ -117,7 +124,7 @@ const command = {
      * @param {type} args
      * @returns {undefined}
      */
-    logCommand: function(args) {
+    log: function(args) {
         // extract command from message
         args.message = args.message.replace(/^(![a-z0-9]+)(.*)/, '$1');
         console.log(locales.t('command-executed', [args.message, args.userstate['display-name'], args.channel]));
@@ -151,7 +158,7 @@ const command = {
                     where = ['id = ' + rows[0].id];
 
                     database.remove('command', where, [], function(remove) {
-                        command.getCommands(chatbot, args);
+                        command.getList(chatbot, args);
                         if (args.say) {
                             chatbot.client.say('#' + args.channel, locales.t('custom-command-removed', [args.name.toLowerCase()]));
                         }
@@ -191,7 +198,7 @@ const command = {
                 where = ['command_id = ' + rows[0].id];
 
                 database.update('channel_command_join', set, where, function(updateCcj) {
-                    command.getCommands(chatbot, args);
+                    command.getList(chatbot, args);
                     if (args.say) {
                         let suffix = set.active ? '1' : '0';
                         chatbot.client.say('#' + args.channel, locales.t('custom-command-toggled-' + suffix, [args.name.toLowerCase()]));
@@ -207,8 +214,8 @@ const command = {
      * @param {object} args
      * @returns {undefined}
      */
-    updateCommand: function(chatbot, args) {
-        chatbot.commands[args.channel][args.commandIndex] = args.command;
+    update: function(chatbot, args) {
+        command.lists[args.channel][args.commandIndex] = args.command;
 
         const set = {
             cooldown: args.command.cooldown,
@@ -223,48 +230,6 @@ const command = {
         ];
 
         database.update('channel_command_join', set, where);
-    },
-    /**
-     * Updates command last execution
-     * 
-     * @param {type} chatbot
-     * @param {type} args
-     * @returns {undefined}
-     */
-    updateCommandLastExec: function(chatbot, args) {
-        chatbot.commands[args.channel][args.commandIndex].lastExec = moment().unix();
-
-        let where = [
-            `channel_id = '${chatbot.channels[args.channel].id}'`,
-            `command_id = ${chatbot.commands[args.channel][args.commandIndex].id}`
-        ];
-
-        database.update('channel_command_join', {lastExec: chatbot.commands[args.channel][args.commandIndex].lastExec}, where, function() {
-            // if custom command id exists
-            if (typeof args.customCommandId !== 'undefined') {
-                where = [
-                    `channel_id = '${chatbot.channels[args.channel].id}'`,
-                    `command_id = ${args.customCommandId}`
-                ];
-
-                database.update('channel_command_join', {lastExec: chatbot.commands[args.channel][args.commandIndex].lastExec}, where);
-            }
-        });
-
-        if (chatbot.socket !== null) {
-            const call = {
-                args: {
-                    channel: args.channel,
-                    lastExec: chatbot.commands[args.channel][args.commandIndex].lastExec,
-                    commandIndex: args.commandIndex
-                },
-                method: 'updateCommandLastExec',
-                ref: 'commands',
-                env: 'browser'
-            };
-
-            chatbot.socket.write(JSON.stringify(call));
-        }
     },
     /**
      * Updates custom command in database
@@ -304,7 +269,7 @@ const command = {
                     where = ['command_id = ' + rows[0].id];
 
                     database.update('channel_command_join', set, where, function(updateCcj) {
-                        command.getCommands(chatbot, args);
+                        command.getList(chatbot, args);
                         if (args.say) {
                             chatbot.client.say('#' + args.channel, locales.t('custom-command-updated', [args.name.toLowerCase(), args.content]));
                         }
@@ -314,9 +279,51 @@ const command = {
         });
     },
     /**
+     * Updates command last execution
+     * 
+     * @param {type} chatbot
+     * @param {type} args
+     * @returns {undefined}
+     */
+    updateLastExec: function(chatbot, args) {
+        command.lists[args.channel][args.commandIndex].lastExec = moment().unix();
+
+        let where = [
+            `channel_id = '${chatbot.channels[args.channel].id}'`,
+            `command_id = ${command.lists[args.channel][args.commandIndex].id}`
+        ];
+
+        database.update('channel_command_join', {lastExec: command.lists[args.channel][args.commandIndex].lastExec}, where, function() {
+            // if custom command id exists
+            if (typeof args.customCommandId !== 'undefined') {
+                where = [
+                    `channel_id = '${chatbot.channels[args.channel].id}'`,
+                    `command_id = ${args.customCommandId}`
+                ];
+
+                database.update('channel_command_join', {lastExec: command.lists[args.channel][args.commandIndex].lastExec}, where);
+            }
+        });
+
+        if (chatbot.socket !== null) {
+            const call = {
+                args: {
+                    channel: args.channel,
+                    lastExec: command.lists[args.channel][args.commandIndex].lastExec,
+                    commandIndex: args.commandIndex
+                },
+                method: 'updateCommandLastExec',
+                ref: 'commands',
+                env: 'browser'
+            };
+
+            chatbot.socket.write(JSON.stringify(call));
+        }
+    },
+    /**
      * List of default commands
      */
-    commandList: {
+    defaultList: {
         /**
          * Sends information about chatbot to chat
          * 
@@ -332,8 +339,8 @@ const command = {
                 const bugs = require('../../../package.json')['bugs']['url'];
 
                 chatbot.client.say('#' + args.channel, locales.t('command-about', [version, formatDate, bugs]));
-                command.logCommand(args);
-                command.updateCommandLastExec(chatbot, args);
+                command.log(args);
+                command.updateLastExec(chatbot, args);
             }
         },
         /**
@@ -351,7 +358,7 @@ const command = {
                     name: matches[1],
                     say: true
                 });
-                chat.addBot(chatbot, args);
+                bot.add(chatbot, args);
             }
         },
         /**
@@ -385,9 +392,9 @@ const command = {
             if (/^!bots/i.test(args.message) 
                 && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
                 if (/^!bots public/i.test(args.message)) {
-                    chatbot.client.say('#' + args.channel, locales.t('bot-list', [chatbot.bots.length, chatbot.bots.join(', ')]));
+                    chatbot.client.say('#' + args.channel, locales.t('bot-list', [bot.list.length, bot.list.join(', ')]));
                 } else {
-                    console.log('* ' + locales.t('bot-list', [chatbot.bots.length, chatbot.bots.join(', ')]));
+                    console.log('* ' + locales.t('bot-list', [bot.list.length, bot.list.join(', ')]));
                 }
             }
         },
@@ -401,7 +408,7 @@ const command = {
         commands: function(chatbot, args) {
             if (/^!(commands|cc)/i.test(args.message)) {
                 let activeCommands = [];
-                let commands = chatbot.commands[args.channel];
+                let commands = command.lists[args.channel];
                 for (let i = 0; i < commands.length; i++) {
                     // if command is active and tranlation exists
                     if (commands[i].active && typeof command.translation[commands[i].name] !== 'undefined') {
@@ -414,8 +421,8 @@ const command = {
 
                 activeCommands.sort();
                 chatbot.client.say('#' + args.channel, locales.t('command-commands', [activeCommands.join(', ')]));
-                command.logCommand(args);
-                command.updateCommandLastExec(chatbot, args);
+                command.log(args);
+                command.updateLastExec(chatbot, args);
             }
         },
         /**
@@ -428,16 +435,16 @@ const command = {
         counter: function(chatbot, args) {
             if (/^\d\d?$/.test(args.message)) {
                 const number = parseInt(args.message);
-                chatbot.counters[args.channel].streak = (number - chatbot.counters[args.channel].streak === 1) ? number : 0;
+                counter.lists[args.channel].streak = (number - counter.lists[args.channel].streak === 1) ? number : 0;
 
                 //command.logCommand(args);
-                command.updateCommandLastExec(chatbot, args);
+                command.updateLastExec(chatbot, args);
 
                 if (chatbot.socket !== null) {
                     const call = {
                         args: {
                             channel: args.channel,
-                            counter: chatbot.counters[args.channel]
+                            counter: counter.lists[args.channel]
                         },
                         method: 'setCounter',
                         ref: 'counter',
@@ -483,7 +490,7 @@ const command = {
                     if (rows.length) {
                         argsClone['customCommandId'] = rows[0].id;
                         chatbot.client.say('#' + args.channel, rows[0].content);
-                        command.updateCommandLastExec(chatbot, argsClone);
+                        command.updateLastExec(chatbot, argsClone);
                     }
                 });
             }
@@ -531,8 +538,8 @@ const command = {
                     }, 120000);
 
                     args.message = args.message.replace('!d', '!dd');
-                    command.logCommand(args);
-                    command.updateCommandLastExec(chatbot, args);
+                    command.log(args);
+                    command.updateLastExec(chatbot, args);
                 }
             }
         },
@@ -578,8 +585,8 @@ const command = {
 
                         chatbot.client.say('#' + args.channel, locales.t('dice-duel-result', [winner, winnerResult, loser, loserResult]));
                         delete command.diceDuels[ddKeys[i]];
-                        command.logCommand(args);
-                        command.updateCommandLastExec(chatbot, args);
+                        command.log(args);
+                        command.updateLastExec(chatbot, args);
                         break;
                     }
                 }
@@ -593,28 +600,28 @@ const command = {
          * @returns {undefined}
          */
         playlistInfo: function(chatbot, args) {
-            if (/^!(info|(sende)?plan|programm|playlist|video)/i.test(args.message)) {
+            if (/^!(plan|program|playlist|video)/i.test(args.message)) {
                 let currentVideo = '';
                 let currentVideoDuration = 0;
                 let currentVideoEnd = 0;
                 let nextVideo = '';
 
-                for (let i = 0; i < chatbot.activePlaylists[args.channel].videos.length; i++) {
-                    if (chatbot.activePlaylists[args.channel].videos[i].skipped) {
+                for (let i = 0; i < playlist.activeLists[args.channel].videos.length; i++) {
+                    if (playlist.activeLists[args.channel].videos[i].skipped) {
                         continue;
                     }
 
-                    if (chatbot.activePlaylists[args.channel].videos[i].played) {
+                    if (playlist.activeLists[args.channel].videos[i].played) {
                         nextVideo = '';
-                        currentVideo = chatbot.activePlaylists[args.channel].videos[i].name;
-                        currentVideoDuration = chatbot.activePlaylists[args.channel].videos[i].duration;
-                        currentVideoEnd = moment((chatbot.currentVideoStart[args.channel] + chatbot.activePlaylists[args.channel].videos[i].duration) * 1000).format(locales.t('time-long-suffix'));
+                        currentVideo = playlist.activeLists[args.channel].videos[i].name;
+                        currentVideoDuration = playlist.activeLists[args.channel].videos[i].duration;
+                        currentVideoEnd = moment((video.currentStarts[args.channel] + playlist.activeLists[args.channel].videos[i].duration) * 1000).format(locales.t('time-long-suffix'));
 
                         let nextCount = 1;
-                        while (typeof chatbot.activePlaylists[args.channel].videos[i + nextCount] !== 'undefined') {
-                            if (!chatbot.activePlaylists[args.channel].videos[i + nextCount].skipped 
-                                    && currentVideo !== chatbot.activePlaylists[args.channel].videos[i + nextCount].name) {
-                                nextVideo = chatbot.activePlaylists[args.channel].videos[i + nextCount].name;
+                        while (typeof playlist.activeLists[args.channel].videos[i + nextCount] !== 'undefined') {
+                            if (!playlist.activeLists[args.channel].videos[i + nextCount].skipped 
+                                    && currentVideo !== playlist.activeLists[args.channel].videos[i + nextCount].name) {
+                                nextVideo = playlist.activeLists[args.channel].videos[i + nextCount].name;
                                 break;
                             }
                             nextCount++;
@@ -623,13 +630,13 @@ const command = {
                 }
 
                 if (currentVideo.length && nextVideo.length) {
-                    if (chatbot.currentVideoStart[args.channel]) {
+                    if (video.currentStarts[args.channel]) {
                         chatbot.client.say('#' + args.channel, locales.t('command-playlist-1-1', [args.userstate['display-name'], currentVideo, currentVideoEnd, nextVideo]));
                     } else {
                         chatbot.client.say('#' + args.channel, locales.t('command-playlist-1-2', [args.userstate['display-name'], currentVideo, nextVideo]));
                     }
-                } else if (currentVideo.length && (chatbot.currentVideoStart[args.channel] + currentVideoDuration) > moment().unix()) {
-                    if (chatbot.currentVideoStart[args.channel]) {
+                } else if (currentVideo.length && (video.currentStarts[args.channel] + currentVideoDuration) > moment().unix()) {
+                    if (video.currentStarts[args.channel]) {
                         chatbot.client.say('#' + args.channel, locales.t('command-playlist-2-1', [args.userstate['display-name'], currentVideo, currentVideoEnd]));
                     } else {
                         chatbot.client.say('#' + args.channel, locales.t('command-playlist-2-2', [args.userstate['display-name'], currentVideo]));
@@ -638,8 +645,8 @@ const command = {
                     chatbot.client.say('#' + args.channel, locales.t('command-playlist-3', [args.userstate['display-name']]));
                 }
 
-                command.logCommand(args);
-                command.updateCommandLastExec(chatbot, args);
+                command.log(args);
+                command.updateLastExec(chatbot, args);
             }
         },
         /**
@@ -650,16 +657,16 @@ const command = {
          * @returns {undefined}
          */
         poll: function(chatbot, args) {
-            if (typeof chatbot.activePolls[args.channel] !== 'undefined' && /^!vote ([0-99])$/i.test(args.message)) {
+            if (typeof poll.activeLists[args.channel] !== 'undefined' && /^!vote ([0-99])$/i.test(args.message)) {
                 args.choice = parseInt(args.message.toLowerCase().match(/^!vote ([0-99])$/i)[1]);
 
                 // if poll is active
-                if (moment().unix() >= chatbot.activePolls[args.channel].start
-                    && moment().unix() <= chatbot.activePolls[args.channel].end 
-                    || !chatbot.activePolls[args.channel].end) {
-                    poll.addUserChoice(chatbot, args);
+                if (moment().unix() >= poll.activeLists[args.channel].start
+                    && moment().unix() <= poll.activeLists[args.channel].end 
+                    || !poll.activeLists[args.channel].end) {
+                    userChoice.add(chatbot, args);
                 }
-                command.updateCommandLastExec(chatbot, args);
+                command.updateLastExec(chatbot, args);
             }
         },
         /**
@@ -670,15 +677,15 @@ const command = {
          * @returns {undefined}
          */
         raffle: function(chatbot, args) {
-            if (typeof chatbot.activeRaffles[args.channel] !== 'undefined' 
-                && chatbot.activeRaffles[args.channel].keyword === args.message) {
+            if (typeof raffle.activeLists[args.channel] !== 'undefined' 
+                && raffle.activeLists[args.channel].keyword === args.message) {
                 // if raffle is active
-                if (moment().unix() >= chatbot.activeRaffles[args.channel].start
-                    && moment().unix() <= chatbot.activeRaffles[args.channel].end 
-                    || !chatbot.activeRaffles[args.channel].end) {
-                    raffle.addAttendee(chatbot, args);
+                if (moment().unix() >= raffle.activeLists[args.channel].start
+                    && moment().unix() <= raffle.activeLists[args.channel].end 
+                    || !raffle.activeLists[args.channel].end) {
+                    attendee.add(chatbot, args);
                 }
-                command.updateCommandLastExec(chatbot, args);
+                command.updateLastExec(chatbot, args);
             }
         },
         /**
@@ -696,7 +703,7 @@ const command = {
                     name: matches[1],
                     say: true
                 });
-                chat.removeBot(chatbot, args);
+                bot.remove(chatbot, args);
             }
         },
         /**
@@ -747,8 +754,8 @@ const command = {
                         chatbot.client.say('#' + args.channel, locales.t('command-roll-dice-2', [args.userstate['display-name'], locales.t('rolled'), sides, results.join(' + '), result]));
                     }
 
-                    command.logCommand(args);
-                    command.updateCommandLastExec(chatbot, args);
+                    command.log(args);
+                    command.updateLastExec(chatbot, args);
                 }
             }
         },

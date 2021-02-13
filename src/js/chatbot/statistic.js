@@ -1,5 +1,6 @@
 const database = require('./database');
 const chat     = require('./chat');
+const emote    = require('./emote');
 const moment   = require('moment');
 const request  = require('request');
 
@@ -224,7 +225,7 @@ const statistic = {
                     const call = {
                         args: {
                             channel: args.channel,
-                            streamDates: streamDates
+                            list: streamDates
                         },
                         method: 'setStreamDates',
                         ref: 'statistic',
@@ -352,7 +353,7 @@ const statistic = {
         join += 'JOIN emote AS e ON cej.emote_uuid = e.uuid';
         let where = [
             'channel_id = $id',
-            `e.type IN (${args.select})`,
+            `e.type IN (${args.where})`,
             'cej.created_at >= strftime($format, $start)',
             'cej.created_at <= strftime($format, $end)'
         ];
@@ -373,14 +374,14 @@ const statistic = {
                 rows[i].image = '';
 
                 if (rows[i].type === 'bttv') {
-                    rows[i].image = chat.encodeBttvEmotes(rows[i].code, args);
+                    rows[i].image = emote.encodeBttv(rows[i].code, args);
                 } else if (rows[i].type === 'ffz') {
-                    rows[i].image = chat.encodeFfzEmotes(rows[i].code, args);
+                    rows[i].image = emote.encodeFfz(rows[i].code, args);
                 } else {
                     let id = rows[i].typeId;
                     let emotes = {};
                     emotes[id] = ['0-' + (rows[i].code.length - 1)];
-                    rows[i].image = chat.encodeTwitchEmotes(rows[i].code, {emotes: emotes, lazy: args.lazy});
+                    rows[i].image = emote.encodeTwitch(rows[i].code, {emotes: emotes, lazy: args.lazy});
                 }
             }
 

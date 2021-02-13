@@ -6,7 +6,7 @@ const {v4: uuidv4} = require('uuid');
 
 const viewerCount = {
     error: false,
-    addViewerCount: function(chatbot) {
+    add: function(chatbot) {
         let oauthToken = '';
         let query = '';
         let channels = Object.keys(chatbot.channels);

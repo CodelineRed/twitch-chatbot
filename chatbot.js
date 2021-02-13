@@ -3,9 +3,11 @@ const skateboard  = require('skateboard');
 const tmi         = require('tmi.js');
 
 const config      = require('./src/app/chatbot.json');
+const database    = require('./src/js/chatbot/database');
 const chatbot     = require('./src/js/chatbot/app');
 const chat        = require('./src/js/chatbot/chat');
-const database    = require('./src/js/chatbot/database');
+const command     = require('./src/js/chatbot/command');
+const emote       = require('./src/js/chatbot/emote');
 const locales     = require('./src/js/chatbot/locales');
 const user        = require('./src/js/chatbot/user');
 const viewerCount = require('./src/js/chatbot/viewer-count');
@@ -39,7 +41,7 @@ function onAnonGiftPaidUpgrade(channel, username, userstate) {
         userstate: userstate
     };
 
-    user.addUser(chatbot, args, function() {
+    user.add(chatbot, args, function() {
         chat.getNotification(chatbot, args);
     });
 }
@@ -94,7 +96,7 @@ function onCheer(channel, userstate, message) {
         userstate: userstate
     };
 
-    user.addUser(chatbot, args, function() {
+    user.add(chatbot, args, function() {
         chat.getNotification(chatbot, args);
     });
 }
@@ -148,7 +150,7 @@ function onGiftPaidUpgrade(channel, username, sender, userstate) {
         userstate: userstate
     };
 
-    user.addUser(chatbot, args, function() {
+    user.add(chatbot, args, function() {
         chat.getNotification(chatbot, args);
     });
 }
@@ -171,7 +173,7 @@ function onHosted(channel, username, viewers, autohost) {
                 }
             };
 
-            user.addUser(chatbot, args, function() {
+            user.add(chatbot, args, function() {
                 chat.getNotification(chatbot, args);
             });
         }
@@ -200,7 +202,7 @@ function onHosting(channel, target, viewers) {
                 }
             };
 
-            user.addUser(chatbot, args, function() {
+            user.add(chatbot, args, function() {
                 chat.getNotification(chatbot, args);
             });
         }
@@ -236,19 +238,19 @@ function onMessage(channel, userstate, message, self) {
         message: message.trim()
     };
 
-    user.addUser(chatbot, args, function() {
-        chat.getMessage(chatbot, args);
+    user.add(chatbot, args, function() {
+        chat.get(chatbot, args);
 
         // ignore messages from the bot
         if (self) {
             return;
         }
 
-        const commands = Object.keys(chatbot.commandList);
+        const commands = Object.keys(command.defaultList);
         for (let i = 0; i < commands.length; i++) {
             // if command is active for channel
-            if (typeof chatbot.commandList[commands[i]] === 'function') {
-                let channelCommands = typeof chatbot.commands[args.channel] === 'object' ? chatbot.commands[args.channel] : [];
+            if (typeof command.defaultList[commands[i]] === 'function') {
+                let channelCommands = typeof command.lists[args.channel] === 'object' ? command.lists[args.channel] : [];
                 let commandActive = false;
 
                 for (let j = 0; j < channelCommands.length; j++) {
@@ -262,7 +264,7 @@ function onMessage(channel, userstate, message, self) {
                 }
 
                 if (commandActive) {
-                    chatbot.commandList[commands[i]](chatbot, args);
+                    command.defaultList[commands[i]](chatbot, args);
                 }
             }
         }
@@ -312,7 +314,7 @@ function onRaided(channel, username, viewers){
                 }
             };
 
-            user.addUser(chatbot, args, function() {
+            user.add(chatbot, args, function() {
                 chat.getNotification(chatbot, args);
             });
         }
@@ -360,7 +362,7 @@ function onReSub(channel, username, months, message, userstate, methods) {
         userstate: userstate
     };
 
-    user.addUser(chatbot, args, function() {
+    user.add(chatbot, args, function() {
         chat.getNotification(chatbot, args);
     });
 }
@@ -375,8 +377,8 @@ function onReSub(channel, username, months, message, userstate, methods) {
 //  'subs-only': false,
 //  channel: '#insanitymeetshh' }
 function onRoomState(channel, state) {
-    chat.prepareBttvEmotes(state);
-    chat.prepareFfzEmotes(state);
+    emote.prepareBttv(state);
+    emote.prepareFfz(state);
     chatbot.warmUpDatabase(state);
 
     countLoadedChannels++;
@@ -386,11 +388,11 @@ function onRoomState(channel, state) {
 
         // wait for chatbot.warmUpDatabase(state)
         setTimeout(function() {
-            viewerCount.addViewerCount(chatbot);
+            viewerCount.add(chatbot);
         }, 2000); // 2 seconds
 
         setInterval(function() {
-            viewerCount.addViewerCount(chatbot);
+            viewerCount.add(chatbot);
         }, 60000 * 5); // 5 mins
     }
 }
@@ -441,7 +443,7 @@ function onSubGift(channel, username, streakMonths, recipient, methods, userstat
         userstate: userstate
     };
 
-    user.addUser(chatbot, args, function() {
+    user.add(chatbot, args, function() {
         chat.getNotification(chatbot, args);
     });
 }
@@ -486,7 +488,7 @@ function onSubMysteryGift(channel, username, numbOfSubs, methods, userstate) {
         userstate: userstate
     };
 
-    user.addUser(chatbot, args, function() {
+    user.add(chatbot, args, function() {
         chat.getNotification(chatbot, args);
     });
 }
@@ -531,7 +533,7 @@ function onSubscription(channel, username, method, message, userstate) {
         userstate: userstate
     };
 
-    user.addUser(chatbot, args, function() {
+    user.add(chatbot, args, function() {
         chat.getNotification(chatbot, args);
     });
 }
@@ -597,7 +599,7 @@ function onUnhost(channel, viewers) {
                 }
             };
 
-            user.addUser(chatbot, args, function() {
+            user.add(chatbot, args, function() {
                 chat.getNotification(chatbot, args);
             });
         }

@@ -199,7 +199,7 @@
                 }
             });
 
-            jQuery('#playlist-form, #remove-playlist, #switch-playlist').on('hidden.bs.modal', function() {
+            jQuery('#playlist-form, #remove-playlist, #swap-playlist').on('hidden.bs.modal', function() {
                 // reset
                 $this.playlist = {
                     id: 0,
@@ -643,12 +643,12 @@
                     this.merge.source = playlist;
                     this.playlistSourceSearch = this.getPlaylistLabel(playlist);
                 } else {
-                    // prozess: update, switch and remove
+                    // prozess: update, swap and remove
                     this.playlist.id = playlist.id;
                     this.playlist.name = playlist.name;
                     this.playlist.active = playlist.active;
                     this.playlistSearch = this.getPlaylistLabel(playlist);
-                    console.log(playlist.videos);
+                    //console.log(playlist.videos);
                 }
 
                 this.playlistSearchResults = [];
@@ -675,18 +675,18 @@
             },
             setActivePlaylist: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.activePlaylist = args.activePlaylist;
-                    this.video.playlistId = args.activePlaylist.id;
+                    this.activePlaylist = args.item;
+                    this.video.playlistId = args.item.id;
                     this.merge.target = {
-                        id: args.activePlaylist.id,
-                        name: args.activePlaylist.name
+                        id: args.item.id,
+                        name: args.item.name
                     };
                     this.initDataTable();
                 }
             },
             setPlaylist: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.playlist = args.playlist;
+                    this.playlist = args.item;
                     this.initDataTable();
                 }
             },
@@ -697,22 +697,15 @@
             },
             setPlaylists: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    if (this.playlists === null || this.playlists.length !== args.playlists.length) {
-                        this.playlists = args.playlists;
+                    if (this.playlists === null || this.playlists.length !== args.list.length) {
+                        this.playlists = args.list;
                         this.initDataTable();
                     }
                 }
             },
             setPlaylistSearchResults: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.playlistSearchResults = args.playlists;
-                }
-            },
-            setVideoMetaToForm: function(args) {
-                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.setVideoDurationToForm(args);
-                    this.video.name = this.video.name === '' ? args.name : this.video.name;
-                    this.video.subName = this.video.subName === '' ? args.subName : this.video.subName;
+                    this.playlistSearchResults = args.list;
                 }
             },
             setVideoDurationToForm: function(args) {
@@ -723,9 +716,16 @@
                     this.video.durationSec = durationObject.seconds();
                 }
             },
+            setVideoMetaToForm: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    this.setVideoDurationToForm(args);
+                    this.video.name = this.video.name !== args.name ? args.name : this.video.name;
+                    this.video.subName = this.video.subName !== args.subName ? args.subName : this.video.subName;
+                }
+            },
             setVideoSearchResults: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.videoSearchResults = args.videos;
+                    this.videoSearchResults = args.list;
                 }
             },
             showPlaylistForm: function() {
@@ -738,7 +738,7 @@
             showPlaylistTargetSearchResults: function() {
                 return this.playlistSearchResults.length && this.playlistTargetSearch.length && !/\(|\)/g.test(this.playlistTargetSearch);
             },
-            showVideoForm: function(video, index) {
+            showVideoForm: function(index) {
                 this.video = this.activePlaylist.videos[index];
                 this.videoIndex = index;
                 this.updateMode = true;
@@ -748,10 +748,10 @@
                 this.video.durationSec = durationObject.seconds();
                 jQuery('#video-form').modal('show');
             },
-            switchPlaylist: function(playlist) {
+            swapPlaylist: function(playlist) {
                 if (typeof socketWrite === 'function') {
                     const call = {
-                        method: 'switchPlaylist',
+                        method: 'swapPlaylist',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
                             playlist: typeof playlist === 'undefined' ? this.playlist : playlist
@@ -761,7 +761,7 @@
 
                     socketWrite(call);
                     if (typeof playlist === 'undefined') {
-                        jQuery('#switch-playlist').modal('hide');
+                        jQuery('#swap-playlist').modal('hide');
                     } else {
                         jQuery('#all-playlists').modal('hide');
                     }
@@ -874,7 +874,7 @@
                         <td class="text-center">
                             <span class="text-nowrap">
                                 <button type="button" class="btn btn-sm btn-primary btn-animation mr-2" data-animation-success="success" data-animation-error="error" data-toggle="tooltip" data-placement="top" :title="$t('save')" @click="updateVideo(videoItem, index, activePlaylist)"><font-awesome-icon :icon="['fas', 'save']" class="fa-fw" /></button>
-                                <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" :title="$t('update')" @click="showVideoForm(videoItem, index)"><font-awesome-icon :icon="['fas', 'edit']" class="fa-fw" /></button>
+                                <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" :title="$t('edit')" @click="showVideoForm(index)"><font-awesome-icon :icon="['fas', 'edit']" class="fa-fw" /></button>
                                 <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" :title="$t('remove-from-playlist')" @click="removeVideo(videoItem, index, activePlaylist)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                             </span>
                         </td>
@@ -899,7 +899,7 @@
                     <a href="#" class="dropdown-item bg-primary" onclick="javascript:return false;" @click="resetActivePlaylist()">{{ $t('reset-playlist') }}</a>
                     <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#remove-playlist">{{ $t('remove-playlist') }}</a>
                     <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#merge-playlists">{{ $t('merge-playlists') }}</a>
-                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#switch-playlist">{{ $t('switch-playlist') }}</a>
+                    <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#swap-playlist">{{ $t('swap-playlist') }}</a>
                     <a href="#" class="dropdown-item bg-primary" onclick="javascript:return false;" @click="showPlaylistForm()">{{ $t('update-playlist') }}</a>
                     <a href="#" class="dropdown-item bg-primary" data-toggle="modal" data-target="#playlist-form">{{ $t('add-playlist') }}</a>
                     <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
@@ -948,7 +948,7 @@
                                                 <td>{{ playlistItem.createdAt|formatDateTime($t('datetime')) }}</td>
                                                 <td>
                                                     <span class="text-nowrap">
-                                                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" :title="$t('switch-to-playlist')" @click="switchPlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" /></button>
+                                                        <button type="button" class="btn btn-sm btn-primary mr-2" data-toggle="tooltip" data-placement="top" :title="$t('swap-to-playlist')" @click="swapPlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'sync']" class="fa-fw" /></button>
                                                         <button type="button" class="btn btn-sm btn-danger" data-toggle="tooltip" data-placement="top" :title="$t('remove-playlist')" :disabled="playlistItem.name.toLowerCase() === 'general'" @click="removePlaylist(playlistItem)"><font-awesome-icon :icon="['fas', 'trash-alt']" class="fa-fw" /></button>
                                                     </span>
                                                 </td>
@@ -1205,7 +1205,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6 pt-3 pt-md-5">
+                            <div class="col-12 col-md-6 pt-3 pt-md-4 pt-xl-5">
                                 <div class="custom-control custom-switch float-left mr-3">
                                     <input id="video-form-played" v-model.number="video.played" type="checkbox" value="1" class="custom-control-input">
                                     <label class="custom-control-label" for="video-form-played">{{ $t('played') }}</label>
@@ -1228,7 +1228,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
                         <button v-if="!updateMode" type="button" class="btn btn-primary" @click="addVideo()">{{ $t('add') }}</button>
-                        <button v-if="updateMode" type="button" class="btn btn-primary" @click="updateVideo()">{{ $t('update') }}</button>
+                        <button v-if="updateMode" type="button" class="btn btn-primary" @click="updateVideo()">{{ $t('edit') }}</button>
                     </div>
                 </div>
             </div>
@@ -1366,12 +1366,12 @@
             </div>
         </div>
 
-        <div id="switch-playlist" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="switch-playlist-modal-title" aria-hidden="true">
+        <div id="swap-playlist" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="swap-playlist-modal-title" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 id="switch-playlist-modal-title" class="modal-title">
-                            {{ $t('switch-playlist') }}
+                        <h5 id="swap-playlist-modal-title" class="modal-title">
+                            {{ $t('swap-playlist') }}
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -1380,19 +1380,19 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-12 form-search">
-                                <label for="switch-playlist-search" class="col-form-label">
+                                <label for="swap-playlist-search" class="col-form-label">
                                     {{ $t('search-playlist') }}:&nbsp;
                                     <span class="d-inline-block" data-toggle="tooltip" data-placement="top" :title="$t('search-tooltip')">
                                         <font-awesome-icon :icon="['far', 'question-circle']" class="fa-fw" />
                                     </span>
                                 </label>
-                                <input id="switch-playlist-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': video.playlistId === 0}" autocomplete="off" :placeholder="$t('name')">
+                                <input id="swap-playlist-search" v-model="playlistSearch" type="text" class="form-control" :class="{'is-invalid': video.playlistId === 0}" autocomplete="off" :placeholder="$t('name')">
                                 <div v-if="showLoader.playlist" class="fa-icon">
                                     <font-awesome-icon :icon="['fas', 'sync']" class="fa-fw fa-spin" />
                                 </div>
                                 <div class="position-relative">
                                     <div v-if="playlistSearchResults.length" class="list-group">
-                                        <button v-for="playlistItem in playlistSearchResults" :key="playlistItem.id" type="button" class="list-group-item list-group-item-action" @click="selectPlaylist(playlistItem, 'switch')">{{ getPlaylistLabel(playlistItem) }}</button>
+                                        <button v-for="playlistItem in playlistSearchResults" :key="playlistItem.id" type="button" class="list-group-item list-group-item-action" @click="selectPlaylist(playlistItem, 'swap')">{{ getPlaylistLabel(playlistItem) }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -1400,7 +1400,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
-                        <button type="button" class="btn btn-primary" @click="switchPlaylist()">{{ $t('switch') }}</button>
+                        <button type="button" class="btn btn-primary" @click="swapPlaylist()">{{ $t('swap') }}</button>
                     </div>
                 </div>
             </div>

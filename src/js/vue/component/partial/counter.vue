@@ -47,7 +47,7 @@
             },
             setCounter: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.counter = args.counter;
+                    this.counter = args.item;
                 }
             },
             updateCounter: function() {

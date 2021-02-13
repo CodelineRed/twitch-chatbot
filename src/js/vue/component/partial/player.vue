@@ -38,19 +38,6 @@
             this.getVideo();
         },
         methods: {
-            setVideo: function(args) {
-                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    const $this = this;
-                    $this.video = args.video;
-
-                    if (parseInt(this.video.duration) > 0) {
-                        setTimeout(function() {
-                            $this.video.player = 'empty';
-                            $this.getVideo();
-                        }, parseInt($this.video.duration) * 1000);
-                    }
-                }
-            },
             getVideo: function() {
                 if (typeof socketWrite === 'function') {
                     const call = {
@@ -62,6 +49,19 @@
                     };
 
                     socketWrite(call);
+                }
+            },
+            setVideo: function(args) {
+                if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    const $this = this;
+                    $this.video = args.item;
+
+                    if (parseInt(this.video.duration) > 0) {
+                        setTimeout(function() {
+                            $this.video.player = 'empty';
+                            $this.getVideo();
+                        }, parseInt($this.video.duration) * 1000);
+                    }
                 }
             }
         }

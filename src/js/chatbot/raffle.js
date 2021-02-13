@@ -1,94 +1,12 @@
 const database     = require('./database');
+const attendee     = require('./attendee');
 const locales      = require('./locales');
 const moment       = require('moment');
 const request      = require('request');
 const {v4: uuidv4} = require('uuid');
 
 const raffle = {
-    /**
-     * Adds attendee to raffle
-     * 
-     * @param {object} chatbot
-     * @param {object} args
-     * @returns {undefined}
-     */
-    addAttendee: function(chatbot, args) {
-        let select = 'DISTINCT u.name';
-        let from = 'attendee AS a';
-        let join = 'JOIN user AS u ON a.user_id = u.id';
-        let where = ['a.raffle_id = ?', 'a.user_id = ?'];
-        let prepare = [
-            chatbot.activeRaffles[args.channel].id,
-            args.userstate['user-id']
-        ];
-
-        database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
-            // If the user has not yet attended the raffle
-            if (!rows.length) {
-                let badges = args.userstate.badges === null ? {} : args.userstate.badges;
-                let multiplicator = 0;
-                let time = moment().unix();
-                let values = [];
-                let value = {
-                    raffleId: chatbot.activeRaffles[args.channel].id,
-                    userId: args.userstate['user-id'],
-                    updatedAt: time,
-                    createdAt: time
-                };
-
-                var options = {
-                    url: `https://api.twitch.tv/kraken/users/${args.userstate['user-id']}/follows/channels/${args.userstate['room-id']}`,
-                    method: 'GET',
-                    json: true,
-                    headers: {
-                        'Client-ID': chatbot.config.clientIdToken,
-                        'Accept': 'application/vnd.twitchtv.v5+json'
-                    }
-                };
-
-                // check user is follower from channel
-                request(options, (err, res, body) => {
-                    if (err) {
-                        return console.log(err);
-                    }
-
-                    if (typeof body.error === 'undefined') {
-                        badges.follower = 'yes';
-                    }
-
-                    if (typeof badges.partner === 'string' && chatbot.activeRaffles[args.channel].multiplicators.partner >= 0) {
-                        multiplicator = chatbot.activeRaffles[args.channel].multiplicators.partner;
-                    } else if (typeof badges.moderator === 'string' && chatbot.activeRaffles[args.channel].multiplicators.moderator >= 0) {
-                        multiplicator = chatbot.activeRaffles[args.channel].multiplicators.moderator;
-                    } else if (typeof badges.vip === 'string' && chatbot.activeRaffles[args.channel].multiplicators.vip >= 0) {
-                        multiplicator = chatbot.activeRaffles[args.channel].multiplicators.vip;
-                    } else if (typeof badges.subscriber === 'string' && chatbot.activeRaffles[args.channel].multiplicators.subscriber >= 0) {
-                        multiplicator = chatbot.activeRaffles[args.channel].multiplicators.subscriber;
-                    } else if (typeof badges.turbo === 'string' && chatbot.activeRaffles[args.channel].multiplicators.turbo >= 0) {
-                        multiplicator = chatbot.activeRaffles[args.channel].multiplicators.turbo;
-                    } else if (typeof badges.premium === 'string' && chatbot.activeRaffles[args.channel].multiplicators.prime >= 0) {
-                        multiplicator = chatbot.activeRaffles[args.channel].multiplicators.prime;
-                    } else if (typeof badges.follower === 'string' && chatbot.activeRaffles[args.channel].multiplicators.follower >= 0) {
-                        multiplicator = chatbot.activeRaffles[args.channel].multiplicators.follower;
-                    } else if (chatbot.activeRaffles[args.channel].multiplicators.guest >= 0) {
-                        multiplicator = chatbot.activeRaffles[args.channel].multiplicators.guest;
-                    }
-
-                    // generate entries by value of multiplicator
-                    for (let i = 0; i < multiplicator; i++) {
-                        value.uuid = uuidv4();
-                        values.push(Object.assign({}, value));
-                    }
-
-                    if (values.length) {
-                        database.insert('attendee', values, function(insert) {
-                            raffle.getActiveRaffle(chatbot, args);
-                        });
-                    }
-                });
-            }
-        });
-    },
+    activeLists: {},
     /**
      * Adds an active raffle
      * 
@@ -96,7 +14,7 @@ const raffle = {
      * @param {object} args
      * @returns {undefined}
      */
-    addRaffle: function(chatbot, args) {
+    add: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let time = moment().unix();
             let values = {
@@ -121,7 +39,7 @@ const raffle = {
             };
 
             database.insert('raffle', [values], function(insert) {
-                raffle.getActiveRaffle(chatbot, args);
+                raffle.getActive(chatbot, args);
                 console.log(locales.t('raffle-added', [args.raffle.name]));
             });
         }
@@ -133,13 +51,13 @@ const raffle = {
      * @param {object} args
      * @returns {undefined}
      */
-    announceRaffleToChat: function(chatbot, args) {
-        if (typeof chatbot.activeRaffles[args.channel].id !== 'undefined') {
+    announceToChat: function(chatbot, args) {
+        if (typeof raffle.activeLists[args.channel].id !== 'undefined') {
             let keyword = '!raffle';
-            let name = chatbot.activeRaffles[args.channel].name;
+            let name = raffle.activeLists[args.channel].name;
 
-            if (chatbot.activeRaffles[args.channel].keyword.length) {
-                keyword = chatbot.activeRaffles[args.channel].keyword;
+            if (raffle.activeLists[args.channel].keyword.length) {
+                keyword = raffle.activeLists[args.channel].keyword;
             }
 
             chatbot.client.say('#' + args.channel, locales.t('raffle-announcement', [name, keyword]));
@@ -152,19 +70,19 @@ const raffle = {
      * @param {object} args
      * @returns {undefined}
      */
-    closeRaffle: function(chatbot, args) {
-        if (typeof chatbot.activeRaffles[args.channel].id !== 'undefined') {
+    close: function(chatbot, args) {
+        if (typeof raffle.activeLists[args.channel].id !== 'undefined') {
             let from = 'raffle';
             let set = {
                 active: false,
                 end: moment().unix(),
                 updatedAt: moment().unix()
             };
-            let where = [`id = ${chatbot.activeRaffles[args.channel].id}`];
+            let where = [`id = ${raffle.activeLists[args.channel].id}`];
 
             database.update(from, set, where, function(update) {
-                raffle.getActiveRaffle(chatbot, args);
-                raffle.getRaffles(chatbot, args);
+                raffle.getActive(chatbot, args);
+                raffle.getList(chatbot, args);
             });
         }
     },
@@ -175,7 +93,7 @@ const raffle = {
      * @param {object} args
      * @returns {undefined}
      */
-    getActiveRaffle: function(chatbot, args) {
+    getActive: function(chatbot, args) {
         let select = 'r.id, r.name, r.keyword, r.active, r.start, r.end, r.updated_at, r.created_at, ';
         select += 'r.multiplicator_partner, r.multiplicator_moderator, r.multiplicator_vip, r.multiplicator_subscriber, ';
         select += 'r.multiplicator_turbo, r.multiplicator_prime, r.multiplicator_follower, r.multiplicator_guest, ';
@@ -191,11 +109,11 @@ const raffle = {
         let prepare = [chatbot.channels[args.channel].id];
 
         database.find(select, from, join, where, '', order, 0, prepare, function(rows) {
-            chatbot.activeRaffles[args.channel] = {};
+            raffle.activeLists[args.channel] = {};
 
             // if active raffle found
             if (rows.length) {
-                chatbot.activeRaffles[args.channel] = {
+                raffle.activeLists[args.channel] = {
                     id: rows[0].id,
                     name: rows[0].name,
                     keyword: rows[0].keyword,
@@ -233,7 +151,7 @@ const raffle = {
                 let call = {
                     args: {
                         channel: args.channel,
-                        raffle: chatbot.activeRaffles[args.channel]
+                        raffle: raffle.activeLists[args.channel]
                     },
                     method: 'setActiveRaffle',
                     ref: 'raffle',
@@ -258,7 +176,7 @@ const raffle = {
      * @param {type} args
      * @returns {undefined}
      */
-    getRaffles: function(chatbot, args) {
+    getList: function(chatbot, args) {
         let select = 'r.id, r.name, r.keyword, r.active, r.start, r.end, r.updated_at, r.created_at, ';
         select += 'r.multiplicator_partner, r.multiplicator_moderator, r.multiplicator_vip, r.multiplicator_subscriber, ';
         select += 'r.multiplicator_turbo, r.multiplicator_prime, r.multiplicator_follower, r.multiplicator_guest, ';
@@ -337,7 +255,7 @@ const raffle = {
      * @param {object} args
      * @returns {undefined}
      */
-    getRaffleWinner: function(chatbot, args) {
+    getWinner: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let winner = {
                 id: 0,
@@ -353,7 +271,7 @@ const raffle = {
                 let from = 'attendee AS a';
                 let join = 'JOIN user AS u ON a.user_id = u.id';
                 let where = ['raffle_id = ?'];
-                let prepare = [chatbot.activeRaffles[args.channel].id];
+                let prepare = [raffle.activeLists[args.channel].id];
 
                 database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
                     for (let i = 0; i < rows.length; i++) {
@@ -378,7 +296,7 @@ const raffle = {
                         winner: 0,
                         updatedAt: moment().unix()
                     };
-                    where = [`raffle_id = ${chatbot.activeRaffles[args.channel].id}`];
+                    where = [`raffle_id = ${raffle.activeLists[args.channel].id}`];
 
                     database.update(from, set, where, function(updateAll) {
                         set = {
@@ -388,11 +306,11 @@ const raffle = {
                         };
                         where = [
                             `'${winner.name}' IN (SELECT name FROM user WHERE attendee.user_id = user.id)`,
-                            `raffle_id = ${chatbot.activeRaffles[args.channel].id}`
+                            `raffle_id = ${raffle.activeLists[args.channel].id}`
                         ];
 
                         database.update(from, set, where, function(updateWinner) {
-                            raffle.getRaffles(chatbot, args);
+                            raffle.getList(chatbot, args);
                         });
                     });
 
@@ -438,11 +356,11 @@ const raffle = {
      * @param {object} args
      * @returns {undefined}
      */
-    raffleResultToChat: function(chatbot, args) {
-        if (typeof chatbot.activeRaffles[args.channel].id !== 'undefined') {
-            let name = chatbot.activeRaffles[args.channel].name;
-            let attendees = chatbot.activeRaffles[args.channel].attendeeCount;
-            let entries = chatbot.activeRaffles[args.channel].entries;
+    resultToChat: function(chatbot, args) {
+        if (typeof raffle.activeLists[args.channel].id !== 'undefined') {
+            let name = raffle.activeLists[args.channel].name;
+            let attendees = raffle.activeLists[args.channel].attendeeCount;
+            let entries = raffle.activeLists[args.channel].entries;
 
             let select = 'u.name';
             let from = 'attendee AS a';
@@ -451,7 +369,7 @@ const raffle = {
                 'raffle_id = ?',
                 'winner = 1'
             ];
-            let prepare = [chatbot.activeRaffles[args.channel].id];
+            let prepare = [raffle.activeLists[args.channel].id];
 
             database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
                 if (rows.length) {
@@ -469,11 +387,11 @@ const raffle = {
      * @param {object} args
      * @returns {undefined}
      */
-    removeRaffle: function(chatbot, args) {
+    remove: function(chatbot, args) {
         if (args.raffle.active === false) {
             database.remove('raffle', ['id = ?'], [args.raffle.id], function(remove) {
                 database.remove('attendee', ['raffle_id = ?'], [args.raffle.id]);
-                raffle.getRaffles(chatbot, args);
+                raffle.getList(chatbot, args);
                 console.log(locales.t('raffle-removed', [args.raffle.name]));
             });
         }
@@ -485,17 +403,17 @@ const raffle = {
      * @param {object} args
      * @returns {undefined}
      */
-    startRaffle: function(chatbot, args) {
-        if (typeof chatbot.activeRaffles[args.channel].id !== 'undefined') {
+    start: function(chatbot, args) {
+        if (typeof raffle.activeLists[args.channel].id !== 'undefined') {
             let from = 'raffle';
             let set = {
                 start: moment().unix(),
                 updatedAt: moment().unix()
             };
-            let where = [`id = ${chatbot.activeRaffles[args.channel].id}`];
+            let where = [`id = ${raffle.activeLists[args.channel].id}`];
 
             database.update(from, set, where, function(update) {
-                raffle.getActiveRaffle(chatbot, args);
+                raffle.getActive(chatbot, args);
             });
         }
     }
