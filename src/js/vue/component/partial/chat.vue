@@ -133,7 +133,7 @@
             },
             setMessage: function(args) {
                 if (!this.isPause && this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.messages.push(args.message);
+                    this.messages.push(args.item);
 
                     // limit of messages
                     if (this.messages.length >= 100 && !this.isMessagesHover) {
@@ -143,7 +143,7 @@
             },
             setMessages: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.messages = args.messages;
+                    this.messages = args.list;
                 }
             }
         }

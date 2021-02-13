@@ -1,149 +1,16 @@
-const config      = require('../../app/chatbot.json');
-const database    = require('./database');
-const emote       = require('./emote');
-const locales     = require('./locales');
-const linkify     = require('linkifyjs');
-const linkifyHtml = require('linkifyjs/html');
-const moment      = require('moment');
-const request     = require('request');
+const config       = require('../../app/chatbot.json');
+const database     = require('./database');
+const bot          = require('./bot');
+const emote        = require('./emote');
+const locales      = require('./locales');
+const linkify      = require('linkifyjs');
+const linkifyHtml  = require('linkifyjs/html');
+const moment       = require('moment');
+const request      = require('request');
 const {v4: uuidv4, validate: uuidValid} = require('uuid');
 
 const chat = {
-    bttvEmotes: {},
-    ffzEmotes: {},
-    /**
-     * Adds bot to database
-     * 
-     * @param {object} chatbot
-     * @param {object} args
-     * @returns {undefined}
-     */
-    addBot: function(chatbot, args) {
-        let select = 'id';
-        let from = 'bot';
-        let where = ['name = ?'];
-        let prepare = [args.name.toLowerCase()];
-        let time = moment().unix();
-        let value = {
-            name: args.name.toLowerCase(),
-            updatedAt: time,
-            createdAt: time
-        };
-
-        database.find(select, from, '', where, '', '', 0, prepare, function(rows) {
-            // if bot not exists for channel
-            if (!rows.length) {
-                database.insert('bot', [value], function(insert) {
-                    chatbot.bots.push(value.name);
-                    if (args.say) {
-                        chatbot.client.say('#' + args.channel, locales.t('bot-added', [value.name]));
-                    }
-                });
-            }
-        });
-    },
-    /**
-     * Returns message with BTTV emote images
-     * 
-     * @param {string} message
-     * @param {object} args
-     * @returns {string}
-     */
-    encodeBttvEmotes: function(message, args) {
-        return chat.encodeThirdPartyEmote(message, args, 'bttv');
-    },
-    /**
-     * Returns message with FFZ emote images
-     * 
-     * @param {string} message
-     * @param {object} args
-     * @returns {string}
-     */
-    encodeFfzEmotes: function(message, args) {
-        return chat.encodeThirdPartyEmote(message, args, 'ffz');
-    },
-    /**
-     * Returns message with third party emote images
-     * 
-     * @param {string} message
-     * @param {object} args
-     * @returns {string}
-     */
-    encodeThirdPartyEmote: function(message, args, type) {
-        let emoteCodes = Object.keys(chat[type + 'Emotes'][args.channel]);
-        for (let i = 0; i < emoteCodes.length; i++) {
-            let regexEmote = emoteCodes[i].replace(/(\(|\))/g, '\\$1');
-            let regex = new RegExp('\\b' + regexEmote + '\\b', 'g');
-            
-            // if special chars in emote
-            if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(regexEmote)) { // eslint-disable-line no-useless-escape
-                regex = new RegExp(regexEmote, 'g');
-            }
-
-            if (regex.test(message)) {
-                if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
-                    for (let j = 0; j < (message.match(regex) || []).length; j++) {
-                        let emoteArgs = {
-                            uuid: args.uuid,
-                            code: emoteCodes[i],
-                            type: type
-                        };
-
-                        emote.addEmote(emoteArgs);
-                    }
-                }
-
-                message = message.replace(regex, chat.generateEmoteImage(chat[type + 'Emotes'][args.channel][emoteCodes[i]], emoteCodes[i], args.lazy));
-            }
-        }
-        return message;
-    },
-    /**
-     * Returns message with Twitch emote images
-     * 
-     * @param {string} message
-     * @param {object} args
-     * @returns {string}
-     */
-    encodeTwitchEmotes: function(message, args) {
-        let splitText = message.split('');
-
-        for (let i in args.emotes ){
-            if (Object.prototype.hasOwnProperty.call(args.emotes, i)) {
-                let emoteCodes = args.emotes[i];
-
-                for (let j in emoteCodes) {
-                    if (Object.prototype.hasOwnProperty.call(emoteCodes, j)) {
-                        let emoteCode = emoteCodes[j];
-
-                        if (typeof emoteCode === 'string') {
-                            emoteCode = emoteCode.split('-');
-                            emoteCode = [parseInt(emoteCode[0]), parseInt(emoteCode[1])];
-                            let length =  emoteCode[1] - emoteCode[0];
-                            let empty = Array.apply(null, new Array(length + 1)).map(function() {
-                                return '';
-                            });
-                            let ttvEmote = message.slice(emoteCode[0], emoteCode[1] + 1);
-                            splitText = splitText.slice(0, emoteCode[0]).concat(empty).concat(splitText.slice(emoteCode[1] + 1, splitText.length));
-                            splitText.splice(emoteCode[0], 1, chat.generateEmoteImage('http://static-cdn.jtvnw.net/emoticons/v1/' + i + '/1.0', ttvEmote, args.lazy));
-
-                            if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
-                                let emoteArgs = {
-                                    uuid: args.uuid,
-                                    code: ttvEmote,
-                                    typeId: i,
-                                    type: 'ttv'
-                                };
-
-                                emote.addEmote(emoteArgs);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return splitText.join('');
-    },
+    lists: {},
     /**
      * Formats badges to fontawesome icon
      * 
@@ -187,7 +54,7 @@ const chat = {
             twitchconUSA2020: typeof args.badges.twitchconNA2020 === 'string' ? {style: 'fas', icon: 'ticket-alt', transform: null, title: 'TwitchCon USA 2019', cssClass: 'tc-usa-2019'} : undefined,
             twitchconTGC2020: typeof args.badges.glitchcon2020 === 'string' ? {style: 'fas', icon: 'dragon', transform: null, title: 'GlitchCon 2020', cssClass: 'tgc-2020'} : undefined,
             partner: typeof args.badges.partner === 'string' ? {style: 'fas', icon: 'check-circle', transform: null, title: 'Partner', cssClass: null} : undefined,
-            bot: chatbot.bots.indexOf(args.user.toLowerCase()) > -1 ? {style: 'fas', icon: 'robot', transform: null, title: 'Bot', cssClass: null} : undefined
+            bot: bot.list.indexOf(args.user.toLowerCase()) > -1 ? {style: 'fas', icon: 'robot', transform: null, title: 'Bot', cssClass: null} : undefined
         };
 
         return badges;
@@ -198,43 +65,16 @@ const chat = {
      * @param {object} args
      * @returns {string}
      */
-    formatMessage: function(args) {
+    format: function(args) {
         let message = args.message;
-        message = chat.encodeTwitchEmotes(message, args);
-        message = chat.encodeBttvEmotes(message, args);
-        message = chat.encodeFfzEmotes(message, args);
+        message = emote.encodeTwitch(message, args);
+        message = emote.encodeBttv(message, args);
+        message = emote.encodeFfz(message, args);
         message = linkifyHtml(message, {
             defaultProtocol: 'https'
         });
 
         return message;
-    },
-    /**
-     * Returns HTML emote image tag
-     * 
-     * @param {string} url
-     * @param {string} title
-     * @param {boolean} lazy optional (default: true)
-     * @returns {string}
-     */
-    generateEmoteImage: function(url, title, lazy) {
-        let lazyClass = typeof lazy === 'boolean' && lazy ? ' lazy' : '';
-        let image = '';
-        
-        if (typeof config.performance === 'number' && config.performance === 0) {
-            if (/betterttv/.test(url)) {
-                image += ' ';
-                url = 'img/bttv-placeholder-emote.png';
-            } else if (/frankerfacez/.test(url)) {
-                image += ' ';
-                url = 'img/ffz-placeholder-emote.png';
-            } else if (/\.gif$/.test(url)) {
-                url = 'img/placeholder-emote.png';
-            }
-        }
-
-        image += '<img class="emote' + lazyClass + '" src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
-        return image;
     },
     /**
      * Sends formated message to frontend
@@ -243,8 +83,8 @@ const chat = {
      * @param {string} args
      * @returns {undefined}
      */
-    getMessage: function(chatbot, args) {
-        chat.prepareMessages(chatbot, args, true);
+    get: function(chatbot, args) {
+        chat.prepareLists(chatbot, args, true);
 
         let formatBadges = {
             user: args.userstate['display-name'],
@@ -252,7 +92,7 @@ const chat = {
             badgeInfo: args.userstate['badge-info']
         };
 
-        let formatMessage = {
+        let format = {
             uuid: typeof args.userstate.id === 'undefined' ? uuidv4() : args.userstate.id,
             channel: args.channel,
             emotes: args.userstate.emotes,
@@ -261,14 +101,14 @@ const chat = {
         };
 
         let values = {
-            uuid: formatMessage.uuid,
+            uuid: format.uuid,
             badges: chat.formatBadges(chatbot, formatBadges),
             badgeInfo: formatBadges.badgeInfo === null || typeof formatBadges.badgeInfo === 'undefined' ? '' : formatBadges.badgeInfo,
             roomId: typeof args.userstate['room-id'] === 'undefined' ? '' : args.userstate['room-id'],
             color: args.userstate.color === null || typeof args.userstate.color === 'undefined' ? '' : args.userstate.color,
             emotes: args.userstate.emotes === null || typeof args.userstate.emotes === 'undefined' ? '' : args.userstate.emotes,
             flags: args.userstate.flags === null || typeof args.userstate.flags === 'undefined' ? '' : args.userstate.flags,
-            message: chat.formatMessage(formatMessage),
+            message: chat.format(format),
             type: args.userstate['message-type'],
             purge: {showMessage: false, hasPurge: false},
             user: args.userstate['display-name'],
@@ -280,7 +120,7 @@ const chat = {
             const call = {
                 args: {
                     channel: args.channel,
-                    message: Object.assign({}, values)
+                    item: Object.assign({}, values)
                 },
                 method: 'setMessage',
                 ref: 'chat',
@@ -293,7 +133,7 @@ const chat = {
             }
         }
 
-        chatbot.messages[args.channel].push(values);
+        chat.lists[args.channel].push(values);
         if (typeof chatbot.channels[args.channel] !== 'undefined') {
             values.badges = args.userstate.badges === null ? '' : JSON.stringify(args.userstate.badges);
             values.badgeInfo = Object.keys(values.badgeInfo).length ? JSON.stringify(values.badgeInfo) : '';
@@ -320,8 +160,8 @@ const chat = {
      * @param {object} args
      * @returns {undefined}
      */
-    getMessages: function(chatbot, args) {
-        chat.prepareMessages(chatbot, args, false);
+    getList: function(chatbot, args) {
+        chat.prepareLists(chatbot, args, false);
 
         let subSelect = 'SELECT ch.uuid, ch.channel_id, ch.emotes, ch.flags, ';
         subSelect += 'ch.message, ch.notification, ch.type, ch.purge, ';
@@ -340,7 +180,7 @@ const chat = {
 
         // get the latest 100 messages
         database.find(select, from, '', [], '', order, 0, [args.channel], function(rows) {
-            chatbot.messages[args.channel] = [];
+            chat.lists[args.channel] = [];
 
             rows.forEach(function(row) {
                 let formatBadges = {
@@ -349,27 +189,27 @@ const chat = {
                     badgeInfo: row.badge_info.length ? JSON.parse(row.badge_info) : {}
                 };
 
-                let formatMessage = {
+                let format = {
                     channel: args.channel,
                     emotes: row.emotes.length ? JSON.parse(row.emotes) : {},
                     lazy: true,
                     message: row.message
                 };
 
-                let message = chat.formatMessage(formatMessage);
+                let message = chat.format(format);
 
                 if (row.notification.length) {
-                    message = row.notification + (row.message ? ' (' + chat.formatMessage(formatMessage) + ')' : '');
+                    message = row.notification + (row.message ? ' (' + chat.format(format) + ')' : '');
                     row.user_name = ''; // eslint-disable-line camelcase
                 }
 
-                chatbot.messages[args.channel].push({
+                chat.lists[args.channel].push({
                     uuid: row.uuid,
                     channelId: row.channel_id,
                     badges: row.type === 'notification' ? '' : chat.formatBadges(chatbot, formatBadges),
                     badgeInfo: row.type === 'notification' ? '' : formatBadges.badge_info,
                     color: row.color,
-                    emotes: formatMessage.emotes,
+                    emotes: format.emotes,
                     flags: row.flags,
                     message: message,
                     type: row.type,
@@ -384,7 +224,7 @@ const chat = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        messages: chatbot.messages[args.channel]
+                        list: chat.lists[args.channel]
                     },
                     method: 'setMessages',
                     ref: 'chat',
@@ -407,9 +247,9 @@ const chat = {
      * @returns {undefined}
      */
     getNotification: function(chatbot, args) {
-        chat.prepareMessages(chatbot, args, true);
+        chat.prepareLists(chatbot, args, true);
 
-        let formatMessage = {
+        let format = {
             channel: args.channel,
             emotes: {},
             lazy: true,
@@ -424,7 +264,7 @@ const chat = {
             color: '',
             emotes: '',
             flags: '',
-            message: args.notification + (args.message ? ' (' + chat.formatMessage(formatMessage) + ')' : ''),
+            message: args.notification + (args.message ? ' (' + chat.format(format) + ')' : ''),
             type: 'notification',
             purge: {showMessage: false, hasPurge: false},
             user: '[' + args.userstate['message-type'].charAt(0).toUpperCase() + args.userstate['message-type'].slice(1) + ']',
@@ -450,7 +290,7 @@ const chat = {
             }
         }
 
-        chatbot.messages[args.channel].push(values);
+        chat.lists[args.channel].push(values);
         if (typeof chatbot.channels[args.channel] !== 'undefined') {
             values.channelId = chatbot.channels[args.channel].id;
             values.message = typeof args.message === 'string' ? args.message : '';
@@ -474,7 +314,7 @@ const chat = {
      * @returns {undefined}
      */
     getPurge: function(chatbot, args) {
-        chat.prepareMessages(chatbot, args, false);
+        chat.prepareLists(chatbot, args, false);
 
         // if message deleted
         if (typeof args.userstate['target-msg-id'] === 'string') {
@@ -485,7 +325,7 @@ const chat = {
             let where = [`uuid = '${args.userstate['target-msg-id']}'`];
 
             database.update('chat', set, where, function(update) {
-                chat.getMessages(chatbot, args);
+                chat.getList(chatbot, args);
             });
         }
 
@@ -516,145 +356,12 @@ const chat = {
 
                         // add showMessage = true to latest message
                         database.update(from, set, where, function(updateSingle) {
-                            chat.getMessages(chatbot, args);
+                            chat.getList(chatbot, args);
                         });
                     } else {
-                        chat.getMessages(chatbot, args);
+                        chat.getList(chatbot, args);
                     }
                 });
-            });
-        }
-    },
-    /**
-     * Loads BTTV emotes over API to database und bttvEmotes array
-     * 
-     * @param {object} args
-     * @returns {undefined}
-     */
-    prepareBttvEmotes: function(args) {
-        let channelId = args['room-id'];
-        let channel = args.channel.slice(1);
-
-        if (typeof chat.bttvEmotes[channel] === 'undefined') {
-            chat.bttvEmotes[channel] = {};
-
-            let options = {
-                url: 'https://api.betterttv.net/3/cached/emotes/global',
-                method: 'GET',
-                json: true
-            };
-
-            // get global emotes
-            request(options, (err, res, body) => {
-                if (err) {
-                    return console.log(err);
-                }
-
-                if (typeof body[0].id !== 'undefined') {
-                    for (let i = 0; i < body.length; i++) {
-                        chat.bttvEmotes[channel][body[i].code] = 'https://cdn.betterttv.net/emote/' + body[i].id + '/1x';
-                        let emoteArgs = {
-                            code: body[i].code,
-                            typeId: body[i].id,
-                            type: 'bttv'
-                        };
-
-                        emote.addEmote(emoteArgs);
-                    }
-                }
-            });
-
-            options = {
-                url: `https://api.betterttv.net/3/cached/users/twitch/${channelId}`,
-                method: 'GET',
-                json: true
-            };
-
-            // get channel emotes
-            request(options, (err, res, body) => {
-                if (err) {
-                    return console.log(err);
-                }
-
-                if (typeof body.sharedEmotes !== 'undefined') {
-                    for (let i = 0; i < body.sharedEmotes.length; i++) {
-                        chat.bttvEmotes[channel][body.sharedEmotes[i].code] = 'https://cdn.betterttv.net/emote/' + body.sharedEmotes[i].id + '/1x';
-                        let emoteArgs = {
-                            code: body.sharedEmotes[i].code,
-                            typeId: body.sharedEmotes[i].id,
-                            type: 'bttv'
-                        };
-
-                        emote.addEmote(emoteArgs);
-                    }
-                }
-            });
-        }
-    },
-    /**
-     * Loads FFZ emotes over API to database und ffzEmotes array
-     * 
-     * @param {object} args
-     * @returns {undefined}
-     */
-    prepareFfzEmotes: function(args) {
-        let channel = args.channel.slice(1);
-
-        if (typeof chat.ffzEmotes[channel] === 'undefined') {
-            chat.ffzEmotes[channel] = {};
-
-            let options = {
-                url: 'https://api.frankerfacez.com/v1/set/global',
-                method: 'GET',
-                json: true
-            };
-
-            // get global emotes
-            request(options, (err, res, body) => {
-                if (err) {
-                    return console.log(err);
-                }
-
-                if (typeof body.default_sets !== 'undefined' && body.default_sets.length) {
-                    let set = body.default_sets[0];
-                    for (let i = 0; i < body.sets[set].emoticons.length; i++) {
-                        chat.ffzEmotes[channel][body.sets[set].emoticons[i].name] = body.sets[set].emoticons[i].urls['1'];
-                        let emoteArgs = {
-                            code: body.sets[set].emoticons[i].name,
-                            typeId: body.sets[set].emoticons[i].id,
-                            type: 'ffz'
-                        };
-
-                        emote.addEmote(emoteArgs);
-                    }
-                }
-            });
-
-            options = {
-                url: `https://api.frankerfacez.com/v1/room/${channel}`,
-                method: 'GET',
-                json: true
-            };
-
-            // get channel emotes
-            request(options, (err, res, body) => {
-                if (err) {
-                    return console.log(err);
-                }
-
-                if (typeof body.sets !== 'undefined') {
-                    let set = body.room.set;
-                    for (let i = 0; i < body.sets[set].emoticons.length; i++) {
-                        chat.ffzEmotes[channel][body.sets[set].emoticons[i].name] = body.sets[set].emoticons[i].urls['1'];
-                        let emoteArgs = {
-                            code: body.sets[set].emoticons[i].name,
-                            typeId: body.sets[set].emoticons[i].id,
-                            type: 'ffz'
-                        };
-
-                        emote.addEmote(emoteArgs);
-                    }
-                }
             });
         }
     },
@@ -666,37 +373,12 @@ const chat = {
      * @param {boolean} shift
      * @returns {undefined}
      */
-    prepareMessages: function(chatbot, args, shift) {
-        if (typeof chatbot.messages[args.channel] === 'undefined') {
-            chatbot.messages[args.channel] = [];
-        } else if (chatbot.messages[args.channel].length >= 100 && shift) {
-            chatbot.messages[args.channel].shift();
+    prepareLists: function(chatbot, args, shift) {
+        if (typeof chat.lists[args.channel] === 'undefined') {
+            chat.lists[args.channel] = [];
+        } else if (chat.lists[args.channel].length >= 100 && shift) {
+            chat.lists[args.channel].shift();
         }
-    },
-    /**
-     * Removes bot in database
-     * 
-     * @param {object} chatbot
-     * @param {object} args
-     * @returns {undefined}
-     */
-    removeBot: function(chatbot, args) {
-        let select = 'id';
-        let from = 'bot';
-        let where = ['name = ?'];
-        let prepare = [args.name.toLowerCase()];
-
-        database.find(select, from, '', where, '', '', 0, prepare, function(rows) {
-            // if bot exists
-            if (rows.length) {
-                database.remove('bot', where, prepare, function(removeBot) {
-                    database.prepareBotTable(chatbot, {'room-id': 0});
-                    if (args.say) {
-                        chatbot.client.say('#' + args.channel, locales.t('bot-removed', [args.name.toLowerCase()]));
-                    }
-                });
-            }
-        });
     }
 };
 

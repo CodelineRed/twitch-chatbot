@@ -165,13 +165,13 @@
                     socketWrite(call);
                 }
             },
-            getTopEmotes: function(select, type, limit) {
+            getTopEmotes: function(where, type, limit) {
                 if (typeof socketWrite === 'function') {
                     const call = {
                         method: 'getTopEmotes',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            select: select,
+                            where: where,
                             limit: limit,
                             type: type,
                             start: this.datetimePicker.start + moment().format('Z'),
@@ -276,7 +276,7 @@
             setStreamDates: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.completed++;
-                    this.streamDates = args.streamDates;
+                    this.streamDates = args.list;
                 }
             },
             setSubs: function(args) {

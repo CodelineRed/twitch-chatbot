@@ -336,8 +336,8 @@
                     this.resetRaffle();
                     this.initTooltip();
 
-                    if (this.isPopout && this.activeRaffle.id && typeof this.audioNodes.background === 'undefined') {
-                        this.playAudio('background', this.activeRaffle.audio.file, this.activeRaffle.audio.volume / 100, true);
+                    if (this.isPopout && this.activeRaffle.id && typeof this.sound.background === 'undefined') {
+                        this.playAudio('background', this.activeRaffle.audio.file, this.activeRaffle.audio.volume, true);
                     } else if (!this.activeRaffle.id) {
                         this.stopAudio('background');
                     }
@@ -392,7 +392,7 @@
                         }, 100);
 
                         if (this.winner.audio.id) {
-                            this.playAudio('winner', this.winner.audio.file, this.winner.audio.volume / 100);
+                            this.playAudio('winner', this.winner.audio.file, this.winner.audio.volume);
                         } else {
                             this.stopAudio('winner');
                         }
@@ -511,7 +511,7 @@
                     </div>
                     <div v-for="(multiplicator, name) in raffle.multiplicators" :key="name" class="col-12 col-md-6 col-lg-4 col-xl-3">
                         <div v-if="hasMultiplicators" class="form-group">
-                            <label :for="'raffle-multiplicators-' + name">{{ name }}:</label>
+                            <label :for="'raffle-multiplicators-' + name">{{ $t('multiplicator-' + name) }}:</label>
                             <input :id="'raffle-multiplicators-' + name" v-model.number="raffle.multiplicators[name]" type="number" min="-1" max="100" class="form-control">
                         </div>
                     </div>
@@ -548,7 +548,7 @@
                                 </div>
                             </div>
                             <div class="col-12 mb-3">
-                                <button type="button" class="btn btn-light mr-2" :disabled="!raffle.audio.file.length" @click="playAudio('background', raffle.audio.file, raffle.audio.volume / 100, true)">{{ $t('play-audio') }}</button>
+                                <button type="button" class="btn btn-light mr-2" :disabled="!raffle.audio.file.length" @click="playAudio('background', raffle.audio.file, raffle.audio.volume, true)">{{ $t('play-audio') }}</button>
                                 <button type="button" class="btn btn-light" @click="stopAudio('background')">Stop Audio</button>
                             </div>
                         </div>
@@ -676,7 +676,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" :disabled="!winner.audio.file.length" @click="playAudio('winner', winner.audio.file, winner.audio.volume / 100)">{{ $t('play-audio') }}</button>
+                        <button type="button" class="btn btn-light" :disabled="!winner.audio.file.length" @click="playAudio('winner', winner.audio.file, winner.audio.volume)">{{ $t('play-audio') }}</button>
                         <button type="button" class="btn btn-light" @click="stopAudio('winner')">{{ $t('stop-audio') }}</button>
                         <button type="button" class="btn btn-primary" @click="animateRaffleWinner()">{{ $t('ok') }}</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>

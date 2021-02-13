@@ -43,7 +43,7 @@
             },
             setCommands: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.commands = args.commands;
+                    this.commands = args.list;
                     this.initDataTable();
                 }
             },

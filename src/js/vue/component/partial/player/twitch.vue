@@ -10,7 +10,7 @@
         },
         methods: {
             generateUrl: function(file) {
-                return 'https://player.twitch.tv/?video=v' + file + '&autoplay=1&parent=localhost';
+                return 'https://player.twitch.tv/?video=v' + file + '&autoplay=true&parent=localhost';
             },
             getParentVideo: function() {
                 const $this = this;

@@ -10,7 +10,7 @@ const user = {
      * @param {object} args
      * @returns {undefined}
      */
-    addUser: function(chatbot, args, callback) {
+    add: function(chatbot, args, callback) {
         // if is message from own chatbot
         if (args.userstate['display-name'].toLowerCase() === chatbot.config.username.toLowerCase()) {
             args.userstate['room-id'] = chatbot.channels[args.channel].id;

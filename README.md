@@ -4,11 +4,14 @@ Visit [screenshots](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/maste
 
 This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-skeleton).
 
+**_This software is meant to be installed on your local machine. If you want to install on a public web server, please secure `public` folder by `.htpasswd` or something similar._**
+
 ## Table of contents
 - [Included Third Party Code](#included)
-- [Install Production Build (Recommended)](#install-production-build-recommended)
-- [Install Master/ Develop Build](#install-master-develop-build)
-- [Install PHP, Adminer and Web UI (optional)](#install-php-adminer-and-web-ui-optional)
+- Install Guides
+    - [Install Production Build (Recommended)](#install-production-build-recommended)
+    - [Install Master/ Develop Build](#install-master-develop-build)
+    - [Install PHP, Adminer and Web UI (optional)](#install-php-adminer-and-web-ui-optional)
 - [Project Commands](#project-commands)
 - [Ports](#ports)
 - [`chatbot.json`](#chatbotjson)
@@ -139,10 +142,10 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 ## Ports
 |                     | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| 3000                | [BrowserSync](https://www.npmjs.com/package/browser-sync)                                                                        |
+| 3000                | Web UI with HTML ([BrowserSync](https://www.npmjs.com/package/browser-sync))                                                     |
 | 3001                | [BrowserSync UI](https://www.npmjs.com/package/browser-sync)                                                                     |
-| 3050                | [twitch-chatbot](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.yml) (Docker Container)            |
-| 3060                | [twitch-chatbot-videos-folder](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.videos-folder.yml) (Docker Container) |
+| 3050                | Web UI with PHP/ [twitch-chatbot](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.yml) (Docker Container) |
+| 3060                | Host for [twitch-chatbot-videos-folder](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.videos-folder.yml) (Docker Container) |
 | 3100                | Main Window (Skateboard Socket for Web UI)                                                                                       |
 | 3110                | Chat Window (Skateboard Socket for Web UI)                                                                                       |
 | 3120                | Player Window (Skateboard Socket for Web UI)                                                                                     |
@@ -179,7 +182,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 | counter             | counter increased if users counts from 1 - X without interruption                                                                |
 | diceDuel            | !dd6 @User or !dd56w6 @User - first digit can be from 1 - 99 and second from 1 - 9                                               |
 | diceDuelAccept      | !dda - accepting a dice duel request                                                                                             |
-| playlistInfo        | !info, !plan, !programm, !sendeplan, !playlist, !video                                                                           |
+| playlistInfo        | !plan, !program, !playlist, !video                                                                                               |
 | poll                | !vote 1 - X                                                                                                                      |
 | raffle              | custom keyword (default: !raffle)                                                                                                |
 | rollDice            | !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                             |

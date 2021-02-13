@@ -6,7 +6,97 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.7.0]
+## [1.8.0]
+### Added
+- [`chatbot/attendee.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/attendee.js)
+- [`chatbot/bot.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/bot.js)
+- [`chatbot/user-choice.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/user-choice.js)
+- [`chatbot/video.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/video.js)
+
+### Changed
+- `audio.getAudios()` to `audio.getList()`
+- `channel.getChannels()` to `channel.getList()`
+- `channel.getChannelDisplayName()` to `channel.getDisplayName()`
+- `channel.saveChannelToken()` to `channel.saveToken()`
+- `chat.addBot()` to `bot.add()`
+- `chat.encodeBttvEmotes()` to `emote.encodeBttv()`
+- `chat.encodeFfzEmotes()` to `emote.encodeFfz()`
+- `chat.encodeThirdPartyEmote()` to `emote.encodeThirdParty()`
+- `chat.encodeTwitchEmotes()` to `emote.encodeTwitch()`
+- `chat.generateEmoteImage()` to `emote.generateImage()`
+- `chat.getMessages()` to `chat.getList()`
+- `chat.prepareBttvEmotes()` to `emote.prepareBttv()`
+- `chat.prepareFfzEmotes()` to `emote.prepareFfz()`
+- `chat.removeBot()` to `bot.remove()`
+- `command.getCommands()` to `command.getList()`
+- `command.updateCommand()` to `command.update()`
+- `command.updateCommandLastExec()` to `command.updateLastExec()`
+- `command.commandList` to `command.defaultList`
+- `counter.getCounter()` to `counter.get()`
+- `counter.updateCounter()` to `counter.update()`
+- `emote.addEmote()` to `emote.add()`
+- `playlist.addPlaylist()` to `playlist.add()`
+- `playlist.addVideo()` to `video.add()`
+- `playlist.clearActivePlaylist()` to `playlist.clearActive()`
+- `playlist.getActivePlaylist()` to `playlist.getActive()`
+- `playlist.getLocalVideoMeta()` to `video.getLocalVideoMeta()`
+- `playlist.getPlaylist()` to `playlist.get()`
+- `playlist.getPlaylistConfig()` to `playlist.getConfig()`
+- `playlist.getPlaylists()` to `playlist.getList()`
+- `playlist.getPlaylistSearchResults()` to `playlist.getSearchResults()`
+- `playlist.getTwitchClipMeta()` to `video.getTwitchClipMeta()`
+- `playlist.getTwitchVideoMeta()` to `video.getTwitchVideoMeta()`
+- `playlist.getVideo()` to `video.get()`
+- `playlist.getVideoIndexFromVideos()` to `video.getIndexFromVideos()`
+- `playlist.getVideoSearchResults()` to `video.getSearchResults()`
+- `playlist.getYoutubeVideoMeta()` to `video.getYoutubeVideoMeta()`
+- `playlist.mergePlaylists()` to `playlist.merge()`
+- `playlist.moveVideo()` to `video.move()`
+- `playlist.resetActivePlaylist()` to `playlist.resetActive()`
+- `playlist.removePlaylist()` to `playlist.remove()`
+- `playlist.removeVideo()` to `video.remove()`
+- `playlist.switchPlaylist()` to `playlist.swap()`
+- `playlist.updatePlaylist()` to `playlist.update()`
+- `playlist.updateVideo()` to `video.update()`
+- `raffle.addAttendee()` to `attendee.add()`
+- `raffle.addRaffle()` to `raffle.add()`
+- `raffle.announceRaffleToChat()` to `raffle.announceToChat()`
+- `raffle.closeRaffle()` to `raffle.close()`
+- `raffle.getActivePoll()` to `raffle.getActive()`
+- `raffle.getRafflesraffle.getRaffles()` to `raffle.getList()`
+- `raffle.getRaffleWinner()` to `raffle.getWinner()`
+- `raffle.raffleResultToChat()` to `raffle.resultToChat()`
+- `raffle.removeRaffle()` to `raffle.remove()`
+- `raffle.startRaffle()` to `raffle.start()`
+- `poll.addPoll()` to `poll.add()`
+- `poll.addUserChoice()` to `userChoice.add()`
+- `poll.announcePollToChat()` to `poll.announceToChat()`
+- `poll.closePoll()` to `poll.close()`
+- `poll.getActivePoll()` to `poll.getActive()`
+- `poll.getPolls()` to `poll.getList()`
+- `poll.getPollWinner()` to `poll.getWinner()`
+- `poll.pollResultToChat()` to `poll.resultToChat()`
+- `poll.removePoll()` to `poll.remove()`
+- `poll.startPoll()` to `poll.start()`
+- `user.addUser()` to `user.add()`
+- `viewerCount.addViewerCount()` to `viewerCount.add()`
+- `getTopEmotes()` in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
+- `getTopEmotes()` in [`chatbot/statistic.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/statistic.js)
+- `getStreamDates()` in [`chatbot/statistic.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/statistic.js)
+- `audioNodes` to `sound` in [`method/audio.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/method/audio.js)
+- @babel/core 7.12.10 to 7.12.16
+- @babel/plugin-transform-modules-amd 7.12.1 to 7.12.13
+- vanilla-lazyload 17.3.0 to 17.3.1
+- i18next 19.8.5 to 19.8.7
+
+### Fixed
+- missing bootstrap utility `progress` in [`lib/boostrap.scss`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/scss/lib/boostrap.scss)
+- `generateUrl()` in [`player/twitch-clip.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/partial/player/twitch-clip.vue)
+
+### Removed
+- !info, !sendeplan, !programm from `playlistInfo()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+
+## [1.7.0] - 2021-01-30
 ### Added
 - new install guides
 - index in [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)

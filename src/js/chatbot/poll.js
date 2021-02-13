@@ -4,6 +4,7 @@ const moment       = require('moment');
 const {v4: uuidv4} = require('uuid');
 
 const poll = {
+    activeLists: {},
     /**
      * Adds an active poll
      * 
@@ -11,7 +12,7 @@ const poll = {
      * @param {object} args
      * @returns {undefined}
      */
-    addPoll: function(chatbot, args) {
+    add: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let time = moment().unix();
             let values = {
@@ -39,7 +40,7 @@ const poll = {
                     });
                 }
                 database.insert('option', values, function(insertOption) {
-                    poll.getActivePoll(chatbot, args);
+                    poll.getActive(chatbot, args);
 
                     if (typeof args.poll.raffleId === 'number') {
                         let from = 'raffle';
@@ -58,65 +59,18 @@ const poll = {
         }
     },
     /**
-     * Adds user choice to poll
-     * 
-     * @param {object} chatbot
-     * @param {object} args
-     * @returns {undefined}
-     */
-    addUserChoice: function(chatbot, args) {
-        if (typeof chatbot.activePolls[args.channel].options[args.choice - 1] !== 'undefined') {
-            let select = 'uc.uuid';
-            let from = 'poll AS p';
-            let join = 'JOIN user_choice AS uc ON p.id = uc.poll_id';
-            let where = ['uc.poll_id = ?', 'uc.user_id = ?'];
-            let prepare = [
-                chatbot.activePolls[args.channel].id,
-                args.userstate['user-id']
-            ];
-
-            if (chatbot.activePolls[args.channel].multipleChoice) {
-                where.push('option_id = ?');
-                prepare.push(chatbot.activePolls[args.channel].options[args.choice - 1].id);
-            }
-
-            if (chatbot.activePolls[args.channel].raffleId) {
-                chatbot.addAttendee(chatbot, args);
-            }
-
-            database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
-                // If the user has not yet selected an option
-                if (!rows.length) {
-                    let time = moment().unix();
-                    let values = {
-                        uuid: uuidv4(),
-                        pollId: chatbot.activePolls[args.channel].id,
-                        optionId: chatbot.activePolls[args.channel].options[args.choice - 1].id,
-                        userId: args.userstate['user-id'],
-                        updatedAt: time,
-                        createdAt: time
-                    };
-
-                    database.insert('user_choice', [values], function(insert) {
-                        poll.getActivePoll(chatbot, args);
-                    });
-                }
-            });
-        }
-    },
-    /**
      * Sends an annoucement to the chat
      * 
      * @param {object} chatbot
      * @param {object} args
      * @returns {undefined}
      */
-    announcePollToChat: function(chatbot, args) {
-        if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
-            let name = chatbot.activePolls[args.channel].name;
-            let raffle = chatbot.activePolls[args.channel].raffleId ? ' | ' + locales.t('raffle') + ': ' + chatbot.activePolls[args.channel].raffleName : '';
-            let multipleChoice = chatbot.activePolls[args.channel].multipleChoice ? locales.t('yes') : locales.t('no');
-            let options = chatbot.activePolls[args.channel].options;
+    announceToChat: function(chatbot, args) {
+        if (typeof poll.activeLists[args.channel].id !== 'undefined') {
+            let name = poll.activeLists[args.channel].name;
+            let raffle = poll.activeLists[args.channel].raffleId ? ' | ' + locales.t('raffle') + ': ' + poll.activeLists[args.channel].raffleName : '';
+            let multipleChoice = poll.activeLists[args.channel].multipleChoice ? locales.t('yes') : locales.t('no');
+            let options = poll.activeLists[args.channel].options;
             let results =  '';
 
             for (var i = 0; i < options.length; i++) {
@@ -133,19 +87,19 @@ const poll = {
      * @param {object} args
      * @returns {undefined}
      */
-    closePoll: function(chatbot, args) {
-        if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
+    close: function(chatbot, args) {
+        if (typeof poll.activeLists[args.channel].id !== 'undefined') {
             let from = 'poll';
             let set = {
                 active: false,
                 end: moment().unix(),
                 updatedAt: moment().unix()
             };
-            let where = [`id = ${chatbot.activePolls[args.channel].id}`];
+            let where = [`id = ${poll.activeLists[args.channel].id}`];
 
             database.update(from, set, where, function(update) {
-                poll.getActivePoll(chatbot, args);
-                poll.getPolls(chatbot, args);
+                poll.getActive(chatbot, args);
+                poll.getList(chatbot, args);
             });
         }
     },
@@ -156,7 +110,7 @@ const poll = {
      * @param {object} args
      * @returns {undefined}
      */
-    getActivePoll: function(chatbot, args) {
+    getActive: function(chatbot, args) {
         let select = 'p.id, p.name, p.active, p.multiple_choice, p.start, p.end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, winner, COUNT(uc.option_id) AS o_votes, ';
         select += 'pa.id AS pa_id, pa.name AS pa_name, pa.file AS pa_file, pa.duration AS pa_duration, p.audio_volume AS pa_volume, ';
         select += 'pr.id AS pr_id, pr.name AS pr_name, ';
@@ -177,11 +131,11 @@ const poll = {
         let prepare = [chatbot.channels[args.channel].id];
 
         database.find(select, from, join, where, group, order, 0, prepare, function(rows) {
-            chatbot.activePolls[args.channel] = {};
+            poll.activeLists[args.channel] = {};
 
             // if active poll found
             if (rows.length) {
-                chatbot.activePolls[args.channel] = {
+                poll.activeLists[args.channel] = {
                     id: rows[0].id,
                     raffleId: rows[0].pr_id,
                     raffleName: rows[0].pr_name,
@@ -206,7 +160,7 @@ const poll = {
                 };
 
                 for (let i = 0; i < rows.length; i++) {
-                    chatbot.activePolls[args.channel].options.push({
+                    poll.activeLists[args.channel].options.push({
                         id: rows[i].o_id,
                         name: rows[i].o_name,
                         winner: !!rows[i].winner,
@@ -220,7 +174,7 @@ const poll = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        poll: chatbot.activePolls[args.channel]
+                        poll: poll.activeLists[args.channel]
                     },
                     method: 'setActivePoll',
                     ref: 'poll',
@@ -242,7 +196,7 @@ const poll = {
      * @param {type} args
      * @returns {undefined}
      */
-    getPolls: function(chatbot, args) {
+    getList: function(chatbot, args) {
         let select = 'p.id, p.name, p.active, p.multiple_choice, p.start, p.end, p.updated_at, p.created_at, o.id AS o_id, o.name AS o_name, winner, COUNT(uc.option_id) AS o_votes, ';
         select += 'pa.id AS pa_id, pa.name AS pa_name, pa.file AS pa_file, pa.duration AS pa_duration, p.audio_volume AS pa_volume, ';
         select += 'oa.id AS oa_id, oa.name AS oa_name, oa.file AS oa_file, oa.duration AS oa_duration, o.audio_volume AS oa_volume, ';
@@ -344,7 +298,7 @@ const poll = {
      * @param {object} args
      * @returns {undefined}
      */
-    getPollWinner: function(chatbot, args) {
+    getWinner: function(chatbot, args) {
         if (chatbot.socket !== null) {
             let winner = {
                 id: 0,
@@ -353,7 +307,7 @@ const poll = {
                 audio: args.audio
             };
             let winners = [];
-            let options = chatbot.activePolls[args.channel].options;
+            let options = poll.activeLists[args.channel].options;
 
             // if poll is open
             if (!args.close) {
@@ -387,7 +341,7 @@ const poll = {
                     winner: 0,
                     updatedAt: moment().unix()
                 };
-                let where = [`poll_id = ${chatbot.activePolls[args.channel].id}`];
+                let where = [`poll_id = ${poll.activeLists[args.channel].id}`];
 
                 database.update(from, set, where, function(updateAll) {
                     set = {
@@ -398,7 +352,7 @@ const poll = {
                     where = [`id = ${winner.id}`];
 
                     database.update(from, set, where, function(updateWinner) {
-                        poll.getPolls(chatbot, args);
+                        poll.getList(chatbot, args);
                     });
                 });
             }
@@ -427,12 +381,12 @@ const poll = {
      * @param {object} args
      * @returns {undefined}
      */
-    pollResultToChat: function(chatbot, args) {
-        if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
-            let name = chatbot.activePolls[args.channel].name;
-            let attendees = chatbot.activePolls[args.channel].attendees;
-            let votes = chatbot.activePolls[args.channel].votes;
-            let options = chatbot.activePolls[args.channel].options;
+    resultToChat: function(chatbot, args) {
+        if (typeof poll.activeLists[args.channel].id !== 'undefined') {
+            let name = poll.activeLists[args.channel].name;
+            let attendees = poll.activeLists[args.channel].attendees;
+            let votes = poll.activeLists[args.channel].votes;
+            let options = poll.activeLists[args.channel].options;
             let results =  '';
 
             for (var i = 0; i < options.length; i++) {
@@ -449,12 +403,12 @@ const poll = {
      * @param {object} args
      * @returns {undefined}
      */
-    removePoll: function(chatbot, args) {
+    remove: function(chatbot, args) {
         if (args.poll.active === false) {
             database.remove('poll', ['id = ?'], [args.poll.id], function(remove) {
                 database.remove('option', ['poll_id = ?'], [args.poll.id]);
                 database.remove('user_choice', ['poll_id = ?'], [args.poll.id]);
-                poll.getPolls(chatbot, args);
+                poll.getList(chatbot, args);
                 console.log(locales.t('poll-removed', [args.poll.name]));
             });
         }
@@ -466,17 +420,17 @@ const poll = {
      * @param {object} args
      * @returns {undefined}
      */
-    startPoll: function(chatbot, args) {
-        if (typeof chatbot.activePolls[args.channel].id !== 'undefined') {
+    start: function(chatbot, args) {
+        if (typeof poll.activeLists[args.channel].id !== 'undefined') {
             let from = 'poll';
             let set = {
                 start: moment().unix(),
                 updatedAt: moment().unix()
             };
-            let where = [`id = ${chatbot.activePolls[args.channel].id}`];
+            let where = [`id = ${poll.activeLists[args.channel].id}`];
 
             database.update(from, set, where, function(update) {
-                poll.getActivePoll(chatbot, args);
+                poll.getActive(chatbot, args);
             });
         }
     }

@@ -2,19 +2,19 @@ const database = require('./database');
 
 const audio = {
     /**
-     * Sends all audios to frontend
+     * Sends list of audios to frontend
      * 
      * @param {object} chatbot
      * @param {object} args
      * @returns {undefined}
      */
-    getAudios: function(chatbot, args) {
+    getList: function(chatbot, args) {
         let select = 'id, name, file, type, duration, updated_at AS updatedAt, created_at AS createdAt';
         database.find(select, 'audio', '', [], '', 'name', 0, [], function(rows) {
             if (chatbot.socket !== null) {
                 const call = {
                     args: {
-                        audios: rows
+                        list: rows
                     },
                     method: 'setAudios',
                     ref: args.ref,

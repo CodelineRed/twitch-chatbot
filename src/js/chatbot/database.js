@@ -1,9 +1,9 @@
-const config  = require('../../app/chatbot.json');
-const locales = require('./locales');
-const fs      = require('fs');
-const moment  = require('moment');
-const request = require('request');
-const sqlite3 = require('sqlite3').verbose();
+const config   = require('../../app/chatbot.json');
+const locales  = require('./locales');
+const fs       = require('fs');
+const moment   = require('moment');
+const request  = require('request');
+const sqlite3  = require('sqlite3').verbose();
 
 const database = {
     connection: null,
@@ -190,7 +190,7 @@ const database = {
                     console.error(errAll.message);
                 }
 
-                // if bots array empty
+                // if bot list empty
                 if (!chatbot.bots.length) {
                     rows.forEach(function(row) {
                         chatbot.bots.push(row.name);

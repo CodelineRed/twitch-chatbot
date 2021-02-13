@@ -1,7 +1,7 @@
 const audio = {
     data: function() {
         return {
-            audioNodes: {},
+            sound: {},
             audios: []
         };
     },
@@ -21,7 +21,7 @@ const audio = {
         getAudios: function(ref) {
             if (typeof socketWrite === 'function') {
                 const call = {
-                    method: 'getAudios',
+                    method: 'getAudioList',
                     args: {
                         ref: ref
                     },
@@ -45,33 +45,34 @@ const audio = {
             this.setAudioLoop(name, loop);
             this.setAudioSrc(name, src);
             this.setAudioVolume(name, volume);
-            this.audioNodes[name].play();
+            this.sound[name].play();
         },
         prepareAudio: function(name) {
-            if (typeof this.audioNodes[name] === 'undefined') {
-                this.audioNodes[name] = new Audio();
+            if (typeof this.sound[name] === 'undefined') {
+                this.sound[name] = new Audio();
             }
         },
         setAudioLoop: function(name, loop) {
             this.prepareAudio(name);
-            this.audioNodes[name].loop = typeof loop === 'undefined' ? false : loop;
+            this.sound[name].loop = typeof loop === 'boolean' ? loop : false;
         },
         setAudios: function(args) {
-            this.audios = args.audios;
+            this.audios = args.list;
         },
         setAudioSrc: function(name, src) {
             this.prepareAudio(name);
-            this.audioNodes[name].src = '/audio/' + src;
+            this.sound[name].src = '/audio/' + src;
         },
         setAudioVolume: function(name, volume) {
+            volume = typeof volume === 'number' ? (volume > 0 ? volume / 100 : volume) : 0.5;
             this.prepareAudio(name);
-            this.audioNodes[name].volume = typeof volume === 'undefined' ? 0.5 : volume;
+            this.sound[name].volume = volume;
         },
         stopAudio: function(name) {
             this.prepareAudio(name);
-            if (this.audioNodes[name].currentTime) {
-                this.audioNodes[name].pause();
-                this.audioNodes[name].currentTime = 0;
+            if (this.sound[name].currentTime) {
+                this.sound[name].pause();
+                this.sound[name].currentTime = 0;
             }
         }
     }
