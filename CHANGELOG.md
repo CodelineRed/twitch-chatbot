@@ -6,7 +6,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.8.0]
+## [1.9.0]
+### Added
+- new functionality how custom commands can be maintained in chat (see [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot#chatbot-commands-for-broadcaster-and-moderators))
+- new functionality how bot list can be maintained in chat (see [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot#chatbot-commands-for-broadcaster-and-moderators))
+- software abort if database file not exists in [`chatbot/database.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/database.js) - `database.open()`
+- display of animated Twitch emotes in [`chatbot/emote.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/emote.js) - `emote.encodeTwitch()`
+- yargs in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- `command.defaultCommands` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- linkify-html 3.0.2
+- sass 1.32.13
+
+### Changed
+- require for linkifyHtml in [`chatbot/chat.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/chat.js)
+- translations in [`chatbot/locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/locales.js) due to i18next upgrade
+- `command.addCustomCommand()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- `command.updateCustomCommand()` in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+- [`import-videos-folder.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/import-videos-folder.js)
+- [`migration.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/migration.js)
+- require for gulp-sass in [`gulpfile.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/gulpfile.js)
+- [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
+- [`UPGRADE.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/UPGRADE.md)
+- @babel/core 7.12.16 to 7.15.5
+- @babel/plugin-transform-modules-amd 7.12.13 to 7.14.5
+- @fortawesome/fontawesome-free 5.15.2 to 5.15.4
+- @fortawesome/fontawesome-svg-core 1.2.34 to 1.2.36
+- @fortawesome/free-brands-svg-icons 5.15.2 to 5.15.4
+- @fortawesome/free-regular-svg-icons 5.15.2 to 5.15.4
+- @fortawesome/free-solid-svg-icons 5.15.2 to 5.15.4
+- browser-sync 2.26.14 to 2.27.5
+- datatables.net 1.10.23 to 1.11.3
+- datatables.net-bs4 1.10.23 to 1.11.3
+- eslint-plugin-import 2.22.1 to 2.24.2
+- eslint-plugin-vue 7.5.0 to 7.18.0
+- glob 7.1.6 to 7.2.0
+- gulp-autoprefixer 7.0.1 to 8.0.0
+- gulp-sass 4.1.0 to 5.0.0
+- gulp-uglify-es 2.0.0 to 3.0.0
+- gulp-vue-single-file-component 1.0.15 to 1.1.7
+- jquery 3.5.1 to 3.6.0
+- i18next 19.8.7 to 21.2.3
+- linkifyjs 2.1.9 to 3.0.1
+- sqlite3 5.0.1 to 5.0.2
+- tmi.js 1.7.1 to 1.8.5
+- vanilla-lazyload 17.3.1 to 17.5.0
+- vue 2.6.12 to 2.6.14
+- vue-i18n 8.22.4 to 8.26.5
+- vue-router 3.5.1 to 3.5.2
+- yargs 16.2.0 to 17.2.1
+
+### Deprecated
+- !adbot, !addcc, !rmbot, !rmcc, !tglcc and !updcc
+
+### Fixed
+- wrong return parameter `streamDates` in `statistic.getStreamDates()`
+- commands table (frontend). Being on page 2 and click on save caused a jump to page 1. [`method/data-table.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/method/data-table.js) - `updateDataTableRow()`
+- users with no badges can produced a software crash by calling !addbot, !addcc, !bots, !rmbot, !rmcc, !tglcc or !updcc
+- bots with underscore in name couldn't be maintained by !addbot and !rmbot
+- after `bot.remove()` bot wasn't removed from `bot.list`
+- FrankerFaceZ emotes couldn't be initialize
+
+## [1.8.0] - 2021-02-13
 ### Added
 - [`chatbot/attendee.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/attendee.js)
 - [`chatbot/bot.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/bot.js)

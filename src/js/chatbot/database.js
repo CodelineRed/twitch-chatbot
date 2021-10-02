@@ -17,6 +17,9 @@ const database = {
         if (fs.existsSync(this.file)) {
             database.connection = new sqlite3.Database(this.file, sqlite3.OPEN_READWRITE);
             this.backup();
+        } else {
+            console.log(locales.t('database-file-missing'));
+            process.exit(1);
         }
     },
     /**

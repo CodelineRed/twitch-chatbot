@@ -32,11 +32,13 @@ const bot = {
                         chatbot.client.say('#' + args.channel, locales.t('bot-added', [value.name]));
                     }
                 });
+            } else if (args.say) {
+                chatbot.client.say('#' + args.channel, locales.t('bot-exists', [value.name]));
             }
         });
     },
     /**
-     * Removes bot in database
+     * Removes bot from database
      * 
      * @param {object} chatbot
      * @param {object} args
@@ -52,11 +54,20 @@ const bot = {
             // if bot exists
             if (rows.length) {
                 database.remove('bot', where, prepare, function(removeBot) {
+                    let index = bot.list.indexOf(args.name.toLowerCase());
                     database.prepareBotTable(chatbot, {'room-id': 0});
+
+                    // remove bot from list
+                    if (index > -1) {
+                        bot.list.splice(index, 1);
+                    }
+
                     if (args.say) {
                         chatbot.client.say('#' + args.channel, locales.t('bot-removed', [args.name.toLowerCase()]));
                     }
                 });
+            } else if (args.say) {
+                chatbot.client.say('#' + args.channel, locales.t('bot-not-exists', [args.name.toLowerCase()]));
             }
         });
     }

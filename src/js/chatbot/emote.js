@@ -31,7 +31,7 @@ const emote = {
                 };
 
                 database.insert('chat_emote_join', [values]);
-            } else if (!rows.length && emote.newList.indexOf(args.code) === -1 && typeof args.typeId === 'string') {
+            } else if (!rows.length && emote.newList.indexOf(args.code) === -1 && (typeof args.typeId === 'string' || typeof args.typeId === 'number')) {
                 emote.newList.push(args.code);
                 let values = {
                     uuid: uuidv4(),
@@ -89,7 +89,7 @@ const emote = {
         for (let i = 0; i < emoteCodes.length; i++) {
             let regexEmote = emoteCodes[i].replace(/(\(|\))/g, '\\$1');
             let regex = new RegExp('\\b' + regexEmote + '\\b', 'g');
-            
+
             // if special chars in emote
             if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(regexEmote)) { // eslint-disable-line no-useless-escape
                 regex = new RegExp(regexEmote, 'g');
@@ -103,7 +103,6 @@ const emote = {
                             code: emoteCodes[i],
                             type: type
                         };
-
                         emote.add(emoteArgs);
                     }
                 }
@@ -140,7 +139,7 @@ const emote = {
                             });
                             let ttvEmote = message.slice(emoteCode[0], emoteCode[1] + 1);
                             splitText = splitText.slice(0, emoteCode[0]).concat(empty).concat(splitText.slice(emoteCode[1] + 1, splitText.length));
-                            splitText.splice(emoteCode[0], 1, emote.generateImage('http://static-cdn.jtvnw.net/emoticons/v1/' + i + '/1.0', ttvEmote, args.lazy));
+                            splitText.splice(emoteCode[0], 1, emote.generateImage('http://static-cdn.jtvnw.net/emoticons/v2/' + i + '/default/dark/2.0', ttvEmote, args.lazy));
 
                             if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
                                 let emoteArgs = {
@@ -170,7 +169,7 @@ const emote = {
     generateImage: function(url, title, lazy) {
         let lazyClass = typeof lazy === 'boolean' && lazy ? ' lazy' : '';
         let image = '';
-        
+
         if (typeof config.performance === 'number' && config.performance === 0) {
             if (/betterttv/.test(url)) {
                 image += ' ';

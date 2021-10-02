@@ -11,6 +11,7 @@ const userChoice   = require('./user-choice');
 const video        = require('./video');
 const moment       = require('moment');
 const {v4: uuidv4} = require('uuid');
+const yargs        = require('yargs');
 
 const command = {
     lists: {},
@@ -23,6 +24,12 @@ const command = {
         playlistInfo: '!plan',
         rollDice: '!d[0-99](w[0-9])'
     },
+    defaultCommands: [
+        '!about', '!chatbot', '!cb', '!bug', '!bugs', '!help', '!commands', '!cc', 
+        '!d([1-9]+)(w([1-9]))?', '!dd([1-9]+)(w([1-9]))?', '!dda', '!plan', 
+        '!program', '!playlist', '!video', '!vote', '!raffle', '!bots', '!addbot', 
+        '!rmbot', '!addcc', '!rmcc', '!tglcc', '!updcc'
+    ],
     /**
      * Adds custom command to database
      * 
@@ -45,7 +52,7 @@ const command = {
         let time = moment().unix();
         let value = {
             name: args.name.toLowerCase(),
-            content: args.content,
+            content: typeof args.content === 'undefined' ? '' : args.content,
             type: 'custom',
             updatedAt: time,
             createdAt: time
@@ -59,7 +66,7 @@ const command = {
                         channelId: chatbot.channels[args.channel].id,
                         commandId: insert.lastID,
                         cooldown: typeof args.cooldown === 'undefined' ? 30 : args.cooldown,
-                        active: 1,
+                        active: typeof args.active === 'undefined' ? 1 : args.active,
                         updatedAt: time,
                         createdAt: time
                     };
@@ -170,6 +177,7 @@ const command = {
     /**
      * Toggles custom command in database
      * 
+     * @deprecated will be removed in 2.0
      * @param {object} chatbot
      * @param {object} args
      * @returns {undefined}
@@ -239,7 +247,7 @@ const command = {
      * @returns {undefined}
      */
     updateCustomCommand: function(chatbot, args) {
-        let select = 'cmd.id';
+        let select = 'cmd.id, ccj.active, ccj.cooldown';
         let from = 'command AS cmd';
         let join = 'JOIN channel_command_join AS ccj ON cmd.id = ccj.command_id ';
         let where = [
@@ -252,9 +260,12 @@ const command = {
         ];
         let time = moment().unix();
         let set = {
-            content: args.content,
             updatedAt: time
         };
+
+        if (typeof args.content === 'string') {
+            set['content'] = args.content;
+        }
 
         database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
             // if custom command exists for channel
@@ -263,7 +274,8 @@ const command = {
 
                 database.update('command', set, where, function(update) {
                     set = {
-                        cooldown: typeof args.cooldown === 'undefined' ? 30 : args.cooldown,
+                        cooldown: typeof args.cooldown === 'undefined' ? rows[0].cooldown : args.cooldown,
+                        active: typeof args.active === 'undefined' ? rows[0].active : args.active,
                         updatedAt: time
                     };
                     where = ['command_id = ' + rows[0].id];
@@ -346,14 +358,15 @@ const command = {
         /**
          * Adds bot to database
          * 
+         * @deprecated will be removed in 2.0
          * @param {object} chatbot
          * @param {object} args
          * @returns {undefined}
          */
         addBot: function(chatbot, args) {
-            if (/^!addbot ([a-z0-9]+)/i.test(args.message) 
-                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
-                const matches = args.message.match(/^!addbot ([a-z0-9]+)/i);
+            if (/^!addbot ([a-z0-9_]+)/i.test(args.message) 
+                && (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string'))) {
+                const matches = args.message.match(/^!addbot ([a-z0-9_]+)/i);
                 args = Object.assign(args, {
                     name: matches[1],
                     say: true
@@ -364,13 +377,14 @@ const command = {
         /**
          * Adds custom command to database
          * 
+         * @deprecated will be removed in 2.0
          * @param {object} chatbot
          * @param {object} args
          * @returns {undefined}
          */
         addCustomCommand: function(chatbot, args) {
             if (/^!addcc (![a-z0-9]+)@?([0-9]+)? (.*)/i.test(args.message) 
-                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                && (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string'))) {
                 const matches = args.message.match(/^!addcc (![a-z0-9]+)@?([0-9]+)? (.*)/i);
                 args = Object.assign(args, {
                     name: matches[1],
@@ -390,8 +404,38 @@ const command = {
          */
         bots: function(chatbot, args) {
             if (/^!bots/i.test(args.message) 
-                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
-                if (/^!bots public/i.test(args.message)) {
+                && (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string'))) {
+                let argv = yargs
+                    .command('bot-command <bc> [name]', 'Process chat command', (bcyargs) =>
+                        bcyargs
+                            .option('tc', {type: 'boolean', default: false})
+                            .option('rm', {type: 'boolean', default: false})
+                            .option('name', {type: 'string', default: ''})
+                    )
+                    .parse('bot-command ' + args.message);
+
+                // if name given and rm is false
+                if (argv.name.length && !argv.rm) {
+                    args = Object.assign(args, {
+                        name: argv.name,
+                        say: true
+                    });
+                    bot.add(chatbot, args);
+                    return;
+                }
+
+                // if name given and rm is true
+                if (argv.name.length && argv.rm) {
+                    args = Object.assign(args, {
+                        name: argv.name,
+                        say: true
+                    });
+                    bot.remove(chatbot, args);
+                    return;
+                }
+
+                // if bot list should posted to chat
+                if (argv.tc) {
                     chatbot.client.say('#' + args.channel, locales.t('bot-list', [bot.list.length, bot.list.join(', ')]));
                 } else {
                     console.log('* ' + locales.t('bot-list', [bot.list.length, bot.list.join(', ')]));
@@ -467,8 +511,22 @@ const command = {
          * @returns {undefined}
          */
         customCommand: function(chatbot, args) {
-            if (/^(![a-z0-9]+)(.*)/i.test(args.message)) {
+            let defaultCommands = new RegExp(command.defaultCommands.join('|'), 'i');
+
+            // skip raffle keyword
+            if (typeof raffle.activeLists[args.channel] !== 'undefined' 
+                && raffle.activeLists[args.channel].keyword === args.message) {
+                return;
+            }
+
+            // if message starts with command and is not a default command
+            if (/^(![a-z0-9]+)(.*)/i.test(args.message) && !defaultCommands.test(args.message)) {
                 const matches = args.message.match(/^(![a-z0-9]+)(.*)/i);
+                let isAdmin = false;
+                let updateCommand = false;
+                let argv = null;
+                let atUser = '';
+                let atUserRegExp = /^@([a-z0-9_]+)/i;
                 let argsClone = Object.assign({}, args);
                 let select = 'cmd.id, cmd.content';
                 let from = 'command AS cmd';
@@ -485,11 +543,84 @@ const command = {
                     moment().unix()
                 ];
 
+                // if is an admin
+                if (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                    argv = yargs
+                        .command('custom-command <cc> [txt..]', 'Process chat command', (ccyargs) =>
+                            ccyargs
+                                .option('cd', {type: 'number', default: 0})
+                                .option('off', {type: 'boolean', default: false})
+                                .option('on', {type: 'boolean', default: false})
+                                .option('rm', {type: 'boolean', default: false})
+                                .option('txt', {type: 'string', default: ''})
+                        )
+                        .parse('custom-command ' + args.message);
+
+                    isAdmin = true;
+                    updateCommand = argv.txt.join(' ').length > 0 || argv.off || argv.on || argv.cd > 0;
+
+                    // change criteria
+                    where = [
+                        'cmd.name = ?',
+                        'ccj.channel_id = ?'
+                    ];
+                    prepare = [
+                        matches[1].toLowerCase(),
+                        chatbot.channels[argsClone.channel].id
+                    ];
+                    argsClone = Object.assign(argsClone, {
+                        name: argv.cc,
+                        say: true
+                    });
+
+                    // if cooldown is given
+                    if (argv.cd > 0) {
+                        argsClone['cooldown'] = argv.cd;
+                    }
+
+                    // if text is given
+                    if (argv.txt.join(' ').length > 0) {
+                        argsClone['content'] = argv.txt.join(' ');
+                    }
+
+                    // if active is given
+                    if (argv.off || argv.on) {
+                        argsClone['active'] = argv.on;
+                    }
+                } else {
+                    argv = yargs
+                        .command('custom-command <cc> [txt]', 'Process chat command', (ccyargs) =>
+                            ccyargs
+                                .option('txt', {type: 'string', default: ''})
+                        )
+                        .parse('custom-command ' + args.message);
+                }
+
+                // if bot should mention a user
+                if (typeof argv.txt === 'string' && atUserRegExp.test(argv.txt)) {
+                    atUser = argv.txt.replace(atUserRegExp, '@$1: ');
+                    isAdmin = false;
+                }
+
                 database.find(select, from, join, where, '', '', 0, prepare, function(rows) {
-                    // if command exists for channel
+                    // if is admin and command not exists
+                    if (isAdmin && !rows.length) {
+                        command.addCustomCommand(chatbot, argsClone);
+                        return false;
+                    } else if (isAdmin && updateCommand) {
+                        // if is admin and parameters has changed
+                        command.updateCustomCommand(chatbot, argsClone);
+                        return false;
+                    } else if (isAdmin && argv.rm) {
+                        // if is admin and remove is true
+                        command.removeCustomCommand(chatbot, argsClone);
+                        return false;
+                    }
+
+                    // if command exists for channel and is not a command update
                     if (rows.length) {
                         argsClone['customCommandId'] = rows[0].id;
-                        chatbot.client.say('#' + args.channel, rows[0].content);
+                        chatbot.client.say('#' + args.channel, atUser + rows[0].content);
                         command.updateLastExec(chatbot, argsClone);
                     }
                 });
@@ -507,7 +638,6 @@ const command = {
                 const matches = args.message.match(/^!dd([1-9]+)(w([1-9]))? (@)?([0-9a-z_]+)/i);
                 let ddKeys = Object.keys(command.diceDuels);
                 let userExists = false;
-                let index = 0;
 
                 for (let i = 0; i < ddKeys.length; i++) {
                     if (command.diceDuels[ddKeys[i]].user1 === args.userstate['display-name']) {
@@ -691,14 +821,15 @@ const command = {
         /**
          * Removes bot in database
          * 
+         * @deprecated will be removed in 2.0
          * @param {object} chatbot
          * @param {object} args
          * @returns {undefined}
          */
         removeBot: function(chatbot, args) {
-            if (/^!rmbot ([a-z0-9]+)/i.test(args.message) 
-                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
-                const matches = args.message.match(/^!rmbot ([a-z0-9]+)/i);
+            if (/^!rmbot ([a-z0-9_]+)/i.test(args.message) 
+                && (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string'))) {
+                const matches = args.message.match(/^!rmbot ([a-z0-9_]+)/i);
                 args = Object.assign(args, {
                     name: matches[1],
                     say: true
@@ -709,13 +840,14 @@ const command = {
         /**
          * Removes custom command in database
          * 
+         * @deprecated will be removed in 2.0
          * @param {object} chatbot
          * @param {object} args
          * @returns {undefined}
          */
         removeCustomCommand: function(chatbot, args) {
             if (/^!rmcc (![a-z0-9]+)/i.test(args.message) 
-                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                && (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string'))) {
                 const matches = args.message.match(/^!rmcc (![a-z0-9]+)/i);
                 args = Object.assign(args, {
                     name: matches[1],
@@ -762,13 +894,14 @@ const command = {
         /**
          * Toggles custom command activity in database
          * 
+         * @deprecated will be removed in 2.0
          * @param {object} chatbot
          * @param {object} args
          * @returns {undefined}
          */
         toggleCustomCommand: function(chatbot, args) {
             if (/^!tglcc (![a-z0-9]+)/i.test(args.message) 
-                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                && (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string'))) {
                 const matches = args.message.match(/^!tglcc (![a-z0-9]+)/i);
                 args = Object.assign(args, {
                     name: matches[1],
@@ -780,13 +913,14 @@ const command = {
         /**
          * Updates custom command in database
          * 
+         * @deprecated will be removed in 2.0
          * @param {object} chatbot
          * @param {object} args
          * @returns {undefined}
          */
         updateCustomCommand: function(chatbot, args) {
             if (/^!updcc (![a-z0-9]+)@?([0-9]+)? (.*)/i.test(args.message) 
-                && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
+                && (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string'))) {
                 const matches = args.message.match(/^!updcc (![a-z0-9]+)@?([0-9]+)? (.*)/i);
                 args = Object.assign(args, {
                     name: matches[1],

@@ -123,8 +123,10 @@ const dataTable = {
             // update row in data tables
             setTimeout(function() {
                 if (typeof dataTables[table] !== 'undefined') {
+                    let pageInfo = dataTables[table]['ref'].page.info();
                     dataTables[table].ref.row(index).invalidate();
                     dataTables[table].ref.order(dataTables[table].ref.order()[0]).draw();
+                    dataTables[table].ref.page(pageInfo.page).draw('page');
                 }
             }, 100);
         },
