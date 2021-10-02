@@ -240,7 +240,7 @@ const statistic = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        streamDates: []
+                        list: []
                     },
                     method: 'setStreamDates',
                     ref: 'statistic',
@@ -443,9 +443,9 @@ const statistic = {
         });
     },
     /**
-     * Sums up list of dulicated words and merge to one clean list
+     * Sums up list of duplicated words and merge to one clean list
      * 
-     * @param {array} rows [{name: 'Lorem', amount: 1337}]
+     * @param {array} rows [{words: 'Lorem', amount: 1337}]
      * @param {string} prefix
      * @param {integer} limit
      * @returns {array}
@@ -455,7 +455,7 @@ const statistic = {
         let topList = [];
         let regex = new RegExp(prefix + '[a-z0-9]+', 'gi');
 
-        // sum up duplicate words
+        // sum up duplicated words
         for (let i = 0; i < rows.length; i++) {
             let matches = rows[i].words.match(regex);
 

@@ -17,7 +17,9 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
 - [`chatbot.json`](#chatbotjson)
 - [`gulpfile.json`](#gulpfilejson)
 - [Chatbot Commands](#chatbot-commands)
-- [Chatbot Commands for Broadcaster and Moderators](#chatbot-commands-for-broadcaster-and-moderators)
+- [Chatbot Commands for Streamer and Moderators](#chatbot-commands-for-streamer-and-moderators)
+- [Custom Command Options for Streamer and Moderators](#custom-command-options-for-streamer-and-moderators)
+- [Bot List Options for Streamer and Moderators](#bot-list-options-for-streamer-and-moderators)
 - [Web UI Features](#web-ui-features)
     - [Chat](#chat)
     - [Commands](#commands)
@@ -52,7 +54,7 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
 
 ## Install Production Build (Recommended)
 ### Required
-- [Node.js](http://nodejs.org/en/download/)
+- [Node.js](http://nodejs.org/en/download/) >= 12.20
 - [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 
 [Download zip](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/production.zip) if you don't have git on your OS.
@@ -73,7 +75,7 @@ If you want to use the Web UI, you have to go to [Install PHP, Adminer and Web U
 
 ## Install Master/ Develop Build
 ### Required
-- [Node.js](http://nodejs.org/en/download/)
+- [Node.js](http://nodejs.org/en/download/) >= 12.20
 - [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 - [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
 
@@ -186,18 +188,34 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 | poll                | !vote 1 - X                                                                                                                      |
 | raffle              | custom keyword (default: !raffle)                                                                                                |
 | rollDice            | !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                             |
-| customCommand       | wrapper for all custom command commands                                                                                          |
+| customCommand       | wrapper for all custom commands                                                                                                  |
+| Mention User        | (NEW) !yourcommand @UserName                                                                                                     |
 
-## Chatbot Commands for Broadcaster and Moderators
+## Chatbot Commands for Streamer and Moderators
 | Name                | Command                                                                                                                          |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| bots                | !bots [public]                                                                                                                   |
-| addBot              | !addbot name                                                                                                                     |
-| removeBot           | !rmbot name                                                                                                                      |
-| addCustomCommand    | !addcc !command[@cooldown] lorem ipsum e.g. !addcc !hw@10 hello world                                                            |
-| removeCustomCommand | !rmcc !command                                                                                                                   |
-| toggleCustomCommand | !tglcc !command                                                                                                                  |
-| updateCustomCommand | !updcc !command[@cooldown] lorem ipsum dolor e.g. !updcc !hw Hello World!                                                        |
+| Custom Command      | (NEW) !yourcommand [Hello World!] [OPTIONS]                                                                                      |
+| Bot List            | (NEW) !bots [BotName] [OPTIONS]                                                                                                  |
+| ~~addBot~~          | (Deprecated) !addbot BotName                                                                                                     |
+| ~~removeBot~~       | (Deprecated) !rmbot BotName                                                                                                      |
+| ~~addCustomCommand~~    | (Deprecated) !addcc !command[@cooldown] lorem ipsum e.g. !addcc !hw@10 hello world                                           |
+| ~~removeCustomCommand~~ | (Deprecated) !rmcc !command                                                                                                  |
+| ~~toggleCustomCommand~~ | (Deprecated) !tglcc !command                                                                                                 |
+| ~~updateCustomCommand~~ | (Deprecated) !updcc !command[@cooldown] lorem ipsum dolor e.g. !updcc !hw Hello World!                                       |
+
+## Custom Command Options for Streamer and Moderators
+| Option              | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| --on                | enable command for all users (default: true)                                                                                     |
+| --off               | disable command for all users, but not streamer and mods (default: false)                                                        |
+| --cd 30             | cooldown for all users, but not streamer and mods (default: 30 seconds)                                                          |
+| --rm                | remove command (default: false)                                                                                                  |
+
+## Bot List Options for Streamer and Moderators
+| Option              | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| --tc                | show bot list to chat (default: false)                                                                                           |
+| --rm                | remove bot (default: false)                                                                                                      |
 
 ## Web UI Features
 ### Chat

@@ -12,20 +12,23 @@ const versionExtract = /^.\/data\/migration\/(.*).js$/;
 const argv = yargs
     .option('direction', {
         alias: 'd',
+        default: 'up',
         description: 'Migration direction (default: up)',
         type: 'string'
     })
     .option('file', {
         alias: 'f',
-        description: 'Execute one specific migration file (e.g.: -f version-1.0.0)',
+        description: 'Execute one file (e.g.: -f version-1.0.0)',
         type: 'string'
     })
     .option('locale', {
         alias: 'l',
+        default: 'en',
         description: 'Locale for log messages (default: en)',
         type: 'string'
     })
     .option('log', {
+        default: true,
         description: 'Show logs in CLI (default: true)',
         type: 'boolean'
     })
@@ -33,18 +36,8 @@ const argv = yargs
     .alias('help', 'h')
     .argv;
 
-if (typeof argv.direction === 'undefined') {
-    argv.direction = 'up';
-}
-
-if (typeof argv.log === 'undefined') {
-    argv.log = true;
-}
-
 if (argv.locale) {
     locales.changeLanguage(argv.locale);
-} else {
-    locales.changeLanguage('en');
 }
 
 function log(message) {

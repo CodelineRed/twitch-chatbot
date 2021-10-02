@@ -4,6 +4,12 @@
 - Follow the instructions below
 - Start chatbot `$ node chatbot.js`
 
+### Upgrade from 1.8.0 to 1.9.0
+Default command !bots has changed.
+See:
+- [Chatbot Commands for Streamer and Moderators](#chatbot-commands-for-streamer-and-moderators)
+- [Bot List Options for Streamer and Moderators](#bot-list-options-for-streamer-and-moderators)
+
 ### Upgrade from 1.7.0 to 1.8.0
 Nothing you have to do.
 

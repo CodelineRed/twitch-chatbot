@@ -20,6 +20,7 @@ let videosFolder = config.videosFolder.replace(slashesRegExp, '/');
 const argv = yargs
     .option('backup', {
         alias: 'b',
+        default: false,
         description: 'Create an additional backup (default: false)',
         type: 'boolean'
     })
@@ -35,15 +36,18 @@ const argv = yargs
     })
     .option('locale', {
         alias: 'l',
+        default: 'en',
         description: 'Locale to use in date generation and log messages (default: en)',
         type: 'string'
     })
     .option('log', {
+        default: true,
         description: 'Show logs in CLI (default: true)',
         type: 'boolean'
     })
     .option('subname', {
         alias: 'sn',
+        default: true,
         description: 'Add date as sub name (default: true)',
         type: 'boolean'
     })
@@ -51,26 +55,12 @@ const argv = yargs
     .alias('help', 'h')
     .argv;
 
-if (typeof argv.backup === 'undefined') {
-    argv.backup = false;
-}
-
 if (argv.channel) {
     argv.channel = argv.channel.toLowerCase();
 }
 
-if (typeof argv.log === 'undefined') {
-    argv.log = true;
-}
-
 if (argv.locale) {
     locales.changeLanguage(argv.locale);
-} else {
-    locales.changeLanguage('en');
-}
-
-if (typeof argv.subname === 'undefined') {
-    argv.subname = true;
 }
 
 function log(message) {
