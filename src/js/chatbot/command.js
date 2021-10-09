@@ -247,7 +247,7 @@ const command = {
      * @returns {undefined}
      */
     updateCustomCommand: function(chatbot, args) {
-        let select = 'cmd.id, ccj.active, ccj.cooldown';
+        let select = 'cmd.id, cmd.content, ccj.active, ccj.cooldown';
         let from = 'command AS cmd';
         let join = 'JOIN channel_command_join AS ccj ON cmd.id = ccj.command_id ';
         let where = [
@@ -283,7 +283,7 @@ const command = {
                     database.update('channel_command_join', set, where, function(updateCcj) {
                         command.getList(chatbot, args);
                         if (args.say) {
-                            chatbot.client.say('#' + args.channel, locales.t('custom-command-updated', [args.name.toLowerCase(), args.content]));
+                            chatbot.client.say('#' + args.channel, locales.t('custom-command-updated', [args.name.toLowerCase(), (typeof args.content === 'string' ? args.content : rows[0].content)]));
                         }
                     });
                 });
@@ -528,7 +528,8 @@ const command = {
                 let atUser = '';
                 let atUserRegExp = /^@([a-z0-9_]+)/i;
                 let argsClone = Object.assign({}, args);
-                let select = 'cmd.id, cmd.content';
+                let firstWord = '';
+                let select = 'cmd.id, cmd.content, ccj.active, ccj.cooldown';
                 let from = 'command AS cmd';
                 let join = 'JOIN channel_command_join AS ccj ON cmd.id = ccj.command_id ';
                 let where = [
@@ -546,18 +547,20 @@ const command = {
                 // if is an admin
                 if (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string')) {
                     argv = yargs
-                        .command('custom-command <cc> [txt..]', 'Process chat command', (ccyargs) =>
+                        .command('custom-command <cc> [ct..]', 'Process custom command', (ccyargs) =>
                             ccyargs
                                 .option('cd', {type: 'number', default: 0})
                                 .option('off', {type: 'boolean', default: false})
                                 .option('on', {type: 'boolean', default: false})
+                                .option('st', {type: 'boolean', default: false})
                                 .option('rm', {type: 'boolean', default: false})
-                                .option('txt', {type: 'string', default: ''})
+                                .option('ct', {type: 'string', default: ''})
                         )
                         .parse('custom-command ' + args.message);
 
+                    firstWord = argv.ct[0];
                     isAdmin = true;
-                    updateCommand = argv.txt.join(' ').length > 0 || argv.off || argv.on || argv.cd > 0;
+                    updateCommand = argv.ct.join(' ').length > 0 || argv.off || argv.on || argv.cd > 0;
 
                     // change criteria
                     where = [
@@ -578,9 +581,9 @@ const command = {
                         argsClone['cooldown'] = argv.cd;
                     }
 
-                    // if text is given
-                    if (argv.txt.join(' ').length > 0) {
-                        argsClone['content'] = argv.txt.join(' ');
+                    // if content is given
+                    if (argv.ct.join(' ').length > 0) {
+                        argsClone['content'] = argv.ct.join(' ');
                     }
 
                     // if active is given
@@ -589,16 +592,17 @@ const command = {
                     }
                 } else {
                     argv = yargs
-                        .command('custom-command <cc> [txt]', 'Process chat command', (ccyargs) =>
+                        .command('custom-command <cc> [ct]', 'Process custom command', (ccyargs) =>
                             ccyargs
-                                .option('txt', {type: 'string', default: ''})
+                                .option('ct', {type: 'string', default: ''})
                         )
                         .parse('custom-command ' + args.message);
+                    firstWord = argv.ct;
                 }
 
                 // if bot should mention a user
-                if (typeof argv.txt === 'string' && atUserRegExp.test(argv.txt)) {
-                    atUser = argv.txt.replace(atUserRegExp, '@$1: ');
+                if (typeof firstWord === 'string' && atUserRegExp.test(firstWord)) {
+                    atUser = firstWord.replace(atUserRegExp, '@$1');
                     isAdmin = false;
                 }
 
@@ -611,16 +615,20 @@ const command = {
                         // if is admin and parameters has changed
                         command.updateCustomCommand(chatbot, argsClone);
                         return false;
+                    } else if (isAdmin && argv.st && rows.length) {
+                        // if is admin and status is true
+                        chatbot.client.say('#' + args.channel, locales.t('command-status', [args.userstate['display-name'], rows[0].content, rows[0].cooldown, (rows[0].active ? locales.t('yes') : locales.t('no'))]));
+                        return false;
                     } else if (isAdmin && argv.rm) {
                         // if is admin and remove is true
                         command.removeCustomCommand(chatbot, argsClone);
                         return false;
                     }
 
-                    // if command exists for channel and is not a command update
+                    // if command exists for channel
                     if (rows.length) {
                         argsClone['customCommandId'] = rows[0].id;
-                        chatbot.client.say('#' + args.channel, atUser + rows[0].content);
+                        chatbot.client.say('#' + args.channel, (atUser.length ? atUser : '@' + args.userstate['display-name']) + ': ' + rows[0].content);
                         command.updateLastExec(chatbot, argsClone);
                     }
                 });
