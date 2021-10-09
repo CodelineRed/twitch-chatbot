@@ -6,7 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.9.0]
+## [1.9.1]
+### Added
+- `!yourcommand --st` for command status in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js) - `command.defaultList.customCommand()`
+- if the user calls `!yourcommand`, user will be mentioned automatically
+- `command-status` in [`chatbot/locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/locales.js)
+
+### Changed
+- [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/README.md)
+- @babel/core 7.15.5 to 7.15.8
+- eslint-plugin-vue 7.18.0 to 7.19.1
+- i18next 21.2.3 to 21.2.4
+
+### Fixed
+- streamer and moderators couldn't mention a user
+- `!yourcommand --off` showed just `Updated command "!yourcommand"`
+
+## [1.9.0] - 2021-10-02
 ### Added
 - new functionality how custom commands can be maintained in chat (see [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot#chatbot-commands-for-broadcaster-and-moderators))
 - new functionality how bot list can be maintained in chat (see [`README.md`](https://github.com/InsanityMeetsHH/twitch-chatbot#chatbot-commands-for-broadcaster-and-moderators))
@@ -56,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - yargs 16.2.0 to 17.2.1
 
 ### Deprecated
-- !adbot, !addcc, !rmbot, !rmcc, !tglcc and !updcc
+- !adbot, !addcc, !rmbot, !rmcc, !tglcc and !updcc (will be removed in 2.0)
 
 ### Fixed
 - wrong return parameter `streamDates` in `statistic.getStreamDates()`

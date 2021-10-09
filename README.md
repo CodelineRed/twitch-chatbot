@@ -17,9 +17,9 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
 - [`chatbot.json`](#chatbotjson)
 - [`gulpfile.json`](#gulpfilejson)
 - [Chatbot Commands](#chatbot-commands)
-- [Chatbot Commands for Streamer and Moderators](#chatbot-commands-for-streamer-and-moderators)
-- [Custom Command Options for Streamer and Moderators](#custom-command-options-for-streamer-and-moderators)
-- [Bot List Options for Streamer and Moderators](#bot-list-options-for-streamer-and-moderators)
+    - [Chatbot Commands for Streamer and Moderators](#chatbot-commands-for-streamer-and-moderators)
+    - [Custom Command Options for Streamer and Moderators](#custom-command-options-for-streamer-and-moderators)
+    - [Bot List Options for Streamer and Moderators](#bot-list-options-for-streamer-and-moderators)
 - [Web UI Features](#web-ui-features)
     - [Chat](#chat)
     - [Commands](#commands)
@@ -206,9 +206,10 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 ## Custom Command Options for Streamer and Moderators
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| --on                | enable command for all users (default: true)                                                                                     |
+| --on                | enable command for all users (default: true, if is a new command)                                                                |
 | --off               | disable command for all users, but not streamer and mods (default: false)                                                        |
-| --cd 30             | cooldown for all users, but not streamer and mods (default: 30 seconds)                                                          |
+| --cd 30             | cooldown for all users, but not streamer and mods (default: 30 seconds, if is a new command)                                     |
+| --st                | show command status in chat (default: false)                                                                                     |
 | --rm                | remove command (default: false)                                                                                                  |
 
 ## Bot List Options for Streamer and Moderators
@@ -248,7 +249,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 - Popout URL `/channel/[channel]/counter` to use browser source in OBS (Pixel recommendation: 400x400px)
 
 ### Playlist
-- Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.local-videos.yml`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.local-videos.yml))
+- Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.videos-folder.yml`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.videos-folder.yml))
 - Play Twitch Clips and Videos (past broadcasts, highlights and video uploads)
 - Play YouTube Videos
 - Add Video
