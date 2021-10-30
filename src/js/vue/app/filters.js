@@ -51,11 +51,11 @@ const filters = {
      */
     twitchClipFile: function(file) {
         let twitchClipRegExp = /^[A-Z][A-Za-z0-9]+$/;
-        let blacklistRegExp = /(^[a-z]|[^A-Za-z0-9])/;
+        let blocklistRegExp = /(^[a-z]|[^A-Za-z0-9])/;
 
         if (!twitchClipRegExp.test(file)) {
-            // remove blacklist chars
-            file = file.replace(blacklistRegExp, '');
+            // remove blocklist chars
+            file = file.replace(blocklistRegExp, '');
         }
 
         return file;
@@ -68,11 +68,11 @@ const filters = {
      */
     twitchVideoFile: function(file) {
         let twitchVideoRegExp = /^[0-9]+$/;
-        let blacklistRegExp = /([^0-9])/;
+        let blocklistRegExp = /([^0-9])/;
 
         if (!twitchVideoRegExp.test(file)) {
-            // remove blacklist chars
-            file = file.replace(blacklistRegExp, '');
+            // remove blocklist chars
+            file = file.replace(blocklistRegExp, '');
         }
 
         return file;
@@ -85,11 +85,11 @@ const filters = {
      */
     youtubeFile: function(file) {
         let youtubeRegExp = /^[a-z0-9_-]$/i;
-        let blacklistRegExp = /([^a-z0-9-_])/i;
+        let blocklistRegExp = /([^a-z0-9-_])/i;
 
         if (!youtubeRegExp.test(file)) {
-            // remove blacklist chars
-            file = file.replace(blacklistRegExp, '');
+            // remove blocklist chars
+            file = file.replace(blocklistRegExp, '');
         }
 
         if (file.length > 11) {
