@@ -5,8 +5,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- upgrade to sass latest
+- upgrade to bootstrap 5
+- upgrade to fontawesome 6 (if its released)
 
-## [1.9.1]
+## [1.9.2]
+### Changed
+- `blacklist` to `blocklist` in [`app/filters.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/app/filters.js)
+- @babel/core 7.15.8 to 7.16.0
+- @babel/plugin-transform-modules-amd 7.14.5 to 7.16.0
+- @fortawesome/vue-fontawesome 2.0.2 to 2.0.6
+- bootstrap 4.6.0 to 4.6.1
+- browser-sync 2.27.5 to 2.27.7
+- eslint-plugin-import 2.24.2 to 2.25.2
+- eslint-plugin-vue 7.19.0 to 7.20.0
+- i18next 21.2.4 to 21.3.3
+- linkify-html 3.0.2 to 3.0.3
+- linkifyjs 3.0.1 to 3.0.3
+- vue-router 3.5.2 to 3.5.3
+
+## [1.9.1] - 2021-10-09
 ### Added
 - `!yourcommand --st` for command status in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js) - `command.defaultList.customCommand()`
 - if the user calls `!yourcommand`, user will be mentioned automatically
@@ -54,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - datatables.net 1.10.23 to 1.11.3
 - datatables.net-bs4 1.10.23 to 1.11.3
 - eslint-plugin-import 2.22.1 to 2.24.2
-- eslint-plugin-vue 7.5.0 to 7.18.0
+- eslint-plugin-vue 7.5.0 to 7.19.0
 - glob 7.1.6 to 7.2.0
 - gulp-autoprefixer 7.0.1 to 8.0.0
 - gulp-sass 4.1.0 to 5.0.0
