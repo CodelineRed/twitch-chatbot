@@ -26,7 +26,7 @@ const command = {
     },
     defaultCommands: [
         '!about', '!chatbot', '!cb', '!bug', '!bugs', '!help', '!commands', '!cc', 
-        '!d([1-9]+)(w([1-9]))?', '!dd([1-9]+)(w([1-9]))?', '!dda', '!plan', 
+        '!d([0-9]+)(w([0-9]))?', '!dd([0-9]+)(w([0-9]))?', '!dda', '!plan', 
         '!program', '!playlist', '!video', '!vote', '!raffle', '!bots', '!addbot', 
         '!rmbot', '!addcc', '!rmcc', '!tglcc', '!updcc'
     ],
@@ -642,8 +642,8 @@ const command = {
          * @returns {undefined}
          */
         diceDuel: function(chatbot, args) {
-            if (/^!dd([1-9]+)(w([1-9]))? (@)?([0-9a-z_]+)/i.test(args.message)) {
-                const matches = args.message.match(/^!dd([1-9]+)(w([1-9]))? (@)?([0-9a-z_]+)/i);
+            if (/^!dd([0-9]+)(w([0-9]))? (@)?([0-9a-z_]+)/i.test(args.message)) {
+                const matches = args.message.match(/^!dd([0-9]+)(w([0-9]))? (@)?([0-9a-z_]+)/i);
                 let ddKeys = Object.keys(command.diceDuels);
                 let userExists = false;
 
@@ -658,12 +658,17 @@ const command = {
                 if (!userExists) {
                     args.message = args.message.replace('!dd', '!d');
                     args.return = true;
+                    let result1 = command.defaultList.rollDice(chatbot, args);
                     let uuid = uuidv4();
+
+                    if (typeof result1 === 'undefined') {
+                        return;
+                    }
 
                     command.diceDuels[uuid] = {
                         dice: `!d${matches[1]}` + (typeof matches[2] === 'string' ? matches[2] : ''),
                         user1: args.userstate['display-name'],
-                        result1: command.commandList.rollDice(chatbot, args),
+                        result1: result1,
                         user2: matches[5].toLowerCase(),
                         result2: 0
                     };
@@ -693,7 +698,6 @@ const command = {
                 let ddKeys = Object.keys(command.diceDuels);
                 for (let i = 0; i < ddKeys.length; i++) {
                     if (command.diceDuels[ddKeys[i]].user2 === args.userstate['username']) {
-                        let even = true;
                         let loser = '';
                         let loserResult = 0;
                         let winner = '';
@@ -702,26 +706,27 @@ const command = {
                         args.message = command.diceDuels[ddKeys[i]].dice;
                         args.return = true;
                         command.diceDuels[ddKeys[i]].user2 = args.userstate['display-name'];
+                        command.diceDuels[ddKeys[i]].result2 = command.defaultList.rollDice(chatbot, args);
 
-                        while (even) {
-                            command.diceDuels[ddKeys[i]].result2 = command.commandList.rollDice(chatbot, args);
-
-                            if (command.diceDuels[ddKeys[i]].result1 > command.diceDuels[ddKeys[i]].result2) {
-                                winner = command.diceDuels[ddKeys[i]].user1;
-                                winnerResult = command.diceDuels[ddKeys[i]].result1;
-                                loser = command.diceDuels[ddKeys[i]].user2;
-                                loserResult = command.diceDuels[ddKeys[i]].result2;
-                                even = false;
-                            } else if (command.diceDuels[ddKeys[i]].result1 < command.diceDuels[ddKeys[i]].result2) {
-                                winner = command.diceDuels[ddKeys[i]].user2;
-                                winnerResult = command.diceDuels[ddKeys[i]].result2;
-                                loser = command.diceDuels[ddKeys[i]].user1;
-                                loserResult = command.diceDuels[ddKeys[i]].result1;
-                                even = false;
-                            }
+                        if (command.diceDuels[ddKeys[i]].result1 > command.diceDuels[ddKeys[i]].result2) {
+                            winner = command.diceDuels[ddKeys[i]].user1;
+                            winnerResult = command.diceDuels[ddKeys[i]].result1;
+                            loser = command.diceDuels[ddKeys[i]].user2;
+                            loserResult = command.diceDuels[ddKeys[i]].result2;
+                            chatbot.client.say('#' + args.channel, locales.t('dice-duel-result', [winner, winnerResult, loser, loserResult]));
+                        } else if (command.diceDuels[ddKeys[i]].result1 < command.diceDuels[ddKeys[i]].result2) {
+                            winner = command.diceDuels[ddKeys[i]].user2;
+                            winnerResult = command.diceDuels[ddKeys[i]].result2;
+                            loser = command.diceDuels[ddKeys[i]].user1;
+                            loserResult = command.diceDuels[ddKeys[i]].result1;
+                            chatbot.client.say('#' + args.channel, locales.t('dice-duel-result', [winner, winnerResult, loser, loserResult]));
+                        } else {
+                            let user1 = command.diceDuels[ddKeys[i]].user1;
+                            let user2 = command.diceDuels[ddKeys[i]].user2;
+                            let result1 = command.diceDuels[ddKeys[i]].result1;
+                            chatbot.client.say('#' + args.channel, locales.t('dice-duel-result-even', [user1, user2, result1]));
                         }
 
-                        chatbot.client.say('#' + args.channel, locales.t('dice-duel-result', [winner, winnerResult, loser, loserResult]));
                         delete command.diceDuels[ddKeys[i]];
                         command.log(args);
                         command.updateLastExec(chatbot, args);
@@ -872,12 +877,16 @@ const command = {
          * @returns {undefined}
          */
         rollDice: function(chatbot, args) {
-            if (/^!d([1-9]+)(w([1-9]))?/i.test(args.message)) {
-                const matches = args.message.match(/^!d([1-9]+)(w([1-9]))?/i);
+            if (/^!d([0-9]+)(w([0-9]))?/i.test(args.message)) {
+                const matches = args.message.match(/^!d([0-9]+)(w([0-9]))?/i);
                 const sides = parseInt(matches[1].slice(0, 2));
                 const dices = typeof matches[3] === 'undefined' ? 1 : parseInt(matches[3]) > 0 ? parseInt(matches[3]) : 1;
                 let results = [];
                 let result = 0;
+
+                if (sides === 0) {
+                    return;
+                }
 
                 for (let i = 0; i < dices; i++) {
                     let eyes = Math.floor(Math.random() * sides) + 1;

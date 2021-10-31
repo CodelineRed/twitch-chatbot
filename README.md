@@ -182,7 +182,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 | about               | !about, !chatbot, !cb, !bug, !bugs, !help                                                                                        |
 | commands            | !commands, !cc                                                                                                                   |
 | counter             | counter increased if users counts from 1 - X without interruption                                                                |
-| diceDuel            | !dd6 @User or !dd56w6 @User - first digit can be from 1 - 99 and second from 1 - 9                                               |
+| diceDuel            | !dd6 @User or !dd56w6 @User - first digit can be from 1 - 99 and second from 1 - 9 (automatically removed after 120 sec)         |
 | diceDuelAccept      | !dda - accepting a dice duel request                                                                                             |
 | playlistInfo        | !plan, !program, !playlist, !video                                                                                               |
 | poll                | !vote 1 - X                                                                                                                      |
