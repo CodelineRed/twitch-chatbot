@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - upgrade to bootstrap 5
 - upgrade to fontawesome 6 (if its released)
 
-## [1.9.2]
+## [1.9.3]
+### Fixed
+- rollDice, diceDuel and diceDuelAccept in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
+
+## [1.9.2] - 2021-10-30
 ### Changed
 - `blacklist` to `blocklist` in [`app/filters.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/app/filters.js)
 - @babel/core 7.15.8 to 7.16.0

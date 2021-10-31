@@ -1,7 +1,7 @@
 {
     "name": "twitch-chatbot",
-    "version": "1.9.2",
-    "commitDate": "2021-10-30T18:15:00+02:00",
+    "version": "1.9.3",
+    "commitDate": "2021-10-31T10:00:00+01:00",
     "description": "Twitch Chatbot made with Vue Skeleton",
     "keywords": [
         "gulp",
