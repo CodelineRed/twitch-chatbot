@@ -13,7 +13,7 @@ const argv = yargs
     .option('direction', {
         alias: 'd',
         default: 'up',
-        description: 'Migration direction (default: up)',
+        description: 'Migration direction)',
         type: 'string'
     })
     .option('file', {
@@ -24,12 +24,12 @@ const argv = yargs
     .option('locale', {
         alias: 'l',
         default: 'en',
-        description: 'Locale for log messages (default: en)',
+        description: 'Locale for log messages',
         type: 'string'
     })
     .option('log', {
         default: true,
-        description: 'Show logs in CLI (default: true)',
+        description: 'Show logs in CLI',
         type: 'boolean'
     })
     .help()

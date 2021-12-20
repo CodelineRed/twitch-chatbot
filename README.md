@@ -12,6 +12,7 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
     - [Install Production Build (Recommended)](#install-production-build-recommended)
     - [Install Master/ Develop Build](#install-master-develop-build)
     - [Install PHP, Adminer and Web UI (optional)](#install-php-adminer-and-web-ui-optional)
+- [`chatbot.js`](#chatbotjs-options)
 - [Project Commands](#project-commands)
 - [Ports](#ports)
 - [`chatbot.json`](#chatbotjson)
@@ -30,8 +31,8 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
     - [Raffle](#raffle)
     - [Bots](#bots)
     - [Statistics](#statistics)
-- [`import-videos-folder.js`](#import-videos-folderjs)
-- [`migration.js`](#migrationjs)
+- [`import-videos-folder.js`](#import-videos-folderjs-options)
+- [`migration.js`](#migrationjs-options)
 - [Localization](#localization)
 - [Links](#links)
 - [Audio Files](#audio-files)
@@ -117,6 +118,14 @@ $ node migration.js
 $ node chatbot.js
 ```
 Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/adminer.php](http://localhost:3050/adminer.php) for Database GUI.
+
+## [`chatbot.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/chatbot.js) Options
+| Option              | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| --help, -h          | Shows list of options                                                                                                            |
+| --version           | Show version number                                                                                                              |
+| --recordchat, --rc  | Record chat messages in database (default: true)                                                                                 |
+| --showversion, --sv | Display version text in console (default: true)                                                                                  |
 
 ## Project Commands
 |                     | Description                                                                                                                      |
@@ -206,17 +215,17 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 ## Custom Command Options for Streamer and Moderators
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| --on                | enable command for all users (default: true, if is a new command)                                                                |
-| --off               | disable command for all users, but not streamer and mods (default: false)                                                        |
-| --cd 30             | cooldown for all users, but not streamer and mods (default: 30 seconds, if is a new command)                                     |
-| --st                | show command status in chat (default: false)                                                                                     |
-| --rm                | remove command (default: false)                                                                                                  |
+| --on                | Enable command for all users (default: true, if is a new command)                                                                |
+| --off               | Disable command for all users, but not streamer and mods (default: false)                                                        |
+| --cd 30             | Cooldown for all users, but not streamer and mods (default: 30 seconds, if is a new command)                                     |
+| --st                | Show command status in chat (default: false)                                                                                     |
+| --rm                | Remove command (default: false)                                                                                                  |
 
 ## Bot List Options for Streamer and Moderators
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| --tc                | show bot list to chat (default: false)                                                                                           |
-| --rm                | remove bot (default: false)                                                                                                      |
+| --tc                | Show bot list to chat (default: false)                                                                                           |
+| --rm                | Remove bot (default: false)                                                                                                      |
 
 ## Web UI Features
 ### Chat
@@ -359,7 +368,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 - Viewer Maximum
 - Viewer Average
 
-## [`import-videos-folder.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/import-videos-folder.js)
+## [`import-videos-folder.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/import-videos-folder.js) Options
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
@@ -380,7 +389,7 @@ Example execution: `$ node import-videos-folder.js -c InsanityMeetsHH`
 
 The Script only imports videos which are not in the database.
 
-## [`migration.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/migration.js)
+## [`migration.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/migration.js) Options
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
@@ -441,3 +450,5 @@ Example execution: `$ node migration.js -d up`
 ## Known Issues
 - Sometimes user are not inserted in channel_user_join. This is under investigation.
 - Emotes in Chat component can flicker after new message was added
+- An Emoji followed by a Twitch emote (e.g. 🧡 CoolCat) is wrong interpreted by `emote.encodeTwitch()`
+    - The API sends a wrong `userstate.emotes` object

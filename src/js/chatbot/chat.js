@@ -2,11 +2,9 @@ const config       = require('../../app/chatbot.json');
 const database     = require('./database');
 const bot          = require('./bot');
 const emote        = require('./emote');
-const locales      = require('./locales');
 const linkify      = require('linkifyjs');
 const linkifyHtml  = require('linkify-html');
 const moment       = require('moment');
-const request      = require('request');
 const {v4: uuidv4, validate: uuidValid} = require('uuid');
 
 const chat = {

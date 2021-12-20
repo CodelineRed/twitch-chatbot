@@ -1,6 +1,7 @@
 const moment      = require('moment');
 const skateboard  = require('skateboard');
 const tmi         = require('tmi.js');
+const yargs       = require('yargs');
 
 const config      = require('./src/app/chatbot.json');
 const database    = require('./src/js/chatbot/database');
@@ -10,7 +11,29 @@ const command     = require('./src/js/chatbot/command');
 const emote       = require('./src/js/chatbot/emote');
 const locales     = require('./src/js/chatbot/locales');
 const user        = require('./src/js/chatbot/user');
+const utility     = require('./src/js/chatbot/utility');
 const viewerCount = require('./src/js/chatbot/viewer-count');
+
+const argv = yargs
+    .option('recordchat', {
+        alias: 'rc',
+        default: true,
+        description: 'Record chat messages in database',
+        type: 'boolean'
+    })
+    .option('showversion', {
+        alias: 'sv',
+        default: true,
+        description: 'Display version text in console',
+        type: 'boolean'
+    })
+    .help()
+    .alias('help', 'h')
+    .argv;
+
+if (argv.showversion) {
+    utility.getVersionText();
+}
 
 let connected = false;
 let countLoadedChannels = 0;
@@ -237,6 +260,11 @@ function onMessage(channel, userstate, message, self) {
         userstate: userstate,
         message: message.trim()
     };
+
+    // if chat recording is disabled
+    if (!argv.recordchat) {
+        return;
+    }
 
     user.add(chatbot, args, function() {
         chat.get(chatbot, args);

@@ -17,6 +17,8 @@ chatbot.json
 composer-setup.php
 gulpfile.json
 gulpfile-config.json
+.npmrc
+package-lock.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,macos,linux,windows,netbeans,phpstorm,composer
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,macos,linux,windows,netbeans,phpstorm,composer

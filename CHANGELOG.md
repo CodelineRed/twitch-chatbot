@@ -9,7 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - upgrade to bootstrap 5
 - upgrade to fontawesome 6 (if its released)
 
-## [1.9.3]
+## [1.10.0]
+### Added
+- [`chatbot/utility.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/utility.js)
+- options `--rc` and `--sv` in [`chatbot.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/chatbot.js)
+- clarification what "Total" means in [`page/statistic.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/page/statistic.vue)
+- semver-compare 1.0.0
+
+### Changed
+- [`.gitignore`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/.gitignore)
+- link to documentation in [`lib/bootstrap.scss`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/scss/lib/bootstrap.scss)
+
+### Fixed
+- favicon path in [`gulpfile.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/gulpfile.js)
+- banned user quantity
+
+### Removed
+- `package-lock.json`
+
+## [1.9.3] - 2021-10-31
 ### Fixed
 - rollDice, diceDuel and diceDuelAccept in [`chatbot/command.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/command.js)
 
