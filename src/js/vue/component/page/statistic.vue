@@ -433,7 +433,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>{{ $t('total') }}</td>
+                                <td>{{ $t('total-subs') }}</td>
                                 <td>
                                     <span v-if="subs.new + subs.gifted + subs.giftedRandom + subs.resubs">{{ subs.new + subs.gifted + subs.giftedRandom + subs.resubs }}</span>
                                     <span v-else>0</span>
@@ -488,9 +488,9 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>{{ $t('total') }}</td>
+                                <td>{{ $t('total-purges') }}</td>
                                 <td>
-                                    <span v-if="purges.deletedMessages + purges.timeoutedMessages + purges.bannnedUsers">{{ purges.deletedMessages + purges.timeoutedMessages + purges.bannnedUsers }}</span>
+                                    <span v-if="purges.deletedMessages + purges.timeoutedMessages + purges.bannnedUsers">{{ purges.deletedMessages + purges.timeoutedUsers + purges.bannnedUsers }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>

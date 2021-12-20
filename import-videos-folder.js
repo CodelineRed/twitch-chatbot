@@ -21,7 +21,7 @@ const argv = yargs
     .option('backup', {
         alias: 'b',
         default: false,
-        description: 'Create an additional backup (default: false)',
+        description: 'Create an additional backup',
         type: 'boolean'
     })
     .option('channel', {
@@ -37,18 +37,18 @@ const argv = yargs
     .option('locale', {
         alias: 'l',
         default: 'en',
-        description: 'Locale to use in date generation and log messages (default: en)',
+        description: 'Locale to use in date generation and log messages',
         type: 'string'
     })
     .option('log', {
         default: true,
-        description: 'Show logs in CLI (default: true)',
+        description: 'Show logs in CLI',
         type: 'boolean'
     })
     .option('subname', {
         alias: 'sn',
         default: true,
-        description: 'Add date as sub name (default: true)',
+        description: 'Add date as sub name',
         type: 'boolean'
     })
     .help()

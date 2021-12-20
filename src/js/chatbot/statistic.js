@@ -138,10 +138,12 @@ const statistic = {
     getPurges: function(chatbot, args) {
         let selectPre = '(SELECT COUNT(ch.channel_id) FROM chat AS ch WHERE ch.channel_id = $id ';
         selectPre += 'AND ch.created_at >= strftime($format, $start) AND ch.created_at <= strftime($format, $end) AND ch.purge LIKE ';
+        let selectPreUser = '(SELECT COUNT(*) FROM (SELECT DISTINCT ch.user_id FROM chat AS ch WHERE ch.channel_id = $id ';
+        selectPreUser += 'AND ch.created_at >= strftime($format, $start) AND ch.created_at <= strftime($format, $end) AND ch.purge LIKE ';
         let select = selectPre + '\'%deleted%\' GROUP BY ch.channel_id) AS deletedMessages, ';
         select += selectPre + '\'%message":"%s"%\' GROUP BY ch.channel_id) AS timeoutedMessages, ';
-        select += selectPre + '\'%s","showMessage":true%\' GROUP BY ch.channel_id) AS timeoutedUsers, ';
-        select += selectPre + '\'%banned%\' GROUP BY ch.channel_id) AS bannnedUsers';
+        select += selectPreUser + '\'%s","showMessage":true%\')) AS timeoutedUsers, ';
+        select += selectPreUser + '\'%banned%\')) AS bannnedUsers';
         let prepare = {
             $id: chatbot.channels[args.channel].id,
             $format: '%s',
