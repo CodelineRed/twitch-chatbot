@@ -1,8 +1,8 @@
-# Twitch Chatbot - InsanityMeetsHH
+# Twitch Chatbot - CodelineRed
 
-Visit [screenshots](https://github.com/InsanityMeetsHH/twitch-chatbot/tree/master/screenshots) for an inside look.
+Visit [screenshots](https://github.com/CodelineRed/twitch-chatbot/tree/master/screenshots) for an inside look.
 
-This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-skeleton).
+This application based on [Vue Skeleton](https://github.com/CodelineRed/vue-skeleton).
 
 **_This software is meant to be installed on your local machine. If you want to install on a public web server, please secure `public` folder by `.htpasswd` or something similar._**
 
@@ -58,10 +58,10 @@ This application based on [Vue Skeleton](https://github.com/InsanityMeetsHH/vue-
 - [Node.js](http://nodejs.org/en/download/) >= 12.20
 - [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 
-[Download zip](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/production.zip) if you don't have git on your OS.
+[Download zip](https://github.com/CodelineRed/twitch-chatbot/archive/production.zip) if you don't have git on your OS.
 Open console on your OS and navigate to your project folder.
 ```bash
-$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git
+$ git clone https://github.com/CodelineRed/twitch-chatbot.git
 $ cd twitch-chatbot
 $ git checkout production
 $ (optional on unix) rm -rf .git
@@ -80,10 +80,10 @@ If you want to use the Web UI, you have to go to [Install PHP, Adminer and Web U
 - [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 - [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
 
-[Download zip](https://github.com/InsanityMeetsHH/twitch-chatbot/archive/master.zip) if you don't have git on your OS.
+[Download zip](https://github.com/CodelineRed/twitch-chatbot/archive/master.zip) if you don't have git on your OS.
 Open 2 consoles on your OS and navigate both to your project folder.
 ```bash
-$ git clone https://github.com/InsanityMeetsHH/twitch-chatbot.git
+$ git clone https://github.com/CodelineRed/twitch-chatbot.git
 $ cd twitch-chatbot
 $ (optional) git checkout develop
 $ (optional on unix) rm -rf .git
@@ -107,10 +107,7 @@ Open console on your OS and navigate to the unziped/ cloned app folder.
 $ (unix) systemctl docker start
 $ (windows) "c:\path\to\Docker Desktop.exe"
 $ docker-compose up -d
-```
-Follow the 4 steps from [Command-line installation](https://getcomposer.org/download/) and replace every leading `php` with `docker exec -ti twitch-chatbot php`
-```bash
-$ docker exec -ti twitch-chatbot php composer.phar install
+$ docker-compose run composer install --no-dev
 $ docker exec -ti twitch-chatbot php /var/www/vendor/vrana/adminer/compile.php
 $ (unix) mv adminer-4.6.2.php adminer/
 $ (windows) move adminer-4.6.2.php adminer/
@@ -119,13 +116,14 @@ $ node chatbot.js
 ```
 Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/adminer.php](http://localhost:3050/adminer.php) for Database GUI.
 
-## [`chatbot.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/chatbot.js) Options
+## [`chatbot.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/chatbot.js) Options
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
 | --version           | Show version number                                                                                                              |
 | --recordchat, --rc  | Record chat messages in database (default: true)                                                                                 |
 | --showversion, --sv | Display version text in console (default: true)                                                                                  |
+| --intro, -i         | Display intro in console (default: true)                                                                                         |
 
 ## Project Commands
 |                     | Description                                                                                                                      |
@@ -137,17 +135,17 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 | gulp font           | copy font files                                                                                                                  |
 | gulp img            | copy and compress images                                                                                                         |
 | gulp js             | uglify, minify and concat js files                                                                                               |
-| gulp jsLint         | checks js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/js-lint.json)               | 
+| gulp jsLint         | checks js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/js-lint.json)                   | 
 | gulp jsRequire      | copy, uglify and rename files for requirejs                                                                                      |
 | gulp json           | copy and minify json files                                                                                                       |
 | gulp scss           | compile, minify and concat scss files                                                                                            |
-| gulp scssLint       | checks scss follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/scss-lint.json)           |
+| gulp scssLint       | checks scss follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/scss-lint.json)               |
 | gulp svg            | copy and compress svg files                                                                                                      |
 | gulp vue            | transpile vue files                                                                                                              |
-| gulp vueLint        | checks vue follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/vue-lint.json)             |
+| ~gulp vueLint~      | ~checks vue follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/vue-lint.json)~ _**currently disabled**_ |
 | gulp vueJs          | transpile vue js files                                                                                                           |
-| gulp vueJsLint      | checks vue js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/import-lint.json)       |
-| gulp chatbotLint    | checks chatbot js follows [lint rules](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/import-lint.json)   |
+| gulp vueJsLint      | checks vue js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/import-lint.json)           |
+| gulp chatbotLint    | checks chatbot js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/import-lint.json)       |
 | gulp watch          | watch scss, js, json, vue, chatbot, img, font and svg files                                                                      |
 
 ## Ports
@@ -155,8 +153,8 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | 3000                | Web UI with HTML ([BrowserSync](https://www.npmjs.com/package/browser-sync))                                                     |
 | 3001                | [BrowserSync UI](https://www.npmjs.com/package/browser-sync)                                                                     |
-| 3050                | Web UI with PHP/ [twitch-chatbot](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.yml) (Docker Container) |
-| 3060                | Host for [twitch-chatbot-videos-folder](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.videos-folder.yml) (Docker Container) |
+| 3050                | Web UI with PHP/ [twitch-chatbot](https://github.com/CodelineRed/twitch-chatbot/blob/master/docker-compose.yml) (Docker Container) |
+| 3060                | Host for [twitch-chatbot-videos-folder](https://github.com/CodelineRed/twitch-chatbot/blob/master/docker-compose.videos-folder.yml) (Docker Container) |
 | 3100                | Main Window (Skateboard Socket for Web UI)                                                                                       |
 | 3110                | Chat Window (Skateboard Socket for Web UI)                                                                                       |
 | 3120                | Player Window (Skateboard Socket for Web UI)                                                                                     |
@@ -164,7 +162,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 | 3140                | Poll Window (Skateboard Socket for Web UI)                                                                                       |
 | 3150                | Counter Window (Skateboard Socket for Web UI)                                                                                    |
 
-## [`chatbot.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/chatbot.dist.json)
+## [`chatbot.json`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/chatbot.dist.json)
 |                     | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | username            | Required - Twitch User Name                                                                                                      |
@@ -177,7 +175,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 | locale              | Required - German (de) and English (en) are presetted                                                                            |
 | channels            | Required - List of Channels to connect                                                                                           |
 
-## [`gulpfile.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/gulpfile.dist.json)
+## [`gulpfile.json`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/gulpfile.dist.json)
 |                     | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | browserSyncConfig   | Required - Defines which config is used for [BrowserSync](https://www.npmjs.com/package/browser-sync) (default: browserSyncDev)  |
@@ -258,7 +256,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 - Popout URL `/channel/[channel]/counter` to use browser source in OBS (Pixel recommendation: 400x400px)
 
 ### Playlist
-- Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.videos-folder.yml`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/docker-compose.videos-folder.yml))
+- Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.videos-folder.yml`](https://github.com/CodelineRed/twitch-chatbot/blob/master/docker-compose.videos-folder.yml))
 - Play Twitch Clips and Videos (past broadcasts, highlights and video uploads)
 - Play YouTube Videos
 - Add Video
@@ -368,7 +366,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 - Viewer Maximum
 - Viewer Average
 
-## [`import-videos-folder.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/import-videos-folder.js) Options
+## [`import-videos-folder.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/import-videos-folder.js) Options
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
@@ -380,16 +378,16 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 | --log               | Optional - Show logs in CLI (default: true)                                                                                      |
 | --subname, --sn     | Optional - Add date as sub name (default: true)                                                                                  |
 
-Example execution: `$ node import-videos-folder.js -c InsanityMeetsHH`
+Example execution: `$ node import-videos-folder.js -c CodelineRed`
 
 ### Import Requirements:
-- `videosFolder` in [`chatbot.json`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/app/chatbot.dist.json) points to existing folder
+- `videosFolder` in [`chatbot.json`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/chatbot.dist.json) points to existing folder
 - each folder under `videosFolder` corresponds to a playlist
 - only MP4 files are allowed
 
 The Script only imports videos which are not in the database.
 
-## [`migration.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/migration.js) Options
+## [`migration.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/migration.js) Options
 | Option              | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | --help, -h          | Shows list of options                                                                                                            |
@@ -402,20 +400,20 @@ The Script only imports videos which are not in the database.
 Example execution: `$ node migration.js -d up`
 
 ## Localization
-- Web UI: [`i18n-locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/app/i18n-locales.js)
-- Web UI: [`langswitch.vue`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/vue/component/partial/langswitch.vue)
-- Node: [`locales.js`](https://github.com/InsanityMeetsHH/twitch-chatbot/blob/master/src/js/chatbot/locales.js)
+- Web UI: [`i18n-locales.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/js/vue/app/i18n-locales.js)
+- Web UI: [`langswitch.vue`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/js/vue/component/partial/langswitch.vue)
+- Node: [`locales.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/js/chatbot/locales.js)
 
 ## Links
 - [Twitch Messaging Interface](https://github.com/tmijs/docs/tree/gh-pages/_posts)
 - [Twitch TMI Token](https://twitchapps.com/tmi/)
 - [Twitch API Token](https://dev.twitch.tv/)
+- [Twitch API Reference](https://dev.twitch.tv/docs/api/reference)
 - [YouTube API Token](https://console.developers.google.com)
 - [BetterTTV API](https://github.com/pajbot/pajbot/issues/495)
 - [FrankerFaceZ API](https://www.frankerfacez.com/developers)
 - [Twitch Clip API](https://dev.twitch.tv/docs/v5/reference/clips#get-clip)
 - [Twitch Clip Embed](https://dev.twitch.tv/docs/embed/video-and-clips/#non-interactive-iframes-for-clips)
-- [Twitch Video API](https://dev.twitch.tv/docs/v5/reference/videos#get-video)
 - [Twitch Video Embed](https://dev.twitch.tv/docs/embed/video-and-clips/#non-interactive-inline-frames-for-live-streams-and-vods)
 - [ESLint Js Rules](https://eslint.org/docs/rules/)
 - [ESLint Vue Rules](https://vuejs.github.io/eslint-plugin-vue/rules/)
@@ -427,13 +425,13 @@ Example execution: `$ node migration.js -d up`
 - [SCSS Confetti](https://codepen.io/Event_Horizon/pen/wBKVQN)
 
 ## Audio Files
-- Airy by [InsanityMeetsHH](https://twitter.com/InsanityMeetsHH)
-- Ambi EP by [InsanityMeetsHH](https://twitter.com/InsanityMeetsHH)
+- Airy by [CodelineRed](https://twitter.com/CodelineRed)
+- Ambi EP by [CodelineRed](https://twitter.com/CodelineRed)
 - [Big Clap](https://freesound.org/people/kellieskitchen/sounds/209991/)
-- Brassy by [InsanityMeetsHH](https://twitter.com/InsanityMeetsHH)
-- C-Space by [InsanityMeetsHH](https://twitter.com/InsanityMeetsHH)
+- Brassy by [CodelineRed](https://twitter.com/CodelineRed)
+- C-Space by [CodelineRed](https://twitter.com/CodelineRed)
 - [Cheering and Clapping](https://freesound.org/people/AlaskaRobotics/sounds/221568/)
-- Ensemble by [InsanityMeetsHH](https://twitter.com/InsanityMeetsHH)
+- Ensemble by [CodelineRed](https://twitter.com/CodelineRed)
 - [Fan Fare 1](https://freesound.org/people/Suburbanwizard/sounds/423293/)
 - [Fan Fare 2](https://freesound.org/people/humanoide9000/sounds/466133/)
 - [Fan Fare 3](https://freesound.org/people/plasterbrain/sounds/397355/)

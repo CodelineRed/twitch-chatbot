@@ -25,7 +25,7 @@ const utility = {
      */
     getGithubVersion: function() {
         let options = {
-            url: 'https://raw.githubusercontent.com/InsanityMeetsHH/twitch-chatbot/master/package.json',
+            url: 'https://raw.githubusercontent.com/CodelineRed/twitch-chatbot/master/package.json',
             method: 'GET',
             json: true
         };

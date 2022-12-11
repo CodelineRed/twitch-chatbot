@@ -1,4 +1,5 @@
 const browserSync = require('browser-sync').create();
+const chalk       = require('chalk');
 const del         = require('del');
 const gulp        = require('gulp');
 const prefixer    = require('gulp-autoprefixer');
@@ -74,11 +75,11 @@ function favicon() {
             appName: 'Twitch Chatbot',
             appShortName: 'Twitch Chatbot',
             appDescription: 'Twitch Chatbot made with Vue Skeleton',
-            developerName: 'InsanityMeetsHH',
-            developerURL: 'https://insanitymeetshh.net/',
-            background: '#212121',
+            developerName: 'CodelineRed',
+            developerURL: 'https://codelinered.net/',
+            background: '#ff2525',
             path: '',
-            url: 'https://vue.insanitymeetshh.net/',
+            url: 'https://vue.codelinered.net/',
             display: 'standalone',
             orientation: 'portrait',
             scope: '/',
@@ -247,7 +248,13 @@ function vueJsLint() {
 
 // lint vue files
 function vueLint() {
-    return lint(gulp, eslint, [config.sourcePath + 'js/vue/**/*.vue'], 'vue');
+    return new Promise(function(resolve, reject) {
+        console.log(chalk.black.bgYellow(" Message from Developer:        "));
+        console.log(chalk.black.bgYellow(" vueLint is currently disabled  "));
+        console.log(chalk.black.bgYellow(" No action from you is required "));
+        resolve();
+    });
+    //return lint(gulp, eslint, [config.sourcePath + 'js/vue/**/*.vue'], 'vue');
 }
 
 // watch files

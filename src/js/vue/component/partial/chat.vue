@@ -112,7 +112,7 @@
                     cssClass.push('first');
                 }
 
-                if (message.purge.hasPurge) {
+                if (typeof message.purge !== 'undefined' && message.purge.hasPurge) {
                     cssClass.push('purge');
                 }
 

@@ -4,6 +4,12 @@
 - Follow the instructions below
 - Start chatbot `$ node chatbot.js`
 
+### Upgrade from 1.10.0 to 1.11.0
+Nothing you have to do.
+
+### Upgrade from 1.9.x to 1.10.0
+Nothing you have to do.
+
 ### Upgrade from 1.8.0 to 1.9.0
 Default command !bots has changed.
 See:
@@ -15,7 +21,7 @@ Nothing you have to do.
 
 ### Upgrade from 1.6.x to 1.7.0
 `adminer-4.6.2.php` was removed from repo and has to be installed with composer.
-See: [Install PHP, Adminer and Web UI](https://github.com/InsanityMeetsHH/twitch-chatbot/#install-php-adminer-and-web-ui-optional).
+See: [Install PHP, Adminer and Web UI](https://github.com/CodelineRed/twitch-chatbot/#install-php-adminer-and-web-ui-optional).
 
 ### Upgrade from 1.5.0 to 1.6.x
 Nothing you have to do.

@@ -50,8 +50,8 @@ const filters = {
      * @returns {string}
      */
     twitchClipFile: function(file) {
-        let twitchClipRegExp = /^[A-Z][A-Za-z0-9]+$/;
-        let blocklistRegExp = /(^[a-z]|[^A-Za-z0-9])/;
+        let twitchClipRegExp = /^[A-Z][A-Za-z0-9-_]+$/;
+        let blocklistRegExp = /(^[a-z]|[^A-Za-z0-9-_])/;
 
         if (!twitchClipRegExp.test(file)) {
             // remove blocklist chars

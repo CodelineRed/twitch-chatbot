@@ -1,20 +1,27 @@
 {
-    "name": "insanitymeetshh/twitch-chatbot",
+    "name": "codelinered/twitch-chatbot",
     "description": "Twitch Chatbot made with Vue Skeleton",
-    "version": "1.10.0",
+    "version": "1.11.0-dev",
     "keywords": ["gulp", "twitch", "twitch-tmi", "chatbot", "vue", "vue router", "vue i18n", "bootstrap", "fontawesome", "docker", "jquery"],
-    "homepage": "https://www.insanitymeetshh.net",
+    "homepage": "https://www.codelinered.net",
     "license": "MIT",
     "type": "project",
     "authors": [
         {
-            "name": "InsanityMeetsHH",
-            "email": "software@insanitymeetshh.net",
-            "homepage": "https://www.insanitymeetshh.net"
+            "name": "CodelineRed",
+            "email": "software@codelinered.net",
+            "homepage": "https://www.codelinered.net"
         }
     ],
     "minimum-stability": "stable",
     "require": {
+        "php": "^7.4",
         "vrana/adminer": "4.6.2"
+    },
+    "config": {
+        "process-timeout": 0,
+        "platform": {
+            "php": "7.4.30"
+        }
     }
 }

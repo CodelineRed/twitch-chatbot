@@ -7,17 +7,12 @@ const {v4: uuidv4} = require('uuid');
 const viewerCount = {
     error: false,
     add: function(chatbot) {
-        let oauthToken = '';
-        let query = '';
         let channels = Object.keys(chatbot.channels);
+        let oauthToken = chatbot.getOauthToken();
+        let query = '';
 
-        // get oauthToken by any channel
+        // generate query
         for (let i = 0; i < channels.length; i++) {
-            if (typeof chatbot.channels[channels[i]].oauthToken === 'string' 
-                && chatbot.channels[channels[i]].oauthToken.length && !oauthToken.length) {
-                oauthToken = chatbot.channels[channels[i]].oauthToken;
-            }
-
             query += (query.length ? '&' : '') + 'user_id=' + chatbot.channels[channels[i]].id;
         }
 
@@ -28,7 +23,6 @@ const viewerCount = {
                 method: 'GET',
                 json: true,
                 headers: {
-                    'Accept': 'application/vnd.twitchtv.v5+json',
                     'Authorization': `Bearer ${oauthToken}`,
                     'Client-ID': chatbot.config.clientIdToken
                 }
@@ -40,17 +34,17 @@ const viewerCount = {
                     return console.log(err);
                 }
 
-                if (typeof body.data !== 'undefined') {
+                if (typeof body.data !== 'undefined' && body.data.length) {
                     for (let i = 0; i < body.data.length; i++) {
                         let time = moment().unix();
                         let count = body.data[i].viewer_count;
                         let channelId = body.data[i].user_id;
                         options = {
-                            url: `https://api.twitch.tv/kraken/channels/${body.data[i].user_id}`,
+                            url: `https://api.twitch.tv/helix/search/channels?query=${body.data[i].user_login}&live_only=1`,
                             method: 'GET',
                             json: true,
                             headers: {
-                                'Accept': 'application/vnd.twitchtv.v5+json',
+                                'Authorization': `Bearer ${oauthToken}`,
                                 'Client-ID': chatbot.config.clientIdToken
                             }
                         };
@@ -61,12 +55,12 @@ const viewerCount = {
                                 return console.log(errGame);
                             }
 
-                            if (typeof bodyGame.game !== 'undefined') {
+                            if (typeof bodyGame.data !== 'undefined' && bodyGame.data.length) {
                                 let values = {
                                     uuid: uuidv4(),
                                     channelId: channelId,
                                     count: count,
-                                    game: bodyGame.game,
+                                    game: bodyGame.data[0].game_name,
                                     updatedAt: time,
                                     createdAt: time
                                 };

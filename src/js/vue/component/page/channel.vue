@@ -196,7 +196,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div id="oauth-token" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="oauth-token-modal-title" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg modal-xl" role="document">
                     <div class="modal-content">

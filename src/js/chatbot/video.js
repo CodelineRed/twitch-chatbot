@@ -155,55 +155,53 @@ const video = {
             }
 
             if (chatbot.channels[args.channel].oauthToken.length) {
-                let set = {'channel': {}};
+                let set = {};
 
                 // if titleCmd is set, change stream titel
                 if (typeof videoItem.titleCmd !== 'undefined' && videoItem.titleCmd.length) {
-                    set.channel.status = videoItem.titleCmd;
+                    set['title'] = videoItem.titleCmd;
                 }
 
                 // if gameCmd is set, change stream game
                 if (typeof videoItem.gameCmd !== 'undefined' && videoItem.gameCmd.length) {
-                    set.channel.game = videoItem.gameCmd;
-                }
-
-                if (Object.keys(set.channel).length) {
                     let options = {
-                        url: `https://api.twitch.tv/v5/channels/${chatbot.channels[args.channel].id}`,
-                        method: 'PUT',
+                        url: `https://api.twitch.tv/helix/search/categories?query=${videoItem.gameCmd}`,
+                        method: 'GET',
                         json: true,
                         headers: {
-                            'Accept': 'application/vnd.twitchtv.v5+json',
-                            'Authorization': `OAuth ${chatbot.channels[args.channel].oauthToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(set)
+                            'Authorization': `Bearer ${chatbot.channels[args.channel].oauthToken}`,
+                            'Client-ID': chatbot.config.clientIdToken
+                        }
                     };
 
-                    // change stream game and/ or title
+                    // search game by name
                     request(options, (err, res, body) => {
                         if (err) {
                             return console.log(err);
                         }
 
-                        if (typeof body.error === 'undefined') {
-                            if (typeof set.channel.status !== 'undefined' && typeof set.channel.game !== 'undefined' ) {
-                                locales.t('change-channel-1', [set.channel.status, set.channel.game]);
-                            } else if (typeof set.channel.status !== 'undefined') {
-                                locales.t('change-channel-2', [set.channel.status]);
-                            } else {
-                                locales.t('change-channel-3', [set.channel.game]);
+                        if (typeof body.data !== 'undefined' && body.data.length) {
+                            let gameExp = new RegExp(videoItem.gameCmd.toLowerCase());
+                            set['game_id'] = body.data[0].id;
+                            args.gameCmd = body.data[0].name;
+                            
+                            // find matching game
+                            for (let i = 0; i < body.data.length; i++) {
+                                if (videoItem.gameCmd.toLowerCase() === body.data[i].name.toLowerCase()) {
+                                    set['game_id'] = body.data[i].id;
+                                    args.gameCmd = body.data[i].name;
+                                    break;
+                                } else if (gameExp.test(body.data[i].name.toLowerCase())) {
+                                    set['game_id'] = body.data[i].id;
+                                    args.gameCmd = body.data[i].name;
+                                }
                             }
-                        } else {
-                            if (typeof set.channel.status !== 'undefined' && typeof set.channel.game !== 'undefined' ) {
-                                locales.t('could-not-change-channel-1', [set.channel.status, set.channel.game]);
-                            } else if (typeof set.channel.status !== 'undefined') {
-                                locales.t('could-not-change-channel-2', [set.channel.status]);
-                            } else {
-                                locales.t('could-not-change-channel-3', [set.channel.game]);
-                            }
+
+                            video.modifyChannel(chatbot, args, set);
                         }
                     });
+                } else if (Object.keys(set).length) {
+                    video.modifyChannel(chatbot, args, set);
                 }
             } else {
                 // if titleCmd is set, change stream titel
@@ -250,6 +248,42 @@ const video = {
                 chatbot.getActivePlaylist(chatbot, args);
             }
         }
+    },
+    /**
+     * Gets game informations by game id
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @param {function} callback
+     * @param {object} cbArgs
+     * @returns {undefined}
+     */
+    getGameById: function(chatbot, args, callback, cbArgs) {
+        let oauthToken = chatbot.getOauthToken();
+        let options = {
+            url: `https://api.twitch.tv/helix/games?id=${args.gameId}`,
+            method: 'GET',
+            json: true,
+            headers: {
+                'Authorization': `Bearer ${oauthToken}`,
+                'Client-ID': chatbot.config.clientIdToken
+            }
+        };
+
+        // get game by id
+        request(options, (err, res, body) => {
+            if (err) {
+                return console.log(err);
+            }
+
+            if (typeof body.data !== 'undefined' && body.data.length) {
+                cbArgs.game = body.data[0].name;
+                cbArgs.gameId = body.data[0].id;
+                cbArgs.boxArtUrl = body.data[0].box_art_url;
+                cbArgs.igdbId = body.data[0].igdb_id;
+                callback(cbArgs);
+            }
+        });
     },
     /**
      * Returns index of given video in videos
@@ -367,6 +401,7 @@ const video = {
      * @returns {undefined}
      */
     getTwitchClipMeta: function(chatbot, args) {
+        let oauthToken = chatbot.getOauthToken();
         let call = {
             args: {
                 channel: args.channel,
@@ -380,41 +415,41 @@ const video = {
         };
 
         // if file fits pattern and token is defined
-        if (/^[A-Z][A-Za-z0-9]+$/.test(args.file) && chatbot.config.clientIdToken.length) {
+        if (/^[A-Z][A-Za-z0-9-_]+$/.test(args.file) && oauthToken.length 
+            && chatbot.config.clientIdToken.length) {
             let options = {
-                url: `https://api.twitch.tv/kraken/clips/${args.file}`,
+                url: `https://api.twitch.tv/helix/clips?id=${args.file}`,
                 method: 'GET',
                 json: true,
                 headers: {
-                    'Accept': 'application/vnd.twitchtv.v5+json',
+                    'Authorization': `Bearer ${oauthToken}`,
                     'Client-ID': chatbot.config.clientIdToken
                 }
             };
 
-            // get single twitch video
+            // get single twitch clip
             request(options, (err, res, body) => {
                 if (err) {
                     return console.log(err);
                 }
 
-                if (typeof body.title !== 'undefined') {
-                    let duration = (body.duration -.5).toFixed(0);
-                    let format = locales.t('date');
-                    let name = body.title;
-                    let subName = (body.game.length ? `${body.game} - ` : '') + 'Clip';
-                    subName += ` (${moment(body.created_at).format(format)})`;
+                if (typeof body.data !== 'undefined' && body.data.length) {
+                    let data = body.data[0];
+                    args['gameId'] = data.game_id;
+                    
+                    let callback = function(cbData) {
+                        let duration = (cbData.duration -.5).toFixed(0);
+                        let subName = (cbData.game.length ? `${cbData.game} - ` : '') + 'Clip';
+                        subName += ` (${moment(cbData.created_at).format(locales.t('date'))})`;
 
-                    // if duration greater than 23:59:59 hours
-                    if (duration > 86399) {
-                        duration = 0;
-                    }
-
-                    if (chatbot.socket !== null && duration) {
-                        call.args.name = name;
-                        call.args.subName = subName;
-                        call.args.duration = duration;
-                        chatbot.socket.write(JSON.stringify(call));
-                    }
+                        if (chatbot.socket !== null && duration) {
+                            call.args.name = cbData.title;
+                            call.args.subName = subName;
+                            call.args.duration = duration;
+                            chatbot.socket.write(JSON.stringify(call));
+                        }
+                    };
+                    video.getGameById(chatbot, args, callback, data);
                 }
             });
         } else if (chatbot.socket !== null) {
@@ -429,6 +464,7 @@ const video = {
      * @returns {undefined}
      */
     getTwitchVideoMeta: function(chatbot, args) {
+        let oauthToken = chatbot.getOauthToken();
         let call = {
             args: {
                 channel: args.channel,
@@ -442,13 +478,14 @@ const video = {
         };
 
         // if file fits pattern and token is defined
-        if (/^[0-9]+$/.test(args.file) && chatbot.config.clientIdToken.length) {
+        if (/^[0-9]+$/.test(args.file) && oauthToken.length 
+            && chatbot.config.clientIdToken.length) {
             let options = {
-                url: `https://api.twitch.tv/kraken/videos/${args.file}`,
+                url: `https://api.twitch.tv/helix/videos?id=${args.file}`,
                 method: 'GET',
                 json: true,
                 headers: {
-                    'Accept': 'application/vnd.twitchtv.v5+json',
+                    'Authorization': `Bearer ${oauthToken}`,
                     'Client-ID': chatbot.config.clientIdToken
                 }
             };
@@ -459,12 +496,16 @@ const video = {
                     return console.log(err);
                 }
 
-                if (typeof body.title !== 'undefined' 
-                    && body.status === 'recorded') {
-                    let duration = body.length;
+                if (typeof body.data !== 'undefined' && body.data.length) {
+                    let data = body.data[0];
+                    let durationArr = data.duration.replace('s', '').replace(/([hm])/g, '-').split('-').reverse();
+                    let hours = typeof durationArr[2] !== 'undefined' ? parseInt(durationArr[2]) : 0;
+                    let minutes = typeof durationArr[1] !== 'undefined' ? parseInt(durationArr[1]) : 0;
+                    let seconds= typeof durationArr[0] !== 'undefined' ? parseInt(durationArr[0]) : 0;
+                    let duration = seconds + (minutes * 60) + (hours * 3600);
                     let format = locales.t('date');
-                    let name = body.title;
-                    let subName = body.game.length ? `${body.game} (${moment(body.created_at).format(format)})` : moment(body.created_at).format(format);
+                    let name = data.title;
+                    let subName = moment(data.created_at).format(format);
 
                     // if duration greater than 23:59:59 hours
                     if (duration > 86399) {
@@ -555,6 +596,51 @@ const video = {
         } else if (chatbot.socket !== null) {
             chatbot.socket.write(JSON.stringify(call));
         }
+    },
+    /**
+     * Modifies channel category and title
+     * 
+     * @param {object} chatbot
+     * @param {object} args
+     * @param {object} set
+     * @returns {undefined}
+     */
+    modifyChannel: function(chatbot, args, set) {
+        let options = {
+            url: `https://api.twitch.tv/helix/channels?broadcaster_id=${chatbot.channels[args.channel].id}`,
+            method: 'PATCH',
+            json: true,
+            headers: {
+                'Authorization': `Bearer ${chatbot.channels[args.channel].oauthToken}`,
+                'Client-ID': chatbot.config.clientIdToken
+            },
+            body: set
+        };
+
+        // change stream game and/ or title
+        request(options, (err, res, body) => {
+            if (err) {
+                return console.log(err);
+            }
+
+            if (typeof body === 'undefined') {
+                if (typeof set.title !== 'undefined' && typeof args.gameCmd !== 'undefined' ) {
+                    console.log(locales.t('change-channel-1', [set.title, args.gameCmd]));
+                } else if (typeof set.title !== 'undefined') {
+                    console.log(locales.t('change-channel-2', [set.title]));
+                } else {
+                    console.log(locales.t('change-channel-3', [args.gameCmd]));
+                }
+            } else {
+                if (typeof set.title !== 'undefined' && typeof args.gameCmd !== 'undefined' ) {
+                    console.log(locales.t('could-not-change-channel-1', [set.title, args.gameCmd]));
+                } else if (typeof set.title !== 'undefined') {
+                    console.log(locales.t('could-not-change-channel-2', [set.title]));
+                } else {
+                    console.log(locales.t('could-not-change-channel-3', [args.gameCmd]));
+                }
+            }
+        });
     },
     /**
      * Moves a video in sorting order

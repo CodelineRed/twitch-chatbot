@@ -4,8 +4,10 @@ volumes:
     logs:
         driver: local
 
+# docker-compose up -d
 services:
     # http://localhost:3050
+    # docker exec -ti twitch-chatbot php --version
     webserver:
         image: php:7-alpine
         container_name: twitch-chatbot
@@ -18,3 +20,11 @@ services:
         volumes:
             - .:/var/www
             - logs:/var/www/logs
+
+    # docker-compose run composer install --no-dev
+    # docker-compose run composer require user/pack
+    composer:
+        image: composer
+        volumes:
+            - .:/var/www
+        working_dir: /var/www

@@ -1,7 +1,7 @@
 {
     "name": "twitch-chatbot",
-    "version": "1.10.0",
-    "commitDate": "2021-12-20T15:30:00+01:00",
+    "version": "1.11.0-dev",
+    "commitDate": "2022-12-11T12:30:00+01:00",
     "description": "Twitch Chatbot made with Vue Skeleton",
     "keywords": [
         "gulp",
@@ -17,25 +17,25 @@
         "jquery"
     ],
     "author": {
-        "name": "InsanityMeetsHH",
-        "email": "software@insanitymeetshh.net",
-        "url": "https://www.insanitymeetshh.net"
+        "name": "CodelineRed",
+        "email": "software@codelinered.net",
+        "url": "https://www.codelinered.net"
     },
     "bugs": {
-        "url": "https://github.com/InsanityMeetsHH/twitch-chatbot/issues"
+        "url": "https://github.com/CodelineRed/twitch-chatbot/issues"
     },
     "license": "MIT",
-    "homepage": "https://github.com/InsanityMeetsHH/twitch-chatbot",
+    "homepage": "https://github.com/CodelineRed/twitch-chatbot",
     "repository": {
         "type": "git",
-        "url": "git://github.com/InsanityMeetsHH/twitch-chatbot.git"
+        "url": "git://github.com/CodelineRed/twitch-chatbot.git"
     },
     "engines": {
         "node": ">=12.20.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.16.0",
-        "@babel/plugin-transform-modules-amd": "^7.16.0",
+        "@babel/core": "^7.20.5",
+        "@babel/plugin-transform-modules-amd": "^7.19.6",
         "@fortawesome/fontawesome-free": "^5.15.4",
         "@fortawesome/fontawesome-svg-core": "^1.2.36",
         "@fortawesome/free-brands-svg-icons": "^5.15.4",
@@ -43,14 +43,14 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.4",
         "@fortawesome/vue-fontawesome": "^2.0.6",
         "babel-eslint": "^10.1.0",
-        "bootstrap": "^4.6.1",
-        "browser-sync": "^2.27.7",
+        "bootstrap": "^4.6.2",
+        "browser-sync": "^2.27.10",
         "chart.js": "^2.9.4",
         "cssuseragent": "^2.1.31",
-        "datatables.net": "^1.11.3",
-        "datatables.net-bs4": "^1.11.3",
-        "del": "^6.0.0",
-        "eslint-plugin-import": "^2.25.2",
+        "datatables.net": "^1.13.1",
+        "datatables.net-bs4": "^1.13.1",
+        "del": "^6.1.1",
+        "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-vue": "^7.20.0",
         "gulp": "^4.0.2",
         "gulp-autoprefixer": "^8.0.0",
@@ -63,34 +63,35 @@
         "gulp-imagemin": "^7.1.0",
         "gulp-jsonminify": "^1.1.0",
         "gulp-rename": "^2.0.0",
-        "gulp-sass": "^5.0.0",
+        "gulp-sass": "^5.1.0",
         "gulp-sass-lint": "^1.4.0",
         "gulp-sourcemaps": "^3.0.0",
         "gulp-uglify-es": "^3.0.0",
-        "gulp-vue-single-file-component": "^1.1.7",
-        "jquery": "^3.6.0",
+        "gulp-vue-single-file-component": "^1.2.5",
+        "jquery": "^3.6.1",
         "requirejs": "^2.3.6",
         "sass": "1.32.13",
-        "vanilla-lazyload": "^17.5.0",
-        "vue": "^2.6.14",
+        "vanilla-lazyload": "^17.8.3",
+        "vue": "^2.7.14",
         "vue-ctk-date-time-picker": "2.5.0",
-        "vue-i18n": "^8.26.5",
-        "vue-router": "^3.5.3"
+        "vue-i18n": "^8.28.2",
+        "vue-router": "^3.6.5"
     },
     "dependencies": {
-        "glob": "^7.2.0",
-        "i18next": "^21.3.3",
-        "linkify-html": "^3.0.3",
-        "linkifyjs": "^3.0.3",
+        "chalk": "4.1.2",
+        "glob": "^7.2.3",
+        "i18next": "^21.10.0",
+        "linkify-html": "^3.0.5",
+        "linkifyjs": "^3.0.5",
         "mediainfo-wrapper": "^1.2.0",
-        "moment": "^2.29.1",
+        "moment": "^2.29.4",
         "request": "^2.88.2",
         "semver-compare": "^1.0.0",
         "skateboard": "^2.0.1",
-        "sqlite3": "^5.0.2",
+        "sqlite3": "^5.1.2",
         "tmi.js": "^1.8.5",
         "uuid": "^8.3.2",
-        "yargs": "^17.2.1"
+        "yargs": "^17.6.2"
     },
     "scripts": {
         "postinstall": "node npm-postinstall.js",
