@@ -8,7 +8,7 @@
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/#/",
-  "background_color": "#212121",
+  "background_color": "#ff2525",
   "theme_color": "#fff",
   "icons": [
     {
