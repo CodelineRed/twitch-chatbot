@@ -175,16 +175,7 @@ const statistic = {
      * @returns {undefined}
      */
     getStreamDates: function(chatbot, args) {
-        let channels = Object.keys(chatbot.channels);
-        let oauthToken = '';
-
-        // get oauthToken by any channel
-        for (let i = 0; i < channels.length; i++) {
-            if (typeof chatbot.channels[channels[i]].oauthToken === 'string' 
-                && chatbot.channels[channels[i]].oauthToken.length && !oauthToken.length) {
-                oauthToken = chatbot.channels[channels[i]].oauthToken;
-            }
-        }
+        let oauthToken = chatbot.getOauthToken();
 
         // if oauthToken found
         if (oauthToken.length) {
@@ -193,7 +184,6 @@ const statistic = {
                 method: 'GET',
                 json: true,
                 headers: {
-                    'Accept': 'application/vnd.twitchtv.v5+json',
                     'Authorization': `Bearer ${oauthToken}`,
                     'Client-ID': chatbot.config.clientIdToken
                 }
@@ -206,7 +196,7 @@ const statistic = {
                 }
                 let streamDates = [];
 
-                if (typeof body.data !== 'undefined') {
+                if (typeof body.data !== 'undefined' && body.data.length) {
                     for (let i = 0; i < body.data.length; i++) {
                         let durationArr = body.data[i].duration.replace('s', '').replace(/([hm])/g, '-').split('-').reverse();
                         let dateObj = {
@@ -214,9 +204,9 @@ const statistic = {
                             title: body.data[i].title,
                             start: moment(body.data[i].created_at).unix(),
                             end: moment(body.data[i].created_at).add({
-                                hours: typeof durationArr[2] !== 'undefined' ? durationArr[2] : 0,
-                                minutes: typeof durationArr[1] !== 'undefined' ? durationArr[1] : 0,
-                                seconds: typeof durationArr[0] !== 'undefined' ? durationArr[0] : 0
+                                hours: typeof durationArr[2] !== 'undefined' ? parseInt(durationArr[2]) : 0,
+                                minutes: typeof durationArr[1] !== 'undefined' ? parseInt(durationArr[1]) : 0,
+                                seconds: typeof durationArr[0] !== 'undefined' ? parseInt(durationArr[0]) : 0
                             }).unix()
                         };
                         streamDates.push(dateObj);

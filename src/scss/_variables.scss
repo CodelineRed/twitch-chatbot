@@ -1,4 +1,4 @@
-$theme-color-1: #2e97bf; // turquoise
+$theme-color-1: #ff2525; // red
 $theme-color-2: #212121; // dark grey
 $theme-color-3: lighten($theme-color-2, 50%); // light grey
 $theme-color-4: lighten($theme-color-2, 5%); // grey
@@ -36,7 +36,7 @@ $badge-bg-tgc-2020: #cbacfe;
 $badge-bg-turbo: $badge-bg-admin;
 $badge-bg-vip: #e005b9;
 
-$badge-color-bits-charity: $theme-color-1;
+$badge-color-bits-charity: #2e97bf;
 $badge-color-hype-train: #ff0;
 $badge-color-hype-train-former: #ccc;
 $badge-color-tgc-2020: #006357;
@@ -62,8 +62,8 @@ $h1-font-size: $font-size-base * 2;
 $close-color: #fff;
 $close-text-shadow: none;
 
-$blue: $theme-color-1;
-$info: $theme-color-1;
+$red: $theme-color-1;
+//$info: $theme-color-1;
 
 $link-color: $theme-color-1;
 
@@ -86,6 +86,8 @@ $pagination-hover-border-color: $theme-color-1;
 $pagination-disabled-color: $theme-color-3;
 $pagination-disabled-bg: $theme-color-4;
 $pagination-disabled-border-color: $theme-color-1;
+
+$pagination-active-bg: $theme-color-1;
 
 $dropdown-bg: $theme-color-2;
 $dropdown-link-color: $body-color;

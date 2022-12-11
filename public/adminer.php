@@ -67,6 +67,6 @@ if (file_exists('../adminer/adminer-4.6.2.php')) {
 } else {
     echo 'Adminer 4.6.2 is missing.<br>';
     echo 'Install Adminer with Composer.<br>';
-    echo 'See: <a href="https://github.com/InsanityMeetsHH/twitch-chatbot/#install-php-adminer-and-web-ui-optional" target="_blank">Install PHP, Adminer and Web UI</a>';
+    echo 'See: <a href="https://github.com/CodelineRed/twitch-chatbot/#install-php-adminer-and-web-ui-optional" target="_blank">Install PHP, Adminer and Web UI</a>';
 }
 //phpinfo();

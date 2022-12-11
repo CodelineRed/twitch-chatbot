@@ -252,14 +252,22 @@ const database = {
         if (database.connection !== null) {
             database.connection.serialize(() => {
                 const channel = channelState.channel.slice(1);
-                let stmt = database.connection.prepare('SELECT * FROM channel WHERE name = ?');
-                stmt.all([channel], (errAll, rows) => {
+                const roomId = parseInt(channelState['room-id']);
+                let stmt = database.connection.prepare('SELECT * FROM channel WHERE id = ?');
+                stmt.all([roomId], (errAll, rows) => {
                     if (errAll) {
                         console.error(errAll.message);
                     }
 
                     // if channel found
                     if (rows.length) {
+                        let where = [`id = '${roomId}'`];
+                        let set = {
+                            name: channel,
+                            updatedAt: moment().unix()
+                        };
+                        database.update('channel', set, where);
+
                         chatbot.channels[channel] = {
                             id: rows[0].id,
                             oauthToken: rows[0].oauth_token,
@@ -271,7 +279,7 @@ const database = {
                         database.prepareActivePlaylists(chatbot, channel);
                     } else {
                         let values = {
-                            id: channelState['room-id'],
+                            id: roomId,
                             name: channel,
                             updatedAt: moment().unix(),
                             createdAt: moment().unix()
@@ -279,7 +287,7 @@ const database = {
 
                         database.insert('channel', [values], function(insert) {
                             chatbot.channels[channel] = {
-                                id: channelState['room-id'],
+                                id: roomId,
                                 updatedAt: values.updatedAt, // unix timestamp (seconds)
                                 createdAt: values.createdAt // unix timestamp (seconds)
                             };

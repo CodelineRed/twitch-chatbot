@@ -27,9 +27,19 @@ const argv = yargs
         description: 'Display version text in console',
         type: 'boolean'
     })
+    .option('intro', {
+        alias: 'i',
+        default: true,
+        description: 'Display intro in console',
+        type: 'boolean'
+    })
     .help()
     .alias('help', 'h')
     .argv;
+
+if (argv.intro) {
+    chatbot.showIntro();
+}
 
 if (argv.showversion) {
     utility.getVersionText();
@@ -70,7 +80,7 @@ function onAnonGiftPaidUpgrade(channel, username, userstate) {
 }
 
 //onBan
-//#insanitymeetshh
+//#codelinered
 //insanitymeetshamburg
 //null
 //{ 'room-id': '86980760',
@@ -148,6 +158,7 @@ function onConnected(url, port) {
 
                 socket.on('data', function(data) {
                     let dataJson = JSON.parse(data);
+                    //console.log(dataJson);
 
                     // if method is function and env is "node"
                     if (typeof dataJson.method === 'string' && typeof chatbot[dataJson.method] === 'function' 
@@ -204,7 +215,7 @@ function onHosted(channel, username, viewers, autohost) {
 }
 
 //onHosting
-//#insanitymeetshh
+//#codelinered
 //biberbros
 //0
 function onHosting(channel, target, viewers) {
@@ -233,11 +244,11 @@ function onHosting(channel, target, viewers) {
 }
 
 // onMessage
-//#insanitymeetshh
+//#codelinered
 //{ 'badge-info': null,
 //  badges: { broadcaster: '1', twitchconAmsterdam2020: '1' },
 //  color: '#3FC9FF',
-//  'display-name': 'InsanityMeetsHH',
+//  'display-name': 'CodelineRed',
 //  emotes: null,
 //  flags: null,
 //  id: 'f1cfd158-1712-4f5f-9442-399f465c56bd',
@@ -251,7 +262,7 @@ function onHosting(channel, target, viewers) {
 //  'emotes-raw': null,
 //  'badge-info-raw': null,
 //  'badges-raw': 'broadcaster/1,twitchconAmsterdam2020/1',
-//  username: 'insanitymeetshh',
+//  username: 'codelinered',
 //  'message-type': 'chat'
 //}
 function onMessage(channel, userstate, message, self) {
@@ -300,7 +311,7 @@ function onMessage(channel, userstate, message, self) {
 }
 
 //onMessagedeleted
-//#insanitymeetshh
+//#codelinered
 //insanitymeetshamburg
 //moin
 //{ login: 'insanitymeetshamburg',
@@ -403,7 +414,7 @@ function onReSub(channel, username, months, message, userstate, methods) {
 //  'room-id': '86980760',
 //  slow: false,
 //  'subs-only': false,
-//  channel: '#insanitymeetshh' }
+//  channel: '#codelinered' }
 function onRoomState(channel, state) {
     emote.prepareBttv(state);
     emote.prepareFfz(state);
@@ -567,7 +578,7 @@ function onSubscription(channel, username, method, message, userstate) {
 }
 
 //onTimeout
-//#insanitymeetshh
+//#codelinered
 //insanitymeetshamburg
 //null
 //300
@@ -607,7 +618,7 @@ function onTimeout(channel, username, reason, duration, userstate) {
 }
 
 //onUnhost
-//#insanitymeetshh
+//#codelinered
 //0
 function onUnhost(channel, viewers) {
     let cname = channel.replace(/#/g, '');

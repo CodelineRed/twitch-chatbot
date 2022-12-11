@@ -74,12 +74,11 @@ const channel = {
     saveToken: function(chatbot, args) {
         if (chatbot.config.clientIdToken.length) {
             let options = {
-                url: 'https://api.twitch.tv/kraken/user',
+                url: 'https://api.twitch.tv/helix/users',
                 method: 'GET',
                 json: true,
                 headers: {
-                    'Accept': 'application/vnd.twitchtv.v5+json',
-                    'Authorization': `OAuth ${args.token}`,
+                    'Authorization': `Bearer ${args.token}`,
                     'Client-ID': chatbot.config.clientIdToken
                 }
             };
@@ -90,15 +89,16 @@ const channel = {
                     return console.log(err);
                 }
 
-                if (typeof body._id !== 'undefined') {
+                if (typeof body.data !== 'undefined' && body.data.length) {
+                    let data = body.data[0];
                     let set = {
                         updatedAt: moment().unix()
                     };
                     set[args.name] = args.token;
-                    let where = [`id = '${body._id}'`];
+                    let where = [`id = '${data.id}'`];
 
                     database.update('channel', set, where, function(update) {
-                        channel.lists[body.name][args.name] = args.token;
+                        channel.lists[data.login][args.name] = args.token;
 
                         if (chatbot.socket !== null) {
                             const call = {

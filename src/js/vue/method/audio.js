@@ -21,7 +21,7 @@ const audio = {
         getAudios: function(ref) {
             if (typeof socketWrite === 'function') {
                 const call = {
-                    method: 'getAudioList',
+                    method: 'getAudios',
                     args: {
                         ref: ref
                     },

@@ -1,3 +1,5 @@
+const chalk      = require('chalk');
+
 const database   = require('./database');
 const attendee   = require('./attendee');
 const audio      = require('./audio');
@@ -101,6 +103,37 @@ const chatbot = {
     updateCounter: counter.update,
     updatePlaylist: playlist.update,
     updateVideo: video.update,
+    getOauthToken: function() {
+        let channels = Object.keys(this.channels);
+        let oauthToken = '';
+        for (let i = 0; i < channels.length; i++) {
+            if (typeof chatbot.channels[channels[i]].oauthToken === 'string' 
+                && chatbot.channels[channels[i]].oauthToken.length && !oauthToken.length) {
+                oauthToken = chatbot.channels[channels[i]].oauthToken;
+            }
+        }
+        return oauthToken;
+    },
+    showIntro: function() {
+        // https://patorjk.com/software/taag/#p=display&f=Slant&t=Twitch%20Chatbot%0A----%20by%20----%0A%20CodelineRed
+        console.log(chalk.hex('#bf94ff')('       ______         _ __       __       ________          __  __          __ '));
+        console.log(chalk.hex('#bf94ff')('      /_  __/      __(_) /______/ /_     / ____/ /_  ____ _/ /_/ /_  ____  / /_'));
+        console.log(chalk.hex('#bf94ff')('       / / | | /| / / / __/ ___/ __ \\   / /   / __ \\/ __ `/ __/ __ \\/ __ \\/ __/'));
+        console.log(chalk.hex('#bf94ff')('      / /  | |/ |/ / / /_/ /__/ / / /  / /___/ / / / /_/ / /_/ /_/ / /_/ / /_  '));
+        console.log(chalk.hex('#bf94ff')('     /_/   |__/|__/_/\\__/\\___/_/ /_/   \\____/_/ /_/\\__,_/\\__/_.___/\\____/\\__/  '));
+        console.log(chalk.white('                                   __                                                 '));
+        console.log(chalk.white('                                  / /_  __  __                                 '));
+        console.log(chalk.white('      ________________________   / __ \\/ / / /  ________________________       '));
+        console.log(chalk.white('     /_____/_____/_____/_____/  / /_/ / /_/ /  /_____/_____/_____/_____/       '));
+        console.log(chalk.white('                               /_.___/\\__, /                                   '));
+        console.log(chalk.white('                                     \\____/                                    '));
+        console.log(chalk.hex('#ff2525')('            ______          __     __             ____           __            '));
+        console.log(chalk.hex('#ff2525')('           / ____/___  ____/ /__  / (_)___  ___  / __ \\___  ____/ /            '));
+        console.log(chalk.hex('#ff2525')('          / /   / __ \\/ __  / _ \\/ / / __ \\/ _ \\/ /_/ / _ \\/ __  /             '));
+        console.log(chalk.hex('#ff2525')('         / /___/ /_/ / /_/ /  __/ / / / / /  __/ _, _/  __/ /_/ /              '));
+        console.log(chalk.hex('#ff2525')('         \\____/\\____/\\__,_/\\___/_/_/_/ /_/\\___/_/ |_|\\___/\\__,_/               '));
+        console.log(chalk.hex('#ff2525')('                                                                               '));
+    },
     warmUpDatabase: function(channelState) {
         database.prepareBotTable(this, channelState);
         database.prepareChannelTable(this, channelState);
