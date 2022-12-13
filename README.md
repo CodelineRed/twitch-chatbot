@@ -11,7 +11,7 @@ This application based on [Vue Skeleton](https://github.com/CodelineRed/vue-skel
 - Install Guides
     - [Install Production Build (Recommended)](#install-production-build-recommended)
     - [Install Master/ Develop Build](#install-master-develop-build)
-    - [Install PHP, Adminer and Web UI (optional)](#install-php-adminer-and-web-ui-optional)
+    - [Install PHP, Adminer, Composer and Web UI (optional)](#install-php-adminer-composer-and-web-ui-optional)
 - [`chatbot.js`](#chatbotjs-options)
 - [Project Commands](#project-commands)
 - [Ports](#ports)
@@ -58,21 +58,46 @@ This application based on [Vue Skeleton](https://github.com/CodelineRed/vue-skel
 - [Node.js](http://nodejs.org/en/download/) >= 12.20
 - [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 
-[Download zip](https://github.com/CodelineRed/twitch-chatbot/archive/production.zip) if you don't have git on your OS.
 Open console on your OS and navigate to your project folder.
+[Download zip](https://github.com/CodelineRed/twitch-chatbot/archive/production.zip) if you don't have git on your OS.
 ```bash
-$ git clone https://github.com/CodelineRed/twitch-chatbot.git
-$ cd twitch-chatbot
-$ git checkout production
-$ (optional on unix) rm -rf .git
-$ (optional on windows) rmdir .git /s
++++++ ZIP VERSION +++++
+$ (unix) wget -O tcb-prod.zip https://github.com/CodelineRed/twitch-chatbot/archive/production.zip
+$ (unix) unzip tcb-prod.zip
+$ (win10) curl -L -o tcb-prod.zip https://github.com/CodelineRed/twitch-chatbot/archive/production.zip
+$ (win10) tar -xf tcb-prod.zip
+$ cd twitch-chatbot-production
 $ npm i --only=prod
 $ -- Add username, tmiToken and channels to src/app/chatbot.json ---
 $ node migration.js
 $ node chatbot.js
 ```
+
+```bash
++++++ GIT VERSION +++++
+$ git clone https://github.com/CodelineRed/twitch-chatbot.git
+$ cd twitch-chatbot
+$ git checkout production
+$ (optional on unix) rm -rf .git
+$ (optional on win10) rmdir .git /s
+$ npm i --only=prod
+$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ node migration.js
+$ node chatbot.js
+```
+
+```bash
++++++ COMPOSER VERSION +++++
+$ php composer create-project codelinered/twitch-chatbot twitch-chatbot "dev-production"
+$ cd twitch-chatbot
+$ npm i --only=prod
+$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ node migration.js
+$ node chatbot.js
+```
+
 Generate tmiToken [here](https://twitchapps.com/tmi/).
-If you want to use the Web UI, you have to go to [Install PHP, Adminer and Web UI](#install-php-adminer-and-web-ui-optional).
+If you want to use the Web UI, you have to go to [Install PHP, Adminer and Web UI](#install-php-adminer-composer-and-web-ui-optional).
 
 ## Install Master/ Develop Build
 ### Required
@@ -80,14 +105,15 @@ If you want to use the Web UI, you have to go to [Install PHP, Adminer and Web U
 - [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 - [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
 
-[Download zip](https://github.com/CodelineRed/twitch-chatbot/archive/master.zip) if you don't have git on your OS.
 Open 2 consoles on your OS and navigate both to your project folder.
+[Download zip](https://github.com/CodelineRed/twitch-chatbot/archive/master.zip) if you don't have git on your OS.
 ```bash
-$ git clone https://github.com/CodelineRed/twitch-chatbot.git
-$ cd twitch-chatbot
-$ (optional) git checkout develop
-$ (optional on unix) rm -rf .git
-$ (optional on windows) rmdir .git /s
++++++ ZIP VERSION +++++
+$ (unix) wget -O tcb-mstr.zip https://github.com/CodelineRed/twitch-chatbot/archive/master.zip
+$ (unix) unzip tcb-mstr.zip
+$ (win10) curl -L -o tcb-mstr.zip https://github.com/CodelineRed/twitch-chatbot/archive/master.zip
+$ (win10) tar -xf tcb-mstr.zip
+$ cd twitch-chatbot-master
 $ npm i
 $ gulp build
 $ -- Add username, tmiToken and channels to src/app/chatbot.json ---
@@ -95,12 +121,42 @@ $ node migration.js
 $ node chatbot.js
 $ (in 2nd console) gulp
 ```
+
+```bash
++++++ GIT VERSION +++++
+$ git clone https://github.com/CodelineRed/twitch-chatbot.git
+$ cd twitch-chatbot
+$ git checkout master
+$ (optional on unix) rm -rf .git
+$ (optional on win10) rmdir .git /s
+$ npm i
+$ gulp build
+$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ node migration.js
+$ node chatbot.js
+$ (in 2nd console) gulp
+```
+
+```bash
++++++ COMPOSER VERSION +++++
+$ php composer create-project codelinered/twitch-chatbot
+$ cd twitch-chatbot
+$ npm i
+$ gulp build
+$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ node migration.js
+$ node chatbot.js
+$ (in 2nd console) gulp
+```
+
 Generate tmiToken [here](https://twitchapps.com/tmi/).
 Open [localhost:3000](http://localhost:3000) for Web UI.
 
-## Install PHP, Adminer and Web UI (optional)
+## Install PHP, Adminer, Composer and Web UI (optional)
 ### Required
 - [Docker](https://www.docker.com/)
+- [Node.js](http://nodejs.org/en/download/) >= 12.20
+- [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 
 Open console on your OS and navigate to the unziped/ cloned app folder.
 ```bash
@@ -109,8 +165,10 @@ $ (windows) "c:\path\to\Docker Desktop.exe"
 $ docker-compose up -d
 $ docker-compose run composer install --no-dev
 $ docker exec -ti twitch-chatbot php /var/www/vendor/vrana/adminer/compile.php
-$ (unix) mv adminer-4.6.2.php adminer/
-$ (windows) move adminer-4.6.2.php adminer/
+$ (unix) mv adminer-4.6.2.php ./adminer
+$ (windows) move adminer-4.6.2.php ./adminer
+$ npm i
+$ gulp build
 $ node migration.js
 $ node chatbot.js
 ```
@@ -142,7 +200,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 | gulp scssLint       | checks scss follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/scss-lint.json)               |
 | gulp svg            | copy and compress svg files                                                                                                      |
 | gulp vue            | transpile vue files                                                                                                              |
-| ~gulp vueLint~      | ~checks vue follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/vue-lint.json)~ _**currently disabled**_ |
+| gulp vueLint        | checks vue follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/vue-lint.json)                 |
 | gulp vueJs          | transpile vue js files                                                                                                           |
 | gulp vueJsLint      | checks vue js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/import-lint.json)           |
 | gulp chatbotLint    | checks chatbot js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/import-lint.json)       |

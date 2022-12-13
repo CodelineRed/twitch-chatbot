@@ -4,6 +4,16 @@
 - Follow the instructions below
 - Start chatbot `$ node chatbot.js`
 
+### Upgrade from 1.11.0 to 1.12.0
+- Before you upgrade
+- Remove node_modules
+- Remove package.json
+- Download upgrade
+```bash
+$ npm i --only=prod / npm i
+$ ----------------- / gulp build
+```
+
 ### Upgrade from 1.10.0 to 1.11.0
 Nothing you have to do.
 

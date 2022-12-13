@@ -9,7 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - upgrade to bootstrap 5
 - upgrade to fontawesome 6 (if its released)
 
-## [1.11.0]
+## [1.12.0]
+### Added
+- `package-lock.json` back again to fix `vueLint` task
+
+### Changed
+- task `vueLint` to be enabled in [`gulpfile.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/gulpfile.js)
+- [`.gitignore`](https://github.com/CodelineRed/twitch-chatbot/blob/master/.gitignore)
+- [`README.md`](https://github.com/CodelineRed/twitch-chatbot/blob/master/README.md)
+- @fortawesome/vue-fontawesome 2.0.6 to 2.0.9
+
+## [1.11.0] - 2022-12-11
 ### Added
 - [`screenshots/chatbot-cli-intro.png`](https://github.com/CodelineRed/twitch-chatbot/blob/master/screenshots/chatbot-cli-intro.png)
 - `getOauthToken()` in [`chatbot/app.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/js/chatbot/app.js)

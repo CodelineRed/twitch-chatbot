@@ -1,7 +1,7 @@
 {
     "name": "twitch-chatbot",
-    "version": "1.11.0",
-    "commitDate": "2022-12-11T12:30:00+01:00",
+    "version": "1.12.0",
+    "commitDate": "2022-12-13T16:00:00+01:00",
     "description": "Twitch Chatbot made with Vue Skeleton",
     "keywords": [
         "gulp",
@@ -41,7 +41,7 @@
         "@fortawesome/free-brands-svg-icons": "^5.15.4",
         "@fortawesome/free-regular-svg-icons": "^5.15.4",
         "@fortawesome/free-solid-svg-icons": "^5.15.4",
-        "@fortawesome/vue-fontawesome": "^2.0.6",
+        "@fortawesome/vue-fontawesome": "^2.0.9",
         "babel-eslint": "^10.1.0",
         "bootstrap": "^4.6.2",
         "browser-sync": "^2.27.10",

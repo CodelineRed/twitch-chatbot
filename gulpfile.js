@@ -248,13 +248,7 @@ function vueJsLint() {
 
 // lint vue files
 function vueLint() {
-    return new Promise(function(resolve, reject) {
-        console.log(chalk.black.bgYellow(" Message from Developer:        "));
-        console.log(chalk.black.bgYellow(" vueLint is currently disabled  "));
-        console.log(chalk.black.bgYellow(" No action from you is required "));
-        resolve();
-    });
-    //return lint(gulp, eslint, [config.sourcePath + 'js/vue/**/*.vue'], 'vue');
+    return lint(gulp, eslint, [config.sourcePath + 'js/vue/**/*.vue'], 'vue');
 }
 
 // watch files
