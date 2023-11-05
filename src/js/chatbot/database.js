@@ -48,7 +48,7 @@ const database = {
      * Executes callback if callback is a function
      * 
      * @param {function} callback optional
-     * @param {mixed} args optional
+     * @param {Object|undefined} args optional
      * @returns {undefined}
      */
     callback: function(callback, args) {
@@ -67,10 +67,10 @@ const database = {
      * @param {array} where optional
      * @param {string} group optional
      * @param {string} order optional
-     * @param {integer} limit optional 0 = infinity
+     * @param {int} limit optional 0 = infinity
      * @param {array} prepare optional
      * @param {function} callback optional
-     * @param {mixed} callbackArgs optional
+     * @param {object|undefined} callbackArgs optional
      * @returns {undefined}
      */
     find: function(select, from, join, where, group, order, limit, prepare, callback, callbackArgs) {
@@ -443,7 +443,7 @@ const database = {
      * @param {array} where required
      * @param {array} prepare optional
      * @param {function} callback optional
-     * @param {mixed} callbackArgs optional
+     * @param {object|undefined} callbackArgs optional
      * @returns {undefined}
      */
     remove: function(table, where, prepare, callback, callbackArgs) {
@@ -476,7 +476,7 @@ const database = {
      * @param {string} table required
      * @param {array} values required (array of objects)
      * @param {function} callback optional
-     * @param {mixed} callbackArgs optional
+     * @param {object|undefined} callbackArgs optional
      * @returns {undefined}
      */
     insert: function(table, values, callback, callbackArgs) {
@@ -539,7 +539,7 @@ const database = {
      * @param {object} set required
      * @param {array} where required
      * @param {function} callback optional
-     * @param {mixed} callbackArgs optional
+     * @param {object|undefined} callbackArgs optional
      * @returns {undefined}
      */
     update: function(table, set, where, callback, callbackArgs) {

@@ -31,6 +31,7 @@ const statistic = {
             let backgroundColor = [];
             let data = [];
             let labels = [];
+            let shortLabels = [];
 
             if (rows.length) {
                 let colors = ['#2e97bf', '#fff'];
@@ -38,15 +39,22 @@ const statistic = {
                 let currentGame = rows[0].game;
 
                 for (let i = 0; i < rows.length; i++) {
+                    let game = rows[i].game;
+
+                    // shorten the game name
+                    if (game.length > 15) {
+                        shortLabels.push(game.substring(0, 12) + '...');
+                    } else {
+                        shortLabels.push(game);
+                    }
+
                     labels.push(rows[i].game);
                     data.push(rows[i].count);
 
                     if (rows[i].game !== currentGame) {
                         colorState = !colorState;
                         currentGame = rows[i].game;
-                        //labels.push(currentGame);
                     }
-                    //else if (i > 0) {labels.push('');}
 
                     backgroundColor.push(colorState ? colors[0] : colors[1]);
                 }
@@ -58,7 +66,8 @@ const statistic = {
                         channel: args.channel,
                         backgroundColor: backgroundColor,
                         data: data,
-                        labels: labels
+                        labels: labels,
+                        shortLabels: shortLabels
                     },
                     method: 'setChart',
                     ref: 'statistic',
@@ -116,7 +125,7 @@ const statistic = {
                     const call = {
                         args: {
                             channel: args.channel,
-                            misc: rows[0]
+                            list: rows[0]
                         },
                         method: 'setMisc',
                         ref: 'statistic',
@@ -156,7 +165,7 @@ const statistic = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        purges: rows[0]
+                        list: rows[0]
                     },
                     method: 'setPurges',
                     ref: 'statistic',
@@ -275,7 +284,7 @@ const statistic = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        subs: rows[0]
+                        list: rows[0]
                     },
                     method: 'setSubs',
                     ref: 'statistic',
@@ -381,8 +390,8 @@ const statistic = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        type: args.type,
-                        list: rows
+                        list: rows,
+                        type: args.type
                     },
                     method: 'setTopEmotes',
                     ref: 'statistic',
@@ -422,8 +431,8 @@ const statistic = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        type: args.type,
-                        list: statistic.sumUpDirtyTopList(rows, args.prefix, args.limit)
+                        list: statistic.sumUpDirtyTopList(rows, args.prefix, args.limit),
+                        type: args.type
                     },
                     method: 'setTopWords',
                     ref: 'statistic',

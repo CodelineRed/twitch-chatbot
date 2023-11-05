@@ -40,7 +40,7 @@ const attendee = {
                 // if oauthToken found
                 if (oauthToken.length) {
                     let options = {
-                        url: `https://api.twitch.tv/helix/users/follows?from_id=${args.userstate['user-id']}&to_id=${args.userstate['room-id']}`,
+                        url: `https://api.twitch.tv/helix/channels/followers?user_id=${args.userstate['user-id']}&broadcaster_id=${args.userstate['room-id']}`,
                         method: 'GET',
                         json: true,
                         headers: {

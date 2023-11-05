@@ -1,8 +1,8 @@
 # Twitch Chatbot - CodelineRed
 
-Visit [screenshots](https://github.com/CodelineRed/twitch-chatbot/tree/master/screenshots) for an inside look.
+Visit [screenshots](https://github.com/CodelineRed/twitch-chatbot/tree/main/screenshots) for an inside look.
 
-This application based on [Vue Skeleton](https://github.com/CodelineRed/vue-skeleton).
+This application based on [Vue Skeleton](https://github.com/CodelineRed/vue-skeleton/tree/1.x) (1.x).
 
 **_This software is meant to be installed on your local machine. If you want to install on a public web server, please secure `public` folder by `.htpasswd` or something similar._**
 
@@ -11,7 +11,7 @@ This application based on [Vue Skeleton](https://github.com/CodelineRed/vue-skel
 - Install Guides
     - [Install Production Build (Recommended)](#install-production-build-recommended)
     - [Install Master/ Develop Build](#install-master-develop-build)
-    - [Install PHP, Adminer, Composer and Web UI (optional)](#install-php-adminer-composer-and-web-ui-optional)
+    - [Install with Docker (optional)](#install-with-docker-optional)
 - [`chatbot.js`](#chatbotjs-options)
 - [Project Commands](#project-commands)
 - [Ports](#ports)
@@ -58,17 +58,13 @@ This application based on [Vue Skeleton](https://github.com/CodelineRed/vue-skel
 - [Node.js](http://nodejs.org/en/download/) >= 12.20
 - [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 
-Open console on your OS and navigate to your project folder.
-[Download zip](https://github.com/CodelineRed/twitch-chatbot/archive/production.zip) if you don't have git on your OS.
+Open console on your OS and navigate to the place where you want to install the project.
 ```bash
-+++++ ZIP VERSION +++++
-$ (unix) wget -O tcb-prod.zip https://github.com/CodelineRed/twitch-chatbot/archive/production.zip
-$ (unix) unzip tcb-prod.zip
-$ (win10) curl -L -o tcb-prod.zip https://github.com/CodelineRed/twitch-chatbot/archive/production.zip
-$ (win10) tar -xf tcb-prod.zip
-$ cd twitch-chatbot-production
++++++ COMPOSER VERSION +++++
+$ php composer create-project --ignore-platform-reqs --no-dev codelinered/twitch-chatbot twitch-chatbot "dev-production"
+$ cd twitch-chatbot
 $ npm i --only=prod
-$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
 $ node migration.js
 $ node chatbot.js
 ```
@@ -81,23 +77,30 @@ $ git checkout production
 $ (optional on unix) rm -rf .git
 $ (optional on win10) rmdir .git /s
 $ npm i --only=prod
-$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
 $ node migration.js
 $ node chatbot.js
 ```
 
 ```bash
-+++++ COMPOSER VERSION +++++
-$ php composer create-project codelinered/twitch-chatbot twitch-chatbot "dev-production"
-$ cd twitch-chatbot
++++++ ZIP VERSION +++++
+$ ---- Unix ----
+$ wget -O tcb-prod.zip https://github.com/CodelineRed/twitch-chatbot/archive/production.zip
+$ unzip tcb-prod.zip
+
+$ ---- Windows 10+ ----
+$ curl -L -o tcb-prod.zip https://github.com/CodelineRed/twitch-chatbot/archive/production.zip
+$ tar -xf tcb-prod.zip
+
+$ ---- All OS ----
+$ cd twitch-chatbot-production
 $ npm i --only=prod
-$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
 $ node migration.js
 $ node chatbot.js
 ```
-
-Generate tmiToken [here](https://twitchapps.com/tmi/).
-If you want to use the Web UI, you have to go to [Install PHP, Adminer and Web UI](#install-php-adminer-composer-and-web-ui-optional).
+[Generate tmiToken](https://twitchapps.com/tmi/) and click on "Connect".<br>
+If you need PHP, you have to go to [Install with Docker](#install-with-docker-optional).
 
 ## Install Master/ Develop Build
 ### Required
@@ -105,18 +108,14 @@ If you want to use the Web UI, you have to go to [Install PHP, Adminer and Web U
 - [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 - [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
 
-Open 2 consoles on your OS and navigate both to your project folder.
-[Download zip](https://github.com/CodelineRed/twitch-chatbot/archive/master.zip) if you don't have git on your OS.
+Open 2 consoles on your OS and navigate to the place where you want to install the project.
 ```bash
-+++++ ZIP VERSION +++++
-$ (unix) wget -O tcb-mstr.zip https://github.com/CodelineRed/twitch-chatbot/archive/master.zip
-$ (unix) unzip tcb-mstr.zip
-$ (win10) curl -L -o tcb-mstr.zip https://github.com/CodelineRed/twitch-chatbot/archive/master.zip
-$ (win10) tar -xf tcb-mstr.zip
-$ cd twitch-chatbot-master
++++++ COMPOSER VERSION +++++
+$ php composer create-project --ignore-platform-reqs codelinered/twitch-chatbot
+$ cd twitch-chatbot
 $ npm i
 $ gulp build
-$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
 $ node migration.js
 $ node chatbot.js
 $ (in 2nd console) gulp
@@ -126,162 +125,185 @@ $ (in 2nd console) gulp
 +++++ GIT VERSION +++++
 $ git clone https://github.com/CodelineRed/twitch-chatbot.git
 $ cd twitch-chatbot
-$ git checkout master
+$ git checkout main
 $ (optional on unix) rm -rf .git
 $ (optional on win10) rmdir .git /s
 $ npm i
 $ gulp build
-$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
 $ node migration.js
 $ node chatbot.js
 $ (in 2nd console) gulp
 ```
 
 ```bash
-+++++ COMPOSER VERSION +++++
-$ php composer create-project codelinered/twitch-chatbot
-$ cd twitch-chatbot
++++++ ZIP VERSION +++++
+$ ---- Unix ----
+$ wget -O tcb-main.zip https://github.com/CodelineRed/twitch-chatbot/archive/main.zip
+$ unzip tcb-main.zip
+
+$ ---- Windows 10+ ----
+$ curl -L -o tcb-main.zip https://github.com/CodelineRed/twitch-chatbot/archive/main.zip
+$ tar -xf tcb-main.zip
+
+$ ---- All OS ----
+$ cd twitch-chatbot-main
 $ npm i
 $ gulp build
-$ -- Add username, tmiToken and channels to src/app/chatbot.json ---
+$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
 $ node migration.js
 $ node chatbot.js
 $ (in 2nd console) gulp
 ```
-
-Generate tmiToken [here](https://twitchapps.com/tmi/).
+[Generate tmiToken](https://twitchapps.com/tmi/) and click on "Connect".<br>
 Open [localhost:3000](http://localhost:3000) for Web UI.
 
-## Install PHP, Adminer, Composer and Web UI (optional)
+## Install with Docker (optional)
 ### Required
 - [Docker](https://www.docker.com/)
 - [Node.js](http://nodejs.org/en/download/) >= 12.20
 - [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
 
-Open console on your OS and navigate to the unziped/ cloned app folder.
+Open console on your OS and navigate to the unzipped or cloned app folder.
 ```bash
-$ (unix) systemctl docker start
-$ (windows) "c:\path\to\Docker Desktop.exe"
+$ ---- Unix ----
+$ systemctl docker start
 $ docker-compose up -d
-$ docker-compose run composer install --no-dev
+$ docker run --rm --interactive --tty --volume $PWD:/app composer install --no-dev
 $ docker exec -ti twitch-chatbot php /var/www/vendor/vrana/adminer/compile.php
-$ (unix) mv adminer-4.6.2.php ./adminer
-$ (windows) move adminer-4.6.2.php ./adminer
+$ -- Ignore error messages --
+$ mv adminer-4.6.2.php ./adminer
+
+$ ---- Windows 10+ ----
+$ "c:\path\to\Docker Desktop.exe"
+$ docker-compose up -d
+$ docker run --rm --interactive --tty --volume %cd%:/app composer install --no-dev
+$ docker exec -ti twitch-chatbot php /var/www/vendor/vrana/adminer/compile.php
+$ -- Ignore error messages --
+$ move adminer-4.6.2.php ./adminer
+
+$ ---- All OS ----
 $ npm i
 $ gulp build
 $ node migration.js
 $ node chatbot.js
 ```
-Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/adminer.php](http://localhost:3050/adminer.php) for Database GUI.
 
-## [`chatbot.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/chatbot.js) Options
-| Option              | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| --help, -h          | Shows list of options                                                                                                            |
-| --version           | Show version number                                                                                                              |
-| --recordchat, --rc  | Record chat messages in database (default: true)                                                                                 |
-| --showversion, --sv | Display version text in console (default: true)                                                                                  |
-| --intro, -i         | Display intro in console (default: true)                                                                                         |
+| Login    | [Web UI](http://localhost:3050) | [Adminer](http://localhost:3050/adminer.php) |
+|----------|---------------------------------|----------------------------------------------|
+| Server   | localhost:3050                  | 127.0.0.1                                    |
+| Username | -                               | -                                            |
+| Password | -                               | -                                            |
+| Database | -                               | ../data/chatbot.sqlite3                      |
+
+## [`chatbot.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/chatbot.js) Options
+| Option              | Description                                      |
+|---------------------|--------------------------------------------------|
+| --help, -h          | Shows list of options                            |
+| --version           | Show version number                              |
+| --recordchat, --rc  | Record chat messages in database (default: true) |
+| --showversion, --sv | Display version text in console (default: true)  |
+| --intro, -i         | Display intro in console (default: true)         |
 
 ## Project Commands
-|                     | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| gulp                | watch files and start [BrowserSync](https://www.npmjs.com/package/browser-sync)                                                  |
-| gulp build          | executes following tasks: cleanUp, scss, scssLint, js, jsLint, jsRequire, json, img, font, svg, vue, vueLint, vueJs, vueJsLint   |
-| gulp lintAll        | executes following tasks: scssLint, jsLint, vueJsLint, vueLint, chatbotLint                                                      |
-| gulp cleanUp        | clean up public folder                                                                                                           |
-| gulp font           | copy font files                                                                                                                  |
-| gulp img            | copy and compress images                                                                                                         |
-| gulp js             | uglify, minify and concat js files                                                                                               |
-| gulp jsLint         | checks js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/js-lint.json)                   | 
-| gulp jsRequire      | copy, uglify and rename files for requirejs                                                                                      |
-| gulp json           | copy and minify json files                                                                                                       |
-| gulp scss           | compile, minify and concat scss files                                                                                            |
-| gulp scssLint       | checks scss follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/scss-lint.json)               |
-| gulp svg            | copy and compress svg files                                                                                                      |
-| gulp vue            | transpile vue files                                                                                                              |
-| gulp vueLint        | checks vue follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/vue-lint.json)                 |
-| gulp vueJs          | transpile vue js files                                                                                                           |
-| gulp vueJsLint      | checks vue js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/import-lint.json)           |
-| gulp chatbotLint    | checks chatbot js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/import-lint.json)       |
-| gulp watch          | watch scss, js, json, vue, chatbot, img, font and svg files                                                                      |
+|                     | Description                                                                                                                    |
+|---------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| gulp                | watch files and start [BrowserSync](https://www.npmjs.com/package/browser-sync)                                                |
+| gulp build          | executes following tasks: cleanUp, scss, scssLint, js, jsLint, jsRequire, json, img, font, svg, vue, vueLint, vueJs, vueJsLint |
+| gulp lintAll        | executes following tasks: scssLint, jsLint, vueJsLint, vueLint, chatbotLint                                                    |
+| gulp cleanUp        | clean up public folder                                                                                                         |
+| gulp font           | copy font files                                                                                                                |
+| gulp img            | copy and compress images                                                                                                       |
+| gulp js             | uglify, minify and concat js files                                                                                             |
+| gulp jsLint         | checks js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/app/js-lint.json)                   | 
+| gulp jsRequire      | copy, uglify and rename files for requirejs                                                                                    |
+| gulp json           | copy and minify json files                                                                                                     |
+| gulp scss           | compile, minify and concat scss files                                                                                          |
+| gulp scssLint       | checks scss follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/app/scss-lint.json)               |
+| gulp svg            | copy and compress svg files                                                                                                    |
+| gulp vue            | transpile vue files                                                                                                            |
+| gulp vueLint        | checks vue follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/app/vue-lint.json)                 |
+| gulp vueJs          | transpile vue js files                                                                                                         |
+| gulp vueJsLint      | checks vue js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/app/import-lint.json)           |
+| gulp chatbotLint    | checks chatbot js follows [lint rules](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/app/import-lint.json)       |
+| gulp watch          | watch scss, js, json, vue, chatbot, img, font and svg files                                                                    |
 
 ## Ports
-|                     | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| 3000                | Web UI with HTML ([BrowserSync](https://www.npmjs.com/package/browser-sync))                                                     |
-| 3001                | [BrowserSync UI](https://www.npmjs.com/package/browser-sync)                                                                     |
-| 3050                | Web UI with PHP/ [twitch-chatbot](https://github.com/CodelineRed/twitch-chatbot/blob/master/docker-compose.yml) (Docker Container) |
-| 3060                | Host for [twitch-chatbot-videos-folder](https://github.com/CodelineRed/twitch-chatbot/blob/master/docker-compose.videos-folder.yml) (Docker Container) |
-| 3100                | Main Window (Skateboard Socket for Web UI)                                                                                       |
-| 3110                | Chat Window (Skateboard Socket for Web UI)                                                                                       |
-| 3120                | Player Window (Skateboard Socket for Web UI)                                                                                     |
-| 3130                | Raffle Window (Skateboard Socket for Web UI)                                                                                     |
-| 3140                | Poll Window (Skateboard Socket for Web UI)                                                                                       |
-| 3150                | Counter Window (Skateboard Socket for Web UI)                                                                                    |
+|                     | Description                                                                                                                                          |
+|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 3000                | Web UI with HTML ([BrowserSync](https://www.npmjs.com/package/browser-sync))                                                                         |
+| 3001                | [BrowserSync UI](https://www.npmjs.com/package/browser-sync)                                                                                         |
+| 3050                | Web UI with PHP/ [twitch-chatbot](https://github.com/CodelineRed/twitch-chatbot/blob/main/docker-compose.yml) (Docker Container)                     |
+| 3060                | Host for [twitch-chatbot-videos-folder](https://github.com/CodelineRed/twitch-chatbot/blob/main/docker-compose.videos-folder.yml) (Docker Container) |
+| 3100                | Main Window (Skateboard Socket for Web UI)                                                                                                           |
+| 3110                | Chat Window (Skateboard Socket for Web UI)                                                                                                           |
+| 3120                | Player Window (Skateboard Socket for Web UI)                                                                                                         |
+| 3130                | Raffle Window (Skateboard Socket for Web UI)                                                                                                         |
+| 3140                | Poll Window (Skateboard Socket for Web UI)                                                                                                           |
+| 3150                | Counter Window (Skateboard Socket for Web UI)                                                                                                        |
 
-## [`chatbot.json`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/chatbot.dist.json)
-|                     | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| username            | Required - Twitch User Name                                                                                                      |
-| tmiToken            | Required - [Twitch TMI Token](https://twitchapps.com/tmi/)                                                                       |
-| clientIdToken       | Optional - [Twitch Client ID Token](https://dev.twitch.tv/) (is presetted)                                                       |
-| youtubeToken        | Optional - [YouTube API Token](https://console.developers.google.com)                                                            |
-| videosFolder        | Optional - Absolute path to videos folder with trailing slash                                                                    |
-| backup              | Optional - Daily backup yes or no                                                                                                |
-| performance         | Optional - 0 = low / 1 = high                                                                                                    |
-| locale              | Required - German (de) and English (en) are presetted                                                                            |
-| channels            | Required - List of Channels to connect                                                                                           |
+## [`chatbot.json`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/app/chatbot.dist.json)
+|                     | Description                                                                |
+|---------------------|----------------------------------------------------------------------------|
+| username            | Required - Twitch User Name                                                |
+| tmiToken            | Required - [Twitch TMI Token](https://twitchapps.com/tmi/)                 |
+| clientIdToken       | Optional - [Twitch Client ID Token](https://dev.twitch.tv/) (is presetted) |
+| youtubeToken        | Optional - [YouTube API Token](https://console.developers.google.com)      |
+| videosFolder        | Optional - Absolute path to videos folder with trailing slash              |
+| backup              | Optional - Daily backup yes or no                                          |
+| performance         | Optional - 0 = low / 1 = high                                              |
+| locale              | Required - German (de) and English (en) are presetted                      |
+| channels            | Required - List of Channels to connect                                     |
 
-## [`gulpfile.json`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/gulpfile.dist.json)
-|                     | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| browserSyncConfig   | Required - Defines which config is used for [BrowserSync](https://www.npmjs.com/package/browser-sync) (default: browserSyncDev)  |
-| sourcePath          | Required - Path to raw files (default: src/)                                                                                     |
-| publicPath          | Required - Path to transpiled files (default: public/)                                                                           |
-| env                 | Required - Environment dev, test or prod (default: dev)                                                                          |
+## [`gulpfile.json`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/app/gulpfile.dist.json)
+|                     | Description                                                                                                                     |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| browserSyncConfig   | Required - Defines which config is used for [BrowserSync](https://www.npmjs.com/package/browser-sync) (default: browserSyncDev) |
+| sourcePath          | Required - Path to raw files (default: src/)                                                                                    |
+| publicPath          | Required - Path to transpiled files (default: public/)                                                                          |
+| env                 | Required - Environment dev, test or prod (default: dev)                                                                         |
 
 ## Chatbot Commands
-| Name                | Command                                                                                                                          |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| about               | !about, !chatbot, !cb, !bug, !bugs, !help                                                                                        |
-| commands            | !commands, !cc                                                                                                                   |
-| counter             | counter increased if users counts from 1 - X without interruption                                                                |
-| diceDuel            | !dd6 @User or !dd56w6 @User - first digit can be from 1 - 99 and second from 1 - 9 (automatically removed after 120 sec)         |
-| diceDuelAccept      | !dda - accepting a dice duel request                                                                                             |
-| playlistInfo        | !plan, !program, !playlist, !video                                                                                               |
-| poll                | !vote 1 - X                                                                                                                      |
-| raffle              | custom keyword (default: !raffle)                                                                                                |
-| rollDice            | !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                             |
-| customCommand       | wrapper for all custom commands                                                                                                  |
-| Mention User        | (NEW) !yourcommand @UserName                                                                                                     |
+| Name                | Command                                                                                                                  |
+|---------------------|--------------------------------------------------------------------------------------------------------------------------|
+| about               | !about, !chatbot, !cb, !bug, !bugs, !help                                                                                |
+| commands            | !commands, !cc                                                                                                           |
+| counter             | counter increased if users counts from 1 - X without interruption                                                        |
+| diceDuel            | !dd6 @User or !dd56w6 @User - first digit can be from 1 - 99 and second from 1 - 9 (automatically removed after 120 sec) |
+| diceDuelAccept      | !dda - accepting a dice duel request                                                                                     |
+| playlistInfo        | !plan, !program, !playlist, !video                                                                                       |
+| poll                | !vote 1 - X                                                                                                              |
+| raffle              | custom keyword (default: !raffle)                                                                                        |
+| rollDice            | !d6 or !d56w6 - first digit can be from 1 - 99 and second from 1 - 9                                                     |
+| customCommand       | wrapper for all custom commands                                                                                          |
+| Mention User        | (NEW) !yourcommand @UserName                                                                                             |
 
 ## Chatbot Commands for Streamer and Moderators
-| Name                | Command                                                                                                                          |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| Custom Command      | (NEW) !yourcommand [Hello World!] [OPTIONS]                                                                                      |
-| Bot List            | (NEW) !bots [BotName] [OPTIONS]                                                                                                  |
-| ~~addBot~~          | (Deprecated) !addbot BotName                                                                                                     |
-| ~~removeBot~~       | (Deprecated) !rmbot BotName                                                                                                      |
-| ~~addCustomCommand~~    | (Deprecated) !addcc !command[@cooldown] lorem ipsum e.g. !addcc !hw@10 hello world                                           |
-| ~~removeCustomCommand~~ | (Deprecated) !rmcc !command                                                                                                  |
-| ~~toggleCustomCommand~~ | (Deprecated) !tglcc !command                                                                                                 |
-| ~~updateCustomCommand~~ | (Deprecated) !updcc !command[@cooldown] lorem ipsum dolor e.g. !updcc !hw Hello World!                                       |
+| Name                    | Command                                                                                |
+|-------------------------|----------------------------------------------------------------------------------------|
+| Custom Command          | (NEW) !yourcommand [Hello World!] [OPTIONS]                                            |
+| Bot List                | (NEW) !bots [BotName] [OPTIONS]                                                        |
+| ~~addBot~~              | (Deprecated) !addbot BotName                                                           |
+| ~~removeBot~~           | (Deprecated) !rmbot BotName                                                            |
+| ~~addCustomCommand~~    | (Deprecated) !addcc !command[@cooldown] lorem ipsum e.g. !addcc !hw@10 hello world     |
+| ~~removeCustomCommand~~ | (Deprecated) !rmcc !command                                                            |
+| ~~toggleCustomCommand~~ | (Deprecated) !tglcc !command                                                           |
+| ~~updateCustomCommand~~ | (Deprecated) !updcc !command[@cooldown] lorem ipsum dolor e.g. !updcc !hw Hello World! |
 
 ## Custom Command Options for Streamer and Moderators
-| Option              | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| --on                | Enable command for all users (default: true, if is a new command)                                                                |
-| --off               | Disable command for all users, but not streamer and mods (default: false)                                                        |
-| --cd 30             | Cooldown for all users, but not streamer and mods (default: 30 seconds, if is a new command)                                     |
-| --st                | Show command status in chat (default: false)                                                                                     |
+| Option              | Description                                                                                  |
+|---------------------|----------------------------------------------------------------------------------------------|
+| --on                | Enable command for all users (default: true, if is a new command)                            |
+| --off               | Disable command for all users, but not streamer and mods (default: false)                    |
+| --cd 30             | Cooldown for all users, but not streamer and mods (default: 30 seconds, if is a new command) |
+| --st                | Show command status in chat (default: false)                                                 |
 | --rm                | Remove command (default: false)                                                                                                  |
 
 ## Bot List Options for Streamer and Moderators
-| Option              | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| --tc                | Show bot list to chat (default: false)                                                                                           |
-| --rm                | Remove bot (default: false)                                                                                                      |
+| Option              | Description                            |
+|---------------------|----------------------------------------|
+| --tc                | Show bot list to chat (default: false) |
+| --rm                | Remove bot (default: false)            |
 
 ## Web UI Features
 ### Chat
@@ -314,7 +336,7 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 - Popout URL `/channel/[channel]/counter` to use browser source in OBS (Pixel recommendation: 400x400px)
 
 ### Playlist
-- Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.videos-folder.yml`](https://github.com/CodelineRed/twitch-chatbot/blob/master/docker-compose.videos-folder.yml))
+- Play Local MP4 files with `localhost:3060` domain. (See [`docker-compose.videos-folder.yml`](https://github.com/CodelineRed/twitch-chatbot/blob/main/docker-compose.videos-folder.yml))
 - Play Twitch Clips and Videos (past broadcasts, highlights and video uploads)
 - Play YouTube Videos
 - Add Video
@@ -424,43 +446,43 @@ Open [localhost:3050](http://localhost:3050) for Web UI or [localhost:3050/admin
 - Viewer Maximum
 - Viewer Average
 
-## [`import-videos-folder.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/import-videos-folder.js) Options
-| Option              | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| --help, -h          | Shows list of options                                                                                                            |
-| --version           | Show version number                                                                                                              |
-| --backup, -b        | Optional - Create an additional backup (default: false)                                                                          |
-| --channel, -c       | Required - Channel name which owns the videos                                                                                    |
-| --identity, -i      | Optional - Channel id / Room id. (required if channel is not in database)                                                        |
-| --locale, -l        | Optional - Locale to use in date generation and log messages (default: en)                                                       |
-| --log               | Optional - Show logs in CLI (default: true)                                                                                      |
-| --subname, --sn     | Optional - Add date as sub name (default: true)                                                                                  |
+## [`import-videos-folder.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/import-videos-folder.js) Options
+| Option              | Description                                                                |
+|---------------------|----------------------------------------------------------------------------|
+| --help, -h          | Shows list of options                                                      |
+| --version           | Show version number                                                        |
+| --backup, -b        | Optional - Create an additional backup (default: false)                    |
+| --channel, -c       | Required - Channel name which owns the videos                              |
+| --identity, -i      | Optional - Channel id / Room id. (required if channel is not in database)  |
+| --locale, -l        | Optional - Locale to use in date generation and log messages (default: en) |
+| --log               | Optional - Show logs in CLI (default: true)                                |
+| --subname, --sn     | Optional - Add date as sub name (default: true)                            |
 
 Example execution: `$ node import-videos-folder.js -c CodelineRed`
 
 ### Import Requirements:
-- `videosFolder` in [`chatbot.json`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/app/chatbot.dist.json) points to existing folder
+- `videosFolder` in [`chatbot.json`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/app/chatbot.dist.json) points to existing folder
 - each folder under `videosFolder` corresponds to a playlist
 - only MP4 files are allowed
 
 The Script only imports videos which are not in the database.
 
-## [`migration.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/migration.js) Options
-| Option              | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| --help, -h          | Shows list of options                                                                                                            |
-| --version           | Show version number                                                                                                              |
-| --direction, -d     | Optional - Migration direction (default: up)                                                                                     |
-| --file, -f          | Optional - Execute one specific migration file (e.g.: -f version-1.0.0)                                                          |
-| --locale, -l        | Optional - Locale for log messages (default: en)                                                                                 |
-| --log               | Optional - Show logs in CLI (default: true)                                                                                      |
+## [`migration.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/migration.js) Options
+| Option              | Description                                                             |
+|---------------------|-------------------------------------------------------------------------|
+| --help, -h          | Shows list of options                                                   |
+| --version           | Show version number                                                     |
+| --direction, -d     | Optional - Migration direction (default: up)                            |
+| --file, -f          | Optional - Execute one specific migration file (e.g.: -f version-1.0.0) |
+| --locale, -l        | Optional - Locale for log messages (default: en)                        |
+| --log               | Optional - Show logs in CLI (default: true)                             |
 
 Example execution: `$ node migration.js -d up`
 
 ## Localization
-- Web UI: [`i18n-locales.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/js/vue/app/i18n-locales.js)
-- Web UI: [`langswitch.vue`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/js/vue/component/partial/langswitch.vue)
-- Node: [`locales.js`](https://github.com/CodelineRed/twitch-chatbot/blob/master/src/js/chatbot/locales.js)
+- Web UI: [`i18n-locales.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/vue/app/i18n-locales.js)
+- Web UI: [`langswitch.vue`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/vue/component/partial/langswitch.vue)
+- Node: [`locales.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/chatbot/locales.js)
 
 ## Links
 - [Twitch Messaging Interface](https://github.com/tmijs/docs/tree/gh-pages/_posts)
@@ -475,7 +497,7 @@ Example execution: `$ node migration.js -d up`
 - [Twitch Video Embed](https://dev.twitch.tv/docs/embed/video-and-clips/#non-interactive-inline-frames-for-live-streams-and-vods)
 - [ESLint Js Rules](https://eslint.org/docs/rules/)
 - [ESLint Vue Rules](https://vuejs.github.io/eslint-plugin-vue/rules/)
-- [ESLint Import Rules](https://github.com/benmosher/eslint-plugin-import/tree/master/docs/rules)
+- [ESLint Import Rules](https://github.com/benmosher/eslint-plugin-import/tree/main/docs/rules)
 - [Sass Lint Rules](https://github.com/sasstools/sass-lint/tree/develop/docs/rules)
 - [Vue SFC](https://github.com/nfplee/gulp-vue-single-file-component)
 - [Path to RegExp](https://github.com/pillarjs/path-to-regexp/tree/v1.7.0#parameters)

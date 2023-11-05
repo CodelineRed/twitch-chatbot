@@ -26,27 +26,27 @@
                 this.componentsOrder = {
                     chat: {
                         show: true,
-                        cols: {xs: 12, sm: 0, md: 0, lg: 0, xl: 0, xxl: 0}
+                        cols: {xs: 12, sm: 0, md: 0, lg: 0, xl: 0, xxl: 0, '4xl': 0, '5xl': 0, '6xl': 0}
                     },
                     poll: {
                         show: true,
-                        cols: {xs: 12, sm: 0,  md: 6, lg: 0, xl: 0, xxl: 0}
+                        cols: {xs: 12, sm: 0, md: 6, lg: 0, xl: 0, xxl: 4, '4xl': 0, '5xl': 3, '6xl': 0}
                     },
                     raffle: {
                         show: true,
-                        cols: {xs: 12, sm: 0, md: 6, lg: 0, xl: 0, xxl: 0}
+                        cols: {xs: 12, sm: 0, md: 6, lg: 0, xl: 0, xxl: 4, '4xl': 0, '5xl': 3, '6xl': 0}
                     },
                     commands: {
                         show: true,
-                        cols: {xs: 12, sm: 0, md: 0, lg: 9, xl: 0, xxl: 7}
+                        cols: {xs: 12, sm: 0, md: 0, lg: 9, xl: 0, xxl: 7, '4xl': 0, '5xl': 6, '6xl': 0}
                     },
                     counter: {
                         show: true,
-                        cols: {xs: 12, sm: 6, md: 4, lg: 3, xl: 0, xxl: 0}
+                        cols: {xs: 12, sm: 6, md: 4, lg: 3, xl: 0, xxl: 0, '4xl': 0, '5xl': 0, '6xl': 0}
                     },
                     playlist: {
                         show: true,
-                        cols: {xs: 12, sm: 0,  md: 0, lg: 0, xl: 0, xxl: 0}
+                        cols: {xs: 12, sm: 0, md: 0, lg: 0, xl: 0, xxl: 0, '4xl': 0, '5xl': 0, '6xl': 0}
                     }
                 };
                 this.saveComponentsOrder();
@@ -150,12 +150,45 @@
                                         <table id="componentsOrderTable" class="table table-striped table-hover table-dark">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">#</th>
-                                                    <th scope="col">{{ $tc('component', 2) }}</th>
-                                                    <th scope="col">{{ $t('show') }}</th>
-                                                    <th scope="col" colspan="2">{{ $t('smartphone') }}</th>
-                                                    <th scope="col">{{ $t('tablet') }}</th>
-                                                    <th scope="col" colspan="3">{{ $t('computer') }}</th>
+                                                    <th scope="col">#<br>&nbsp;</th>
+                                                    <th scope="col">{{ $tc('component', 2) }}<br>&nbsp;</th>
+                                                    <th scope="col">{{ $t('show') }}<br>&nbsp;</th>
+                                                    <th scope="col">
+                                                        {{ $t('smartphone') }}<br>
+                                                        <span class="no-wrap">&ge; 0px</span>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <br>
+                                                        <span class="no-wrap">&ge; 576px</span>
+                                                    </th>
+                                                    <th scope="col">
+                                                        {{ $t('tablet') }}<br>
+                                                        <span class="no-wrap">&ge; 768px</span>
+                                                    </th>
+                                                    <th scope="col">
+                                                        {{ $t('computer') }}<br>
+                                                        <span class="no-wrap">&ge; 992px</span>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <br>
+                                                        <span class="no-wrap">&ge; 1200px</span>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <br>
+                                                        <span class="no-wrap">&ge; 1600px</span>
+                                                    </th>
+                                                    <th scope="col">
+                                                        {{ $t('wide-screen') }}<br>
+                                                        <span class="no-wrap">&ge; 1900px</span>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <br>
+                                                        <span class="no-wrap">&ge; 2200px</span>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <br>
+                                                        <span class="no-wrap">&ge; 2500px</span>
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>

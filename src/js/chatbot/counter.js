@@ -46,10 +46,10 @@ const counter = {
      * @returns {undefined}
      */
     update: function(chatbot, args) {
-        args.counter.streak = 0;
-        args.counter.updatedAt = moment().unix();
-        counter.lists[args.channel] = args.counter;
-        database.update('counter', args.counter, [`channel_id = '${chatbot.channels[args.channel].id}'`]);
+        args.item.streak = 0;
+        args.item.updatedAt = moment().unix();
+        counter.lists[args.channel] = args.item;
+        database.update('counter', args.item, [`channel_id = '${chatbot.channels[args.channel].id}'`]);
     }
 };
 

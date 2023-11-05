@@ -135,7 +135,7 @@
                         method: 'addPoll',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            poll: this.poll
+                            item: this.poll
                         },
                         env: 'node'
                     };
@@ -282,7 +282,7 @@
                         method: 'removePoll',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            poll: {
+                            item: {
                                 id: poll.id,
                                 name: poll.name,
                                 active: poll.active
@@ -313,7 +313,7 @@
             },
             setActivePoll: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.activePoll = args.poll;
+                    this.activePoll = args.item;
                     this.currentTime = moment().unix();
                     this.setCountdown();
                     this.resetPoll();
@@ -364,15 +364,15 @@
             },
             setPolls: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    if (this.polls === null || this.polls.length !== args.polls.length) {
-                        this.polls = args.polls;
+                    if (this.polls === null || this.polls.length !== args.list.length) {
+                        this.polls = args.list;
                         this.initDataTable();
                     }
                 }
             },
             setPollWinner: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.winner = args.winner;
+                    this.winner = args.item;
 
                     if (this.isPopout) {
                         setTimeout(function() {
@@ -486,7 +486,7 @@
                 </div>
                 <div class="form-group">
                     <label for="poll-options">{{ $tc('option', 2) }}:</label>
-                    <input id="poll-options" v-model="newOption" type="text" class="form-control" placeholder="New Option" :class="{'is-invalid': !poll.options.length}" @keyup.enter="addOption()">
+                    <input id="poll-options" v-model="newOption" type="text" class="form-control" :placeholder="$t('new-option')" :class="{'is-invalid': !poll.options.length}" @keyup.enter="addOption()">
                     <div v-if="poll.options.length" class="list-group pt-2">
                         <button v-for="(option, index) in poll.options" :key="option.id" type="button" class="list-group-item list-group-item-action" @click="removeOption(index)">{{ option }}</button>
                     </div>

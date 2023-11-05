@@ -17,24 +17,24 @@ const poll = {
             let time = moment().unix();
             let values = {
                 channelId: chatbot.channels[args.channel].id,
-                raffleId: args.poll.raffleId,
-                audioId: typeof args.poll.audio.id === 'number' && args.poll.audio.id > 0 ? args.poll.audio.id : null,
-                name: args.poll.name,
+                raffleId: args.item.raffleId,
+                audioId: typeof args.item.audio.id === 'number' && args.item.audio.id > 0 ? args.item.audio.id : null,
+                name: args.item.name,
                 active: true,
-                multipleChoice: args.poll.multipleChoice,
-                start: args.poll.start,
-                end: args.poll.end,
-                audioVolume: typeof args.poll.audio.volume === 'number' ? args.poll.audio.volume : 50,
+                multipleChoice: args.item.multipleChoice,
+                start: args.item.start,
+                end: args.item.end,
+                audioVolume: typeof args.item.audio.volume === 'number' ? args.item.audio.volume : 50,
                 updatedAt: time,
                 createdAt: time
             };
 
             database.insert('poll', [values], function(insert) {
                 values = [];
-                for (let i = 0; i < args.poll.options.length; i++) {
+                for (let i = 0; i < args.item.options.length; i++) {
                     values.push({
                         pollId: insert.lastID,
-                        name: args.poll.options[i],
+                        name: args.item.options[i],
                         updatedAt: time,
                         createdAt: time
                     });
@@ -42,19 +42,19 @@ const poll = {
                 database.insert('option', values, function(insertOption) {
                     poll.getActive(chatbot, args);
 
-                    if (typeof args.poll.raffleId === 'number') {
+                    if (typeof args.item.raffleId === 'number') {
                         let from = 'raffle';
                         let set = {
                             keyword: null
                         };
-                        let where = [`id = ${args.poll.raffleId}`];
+                        let where = [`id = ${args.item.raffleId}`];
 
                         database.update(from, set, where, function(update) {
                             chatbot.getActiveRaffle(chatbot, args);
                         });
                     }
                 });
-                console.log(locales.t('poll-added', [args.poll.name]));
+                console.log(locales.t('poll-added', [args.item.name]));
             });
         }
     },
@@ -174,7 +174,7 @@ const poll = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        poll: poll.activeLists[args.channel]
+                        item: poll.activeLists[args.channel]
                     },
                     method: 'setActivePoll',
                     ref: 'poll',
@@ -280,7 +280,7 @@ const poll = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        polls: polls
+                        list: polls
                     },
                     method: 'setPolls',
                     ref: 'poll',
@@ -360,7 +360,7 @@ const poll = {
             const call = {
                 args: {
                     channel: args.channel,
-                    winner: winner
+                    item: winner
                 },
                 method: 'setPollWinner',
                 ref: 'poll',
@@ -404,12 +404,12 @@ const poll = {
      * @returns {undefined}
      */
     remove: function(chatbot, args) {
-        if (args.poll.active === false) {
-            database.remove('poll', ['id = ?'], [args.poll.id], function(remove) {
-                database.remove('option', ['poll_id = ?'], [args.poll.id]);
-                database.remove('user_choice', ['poll_id = ?'], [args.poll.id]);
+        if (args.item.active === false) {
+            database.remove('poll', ['id = ?'], [args.item.id], function(remove) {
+                database.remove('option', ['poll_id = ?'], [args.item.id]);
+                database.remove('user_choice', ['poll_id = ?'], [args.item.id]);
                 poll.getList(chatbot, args);
-                console.log(locales.t('poll-removed', [args.poll.name]));
+                console.log(locales.t('poll-removed', [args.item.name]));
             });
         }
     },

@@ -176,8 +176,7 @@ const command = {
     },
     /**
      * Toggles custom command in database
-     * 
-     * @deprecated will be removed in 2.0
+     *
      * @param {object} chatbot
      * @param {object} args
      * @returns {undefined}
@@ -223,18 +222,18 @@ const command = {
      * @returns {undefined}
      */
     update: function(chatbot, args) {
-        command.lists[args.channel][args.commandIndex] = args.command;
+        command.lists[args.channel][args.index] = args.item;
 
         const set = {
-            cooldown: args.command.cooldown,
-            active: args.command.active,
-            lastExec: args.command.lastExec,
+            cooldown: args.item.cooldown,
+            active: args.item.active,
+            lastExec: args.item.lastExec,
             updatedAt: moment().unix()
         };
 
         const where = [
             `channel_id = '${chatbot.channels[args.channel].id}'`,
-            `command_id = ${args.command.id}`
+            `command_id = ${args.item.id}`
         ];
 
         database.update('channel_command_join', set, where);
@@ -322,7 +321,7 @@ const command = {
                 args: {
                     channel: args.channel,
                     lastExec: command.lists[args.channel][args.commandIndex].lastExec,
-                    commandIndex: args.commandIndex
+                    index: args.commandIndex
                 },
                 method: 'updateCommandLastExec',
                 ref: 'commands',
@@ -481,14 +480,13 @@ const command = {
                 const number = parseInt(args.message);
                 counter.lists[args.channel].streak = (number - counter.lists[args.channel].streak === 1) ? number : 0;
 
-                //command.logCommand(args);
                 command.updateLastExec(chatbot, args);
 
                 if (chatbot.socket !== null) {
                     const call = {
                         args: {
                             channel: args.channel,
-                            counter: counter.lists[args.channel]
+                            item: counter.lists[args.channel]
                         },
                         method: 'setCounter',
                         ref: 'counter',
@@ -861,12 +859,13 @@ const command = {
         removeCustomCommand: function(chatbot, args) {
             if (/^!rmcc (![a-z0-9]+)/i.test(args.message) 
                 && (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string'))) {
-                const matches = args.message.match(/^!rmcc (![a-z0-9]+)/i);
-                args = Object.assign(args, {
-                    name: matches[1],
-                    say: true
-                });
-                command.removeCustomCommand(chatbot, args);
+                console.log('* ' + locales.t('command-deprecated', ['!rmcc']));
+                // const matches = args.message.match(/^!rmcc (![a-z0-9]+)/i);
+                // args = Object.assign(args, {
+                //     name: matches[1],
+                //     say: true
+                // });
+                // command.removeCustomCommand(chatbot, args);
             }
         },
         /**
@@ -919,12 +918,13 @@ const command = {
         toggleCustomCommand: function(chatbot, args) {
             if (/^!tglcc (![a-z0-9]+)/i.test(args.message) 
                 && (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string'))) {
-                const matches = args.message.match(/^!tglcc (![a-z0-9]+)/i);
-                args = Object.assign(args, {
-                    name: matches[1],
-                    say: true
-                });
-                command.toggleCustomCommand(chatbot, args);
+                console.log('* ' + locales.t('command-deprecated', ['!tglcc']));
+                // const matches = args.message.match(/^!tglcc (![a-z0-9]+)/i);
+                // args = Object.assign(args, {
+                //     name: matches[1],
+                //     say: true
+                // });
+                // command.toggleCustomCommand(chatbot, args);
             }
         },
         /**
@@ -938,14 +938,15 @@ const command = {
         updateCustomCommand: function(chatbot, args) {
             if (/^!updcc (![a-z0-9]+)@?([0-9]+)? (.*)/i.test(args.message) 
                 && (args.userstate.badges !== null && (typeof args.userstate.badges.broadcaster === 'string' || typeof args.userstate.badges.moderator === 'string'))) {
-                const matches = args.message.match(/^!updcc (![a-z0-9]+)@?([0-9]+)? (.*)/i);
-                args = Object.assign(args, {
-                    name: matches[1],
-                    cooldown: matches[2],
-                    content: matches[3],
-                    say: true
-                });
-                command.updateCustomCommand(chatbot, args);
+                console.log('* ' + locales.t('command-deprecated', ['!updcc']));
+                // const matches = args.message.match(/^!updcc (![a-z0-9]+)@?([0-9]+)? (.*)/i);
+                // args = Object.assign(args, {
+                //     name: matches[1],
+                //     cooldown: matches[2],
+                //     content: matches[3],
+                //     say: true
+                // });
+                // command.updateCustomCommand(chatbot, args);
             }
         }
     }

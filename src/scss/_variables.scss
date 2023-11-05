@@ -1,7 +1,9 @@
-$theme-color-1: #ff2525; // red
+$theme-color-1: #8df; // blue
 $theme-color-2: #212121; // dark grey
 $theme-color-3: lighten($theme-color-2, 50%); // light grey
 $theme-color-4: lighten($theme-color-2, 5%); // grey
+
+$white: #fff;
 
 $badge-gradient-founder-1: #9445fe;
 $badge-gradient-founder-2: #f71fd3;
@@ -42,7 +44,7 @@ $badge-color-hype-train-former: #ccc;
 $badge-color-tgc-2020: #006357;
 
 $chat-color-action: #8df;
-$chat-color-message: #fff;
+$chat-color-message: $white;
 $chat-color-notification: #fa0;
 $chat-color-purge: $chat-color-notification;
 $chat-color-user: $chat-color-action;
@@ -59,11 +61,8 @@ $font-size-base: 1rem;
 $headings-color: $theme-color-1;
 $h1-font-size: $font-size-base * 2;
 
-$close-color: #fff;
+$close-color: $white;
 $close-text-shadow: none;
-
-$red: $theme-color-1;
-//$info: $theme-color-1;
 
 $link-color: $theme-color-1;
 
@@ -76,18 +75,19 @@ $modal-xl: 1075px;
 $modal-md: 800px;
 
 $pagination-bg: $theme-color-2;
-$pagination-color: #fff;
-$pagination-border-color: $theme-color-1;
+$pagination-color: $white;
+$pagination-border-color: var(--blue);
 
-$pagination-hover-color: #fff;
-$pagination-hover-bg: $theme-color-1;
-$pagination-hover-border-color: $theme-color-1;
+$pagination-hover-color: $white;
+$pagination-hover-bg: var(--blue);
+$pagination-hover-border-color: var(--blue);
 
 $pagination-disabled-color: $theme-color-3;
 $pagination-disabled-bg: $theme-color-4;
-$pagination-disabled-border-color: $theme-color-1;
+$pagination-disabled-border-color: var(--blue);
 
-$pagination-active-bg: $theme-color-1;
+$pagination-active-color: $white;
+$pagination-active-bg: var(--blue);
 
 $dropdown-bg: $theme-color-2;
 $dropdown-link-color: $body-color;
@@ -96,13 +96,13 @@ $dropdown-link-hover-bg: $theme-color-4;
 $dropdown-divider-bg: $theme-color-4;
 
 $popover-bg: $theme-color-4;
-$popover-body-color: #fff;
+$popover-body-color: $white;
 $popover-header-bg: $theme-color-2;
-$popover-border-color: $theme-color-1;
+$popover-border-color: #00b7ff;
 
-$list-group-color: #fff;
+$list-group-color: $white;
 $list-group-bg: $theme-color-2;
-$list-group-border-color: rgba($theme-color-1, .25);
+$list-group-border-color: var(--blue);
 $list-group-hover-bg: $theme-color-4;
 $list-group-action-hover-color: $list-group-color;
 $list-group-action-active-color: $list-group-color;
@@ -111,18 +111,24 @@ $list-group-action-active-bg: $theme-color-4;
 $hr-border-color: $theme-color-1;
 
 $grid-breakpoints: (
-  xs: 0,
-  sm: 576px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px,
-  xxl: 1600px
+    xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px,
+    xxl: 1600px,
+    '4xl': 1900px,
+    '5xl': 2200px,
+    '6xl': 2500px
 );
 
 $container-max-widths: (
-  sm: 540px,
-  md: 720px,
-  lg: 960px,
-  xl: 1140px,
-  xxl: 1540px
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1540px,
+    '4xl': 1840px,
+    '5xl': 2140px,
+    '6xl': 2440px
 );

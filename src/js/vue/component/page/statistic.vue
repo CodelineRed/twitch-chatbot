@@ -171,8 +171,8 @@
                         method: 'getTopEmotes',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            where: where,
                             limit: limit,
+                            where: where,
                             type: type,
                             start: this.datetimePicker.start + moment().format('Z'),
                             end: this.datetimePicker.end + moment().format('Z')
@@ -203,13 +203,14 @@
             },
             setChart: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
+                    let $this = this;
                     this.completed++;
                     if (args.data.length) {
                         this.hasChart = true;
                         let config = {
                             type: 'line',
                             data: {
-                                labels: args.labels,
+                                labels: args.shortLabels,
                                 datasets: [{
                                     backgroundColor: args.backgroundColor,
                                     borderColor: '#2e97bf',
@@ -232,8 +233,8 @@
                                             color: '#212121'
                                         },
                                         ticks: {
-                                            fontColor: '#fff',
-                                            min: 0
+                                            fontColor: '#fff'
+                                            // min: 0
                                         }
                                     }],
                                     xAxes: [{
@@ -242,8 +243,23 @@
                                         },
                                         ticks: {
                                             fontColor: '#fff'
+                                        },
+                                        scaleLabel: {
+                                            display: false,
+                                            fontColor: '#fff',
+                                            labelString: this.$tc('game', args.labels.length)
                                         }
                                     }]
+                                },
+                                tooltips: {
+                                    callbacks: {
+                                        title: function(tooltipItem, data) {
+                                            return args.labels[tooltipItem[0].index];
+                                        },
+                                        label: function(tooltipItem, data) {
+                                            return $this.$t('viewer', [tooltipItem.yLabel]);
+                                        }
+                                    }
                                 }
                             }
                         };
@@ -264,13 +280,13 @@
             setMisc: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.completed++;
-                    this.misc = args.misc;
+                    this.misc = args.list;
                 }
             },
             setPurges: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.completed++;
-                    this.purges = args.purges;
+                    this.purges = args.list;
                 }
             },
             setStreamDates: function(args) {
@@ -282,7 +298,7 @@
             setSubs: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this.completed++;
-                    this.subs = args.subs;
+                    this.subs = args.list;
                 }
             },
             setTopChatters: function(args) {
