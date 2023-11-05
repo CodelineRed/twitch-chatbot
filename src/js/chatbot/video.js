@@ -17,19 +17,19 @@ const video = {
      */
     add: function(chatbot, args) {
         if (chatbot.socket !== null) {
-            delete args.video.durationHours;
-            delete args.video.durationMin;
-            delete args.video.durationSec;
-            delete args.video.autofill;
+            delete args.item.durationHours;
+            delete args.item.durationMin;
+            delete args.item.durationSec;
+            delete args.item.autofill;
             let time = moment().unix();
 
             let values = {
                 channelId: chatbot.channels[args.channel].id,
-                name: args.video.name,
-                subName: args.video.subName,
-                file: args.video.file,
-                duration: args.video.duration, // unix timestamp (seconds)
-                player: args.video.player,
+                name: args.item.name,
+                subName: args.item.subName,
+                file: args.item.file,
+                duration: args.item.duration, // unix timestamp (seconds)
+                player: args.item.player,
                 updatedAt: time, // unix timestamp (seconds)
                 createdAt: time // unix timestamp (seconds)
             };
@@ -41,17 +41,17 @@ const video = {
             let where = ['p.id = ?'];
 
             // find videos from playlist
-            database.find(select, from, join, where, '', 'sort', 0, [args.video.playlistId], function(rows) {
+            database.find(select, from, join, where, '', 'sort', 0, [args.item.playlistId], function(rows) {
                 // if video.id is defined, just add playlist relation
-                if (args.video.id) {
+                if (args.item.id) {
                     values = {
                         uuid: uuidv4(),
-                        playlistId: args.video.playlistId,
-                        videoId: args.video.id,
-                        played: args.video.played,
-                        skipped: args.video.skipped,
-                        titleCmd: args.video.titleCmd,
-                        gameCmd: args.video.gameCmd,
+                        playlistId: args.item.playlistId,
+                        videoId: args.item.id,
+                        played: args.item.played,
+                        skipped: args.item.skipped,
+                        titleCmd: args.item.titleCmd,
+                        gameCmd: args.item.gameCmd,
                         start: 0,
                         end: 0,
                         sort: rows[0].sort === null ? 0 : 1 * (rows[rows.length - 1].sort + 1),
@@ -60,29 +60,29 @@ const video = {
                     };
 
                     database.insert('playlist_video_join', [values], function() {
-                        if (args.video.playlistId === chatbot.activePlaylists[args.channel].id) {
+                        if (args.item.playlistId === chatbot.activePlaylists[args.channel].id) {
                             values.id = values.videoId;
-                            values.name = args.video.name;
-                            values.subName = args.video.subName;
-                            values.file = args.video.file;
-                            values.duration = args.video.duration; // unix timestamp (seconds)
-                            values.player = args.video.player;
+                            values.name = args.item.name;
+                            values.subName = args.item.subName;
+                            values.file = args.item.file;
+                            values.duration = args.item.duration; // unix timestamp (seconds)
+                            values.player = args.item.player;
                             chatbot.getActivePlaylist(chatbot, args);
                         }
 
                         chatbot.getPlaylists(chatbot, args);
-                        console.log(locales.t('video-added', [args.video.name, rows[0].name]));
+                        console.log(locales.t('video-added', [args.item.name, rows[0].name]));
                     });
                 } else {
                     database.insert('video', [values], function(insert) {
                         values = {
                             uuid: uuidv4(),
-                            playlistId: args.video.playlistId,
+                            playlistId: args.item.playlistId,
                             videoId: insert.lastID,
-                            played: args.video.played,
-                            skipped: args.video.skipped,
-                            titleCmd: args.video.titleCmd,
-                            gameCmd: args.video.gameCmd,
+                            played: args.item.played,
+                            skipped: args.item.skipped,
+                            titleCmd: args.item.titleCmd,
+                            gameCmd: args.item.gameCmd,
                             start: 0,
                             end: 0,
                             sort: rows[0].sort === null ? 0 : 1 * (rows[rows.length - 1].sort + 1),
@@ -91,18 +91,18 @@ const video = {
                         };
 
                         database.insert('playlist_video_join', [values], function() {
-                            if (args.video.playlistId === chatbot.activePlaylists[args.channel].id) {
+                            if (args.item.playlistId === chatbot.activePlaylists[args.channel].id) {
                                 values.id = values.videoId;
-                                values.name = args.video.name;
-                                values.subName = args.video.subName;
-                                values.file = args.video.file;
-                                values.duration = args.video.duration; // unix timestamp (seconds)
-                                values.player = args.video.player;
+                                values.name = args.item.name;
+                                values.subName = args.item.subName;
+                                values.file = args.item.file;
+                                values.duration = args.item.duration; // unix timestamp (seconds)
+                                values.player = args.item.player;
                                 chatbot.getActivePlaylist(chatbot, args);
                             }
 
                             chatbot.getPlaylists(chatbot, args);
-                            console.log(locales.t('video-added', [args.video.name, rows[0].name]));
+                            console.log(locales.t('video-added', [args.item.name, rows[0].name]));
                         });
                     });
                 }
@@ -371,7 +371,7 @@ const video = {
      * @returns {undefined}
      */
     getSearchResults: function(chatbot, args) {
-        let search = args.videoSearch.replace(/ /g, '%');
+        let search = args.item.replace(/ /g, '%');
         let select = 'id, name, sub_name AS subName, file, ';
         select += 'duration, player, updated_at AS updatedAt, created_at AS createdAt';
         let where = ['channel_id = ?', '(name LIKE ? OR file LIKE ?)'];
@@ -415,10 +415,10 @@ const video = {
         };
 
         // if file fits pattern and token is defined
-        if (/^[A-Z][A-Za-z0-9-_]+$/.test(args.file) && oauthToken.length 
+        if (/^[A-Z][A-Za-z0-9-_]+$/.test(args.item) && oauthToken.length
             && chatbot.config.clientIdToken.length) {
             let options = {
-                url: `https://api.twitch.tv/helix/clips?id=${args.file}`,
+                url: `https://api.twitch.tv/helix/clips?id=${args.item}`,
                 method: 'GET',
                 json: true,
                 headers: {
@@ -478,10 +478,10 @@ const video = {
         };
 
         // if file fits pattern and token is defined
-        if (/^[0-9]+$/.test(args.file) && oauthToken.length 
+        if (/^[0-9]+$/.test(args.item) && oauthToken.length
             && chatbot.config.clientIdToken.length) {
             let options = {
-                url: `https://api.twitch.tv/helix/videos?id=${args.file}`,
+                url: `https://api.twitch.tv/helix/videos?id=${args.item}`,
                 method: 'GET',
                 json: true,
                 headers: {
@@ -545,9 +545,9 @@ const video = {
         };
 
         // if file is 11 chars long, fits pattern and token is defined
-        if (/^[a-z0-9_-]{11}$/i.test(args.file) && chatbot.config.youtubeToken.length) {
+        if (/^[a-z0-9_-]{11}$/i.test(args.item) && chatbot.config.youtubeToken.length) {
             let options = {
-                url: `https://www.googleapis.com/youtube/v3/videos?id=${args.file}&key=${chatbot.config.youtubeToken}&part=snippet,contentDetails,statistics,status`,
+                url: `https://www.googleapis.com/youtube/v3/videos?id=${args.item}&key=${chatbot.config.youtubeToken}&part=snippet,contentDetails,statistics,status`,
                 method: 'GET',
                 json: true
             };
@@ -657,34 +657,34 @@ const video = {
         let prepare = [args.playlist.id];
 
         database.find('*', from, '', where, '', 'sort', 0, prepare, function(rows) {
-            let videoIndex = video.getIndexFromVideos(rows, args.video);
+            let index = video.getIndexFromVideos(rows, args.item);
 
-            if (videoIndex < 0) {
+            if (index < 0) {
                 return false;
             }
 
-            let sort = rows[videoIndex].sort;
-            rows[videoIndex].sort = rows[videoIndex + args.direction].sort;
-            rows[videoIndex + args.direction].sort = sort;
+            let sort = rows[index].sort;
+            rows[index].sort = rows[index + args.direction].sort;
+            rows[index + args.direction].sort = sort;
             let set = {
                 updatedAt: time,
-                sort: rows[videoIndex].sort
+                sort: rows[index].sort
             };
-            where = [`uuid = '${rows[videoIndex].uuid}'`];
+            where = [`uuid = '${rows[index].uuid}'`];
 
             database.update(from, set, where, function() {
                 set = {
                     updatedAt: time,
-                    sort: rows[videoIndex + args.direction].sort
+                    sort: rows[index + args.direction].sort
                 };
-                where = [`uuid = '${rows[videoIndex + args.direction].uuid}'`];
+                where = [`uuid = '${rows[index + args.direction].uuid}'`];
 
                 database.update(from, set, where, function() {
                     if (args.playlist.id === chatbot.activePlaylists[args.channel].id) {
                         chatbot.getActivePlaylist(chatbot, args);
                     }
                     chatbot.getPlaylist(chatbot, args);
-                    console.log(locales.t('video-moved', [args.video.name, locales.t(direction), args.playlist.name]));
+                    console.log(locales.t('video-moved', [args.item.name, locales.t(direction), args.playlist.name]));
                 });
             });
         });
@@ -697,7 +697,7 @@ const video = {
      * @returns {undefined}
      */
     remove: function(chatbot, args) {
-        database.remove('playlist_video_join', ['uuid = ?'], [args.video.uuid], function(remove) {
+        database.remove('playlist_video_join', ['uuid = ?'], [args.item.uuid], function(remove) {
             chatbot.getPlaylists(chatbot, args);
 
             // if is active playlist
@@ -706,7 +706,7 @@ const video = {
             }
 
             chatbot.getPlaylist(chatbot, args);
-            console.log(locales.t('video-removed', [args.video.name, args.playlist.name]));
+            console.log(locales.t('video-removed', [args.item.name, args.playlist.name]));
         });
     },
     /**
@@ -720,48 +720,48 @@ const video = {
         if (chatbot.socket !== null) {
             let reloadActivePlaylist = false;
             let deleteProperties = ['durationHours', 'durationMin', 'durationSec', 'autofill'];
-            args.video.updatedAt = moment().unix(); // unix timestamp (seconds)
+            args.item.updatedAt = moment().unix(); // unix timestamp (seconds)
 
             // delete properties which are not in database
             for (let i = 0; i < deleteProperties.length; i++) {
-                if (typeof args.video[deleteProperties[i]] !== 'undefined') {
-                    delete args.video[deleteProperties[i]];
+                if (typeof args.item[deleteProperties[i]] !== 'undefined') {
+                    delete args.item[deleteProperties[i]];
                     reloadActivePlaylist = true;
                 }
             }
 
             let set = {
-                name: args.video.name,
-                subName: args.video.subName,
-                file: args.video.file,
-                duration: args.video.duration, // unix timestamp (seconds)
-                player: args.video.player,
-                updatedAt: args.video.updatedAt
+                name: args.item.name,
+                subName: args.item.subName,
+                file: args.item.file,
+                duration: args.item.duration, // unix timestamp (seconds)
+                player: args.item.player,
+                updatedAt: args.item.updatedAt
             };
 
-            database.update('video', set, [`id = ${args.video.id}`], function() {
+            database.update('video', set, [`id = ${args.item.id}`], function() {
                 set = {
-                    played: args.video.played,
-                    skipped: args.video.skipped,
-                    titleCmd: args.video.titleCmd,
-                    gameCmd: args.video.gameCmd,
+                    played: args.item.played,
+                    skipped: args.item.skipped,
+                    titleCmd: args.item.titleCmd,
+                    gameCmd: args.item.gameCmd,
                     start: 0,
                     end: 0,
-                    updatedAt: args.video.updatedAt
+                    updatedAt: args.item.updatedAt
                 };
 
-                database.update('playlist_video_join', set, [`uuid = '${args.video.uuid}'`], function() {
+                database.update('playlist_video_join', set, [`uuid = '${args.item.uuid}'`], function() {
                     // if is active playlist
-                    if (args.video.playlistId === chatbot.activePlaylists[args.channel].id) {
-                        let videoIndex = video.getIndexFromVideos(chatbot.activePlaylists[args.channel].videos, args.video);
-                        chatbot.activePlaylists[args.channel].videos[videoIndex] = args.video;
+                    if (args.item.playlistId === chatbot.activePlaylists[args.channel].id) {
+                        let index = video.getIndexFromVideos(chatbot.activePlaylists[args.channel].videos, args.item);
+                        chatbot.activePlaylists[args.channel].videos[index] = args.item;
 
                         if (reloadActivePlaylist) {
                             chatbot.getActivePlaylist(chatbot, args);
                         }
                     }
 
-                    console.log(locales.t('video-updated', [args.video.name, args.playlist.name]));
+                    console.log(locales.t('video-updated', [args.item.name, args.playlist.name]));
                 });
             });
         }

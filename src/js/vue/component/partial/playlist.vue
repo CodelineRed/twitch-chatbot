@@ -263,7 +263,7 @@
                         method: 'addPlaylist',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            playlist: this.playlist
+                            item: this.playlist
                         },
                         env: 'node'
                     };
@@ -278,7 +278,7 @@
                         method: 'addVideo',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            video: this.video
+                            item: this.video
                         },
                         env: 'node'
                     };
@@ -351,7 +351,7 @@
                         method: 'getPlaylist',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            playlist: this.playlist
+                            item: this.playlist
                         },
                         env: 'node'
                     };
@@ -395,7 +395,7 @@
                         method: 'getPlaylistSearchResults',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            playlistSearch: this.playlistSearch
+                            item: this.playlistSearch
                         },
                         env: 'node'
                     };
@@ -409,7 +409,7 @@
                         method: 'getTwitchClipMeta',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            file: this.video.file
+                            item: this.video.file
                         },
                         env: 'node'
                     };
@@ -423,7 +423,7 @@
                         method: 'getTwitchVideoMeta',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            file: this.video.file
+                            item: this.video.file
                         },
                         env: 'node'
                     };
@@ -466,7 +466,7 @@
                         method: 'getVideoSearchResults',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            videoSearch: this.videoSearch
+                            item: this.videoSearch
                         },
                         env: 'node'
                     };
@@ -480,7 +480,7 @@
                         method: 'getYoutubeVideoMeta',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            file: this.video.file
+                            item: this.video.file
                         },
                         env: 'node'
                     };
@@ -529,7 +529,7 @@
                         method: 'mergePlaylists',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            merge: this.merge
+                            item: this.merge
                         },
                         env: 'node'
                     };
@@ -548,7 +548,7 @@
                                 id: playlist.id,
                                 name: playlist.name
                             },
-                            video: video
+                            item: video
                         },
                         env: 'node'
                     };
@@ -571,8 +571,8 @@
                                 id: playlist.id,
                                 name: playlist.name
                             },
-                            video: video,
-                            videoIndex: index
+                            item: video,
+                            index: index
                         },
                         env: 'node'
                     };
@@ -619,7 +619,7 @@
                         method: 'removePlaylist',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            playlist: {
+                            item: {
                                 id: playlist.id,
                                 name: playlist.name,
                                 active: playlist.active
@@ -692,7 +692,7 @@
             },
             setPlaylistConfig: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.config = args.config;
+                    this.config = args.item;
                 }
             },
             setPlaylists: function(args) {
@@ -754,7 +754,7 @@
                         method: 'swapPlaylist',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            playlist: typeof playlist === 'undefined' ? this.playlist : playlist
+                            item: typeof playlist === 'undefined' ? this.playlist : playlist
                         },
                         env: 'node'
                     };
@@ -773,7 +773,7 @@
                         method: 'updatePlaylist',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            playlist: this.playlist
+                            item: this.playlist
                         },
                         env: 'node'
                     };
@@ -788,11 +788,11 @@
                         method: 'updateVideo',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
+                            item: typeof video === 'undefined' ? this.video : video,
                             playlist: {
                                 id: typeof playlist === 'undefined' ? this.activePlaylist.id : playlist.id,
                                 name: typeof playlist === 'undefined' ? this.activePlaylist.name : playlist.name
-                            },
-                            video: typeof video === 'undefined' ? this.video : video
+                            }
                         },
                         env: 'node'
                     };
@@ -815,10 +815,10 @@
 <template>
     <div class="playlist p-2">
         <div v-if="activePlaylist.videos.length" class="h4 text-center">
-            <a href="#" onclick="javascript:return false;" @click="popoutPlayer()">{{ activePlaylist.name }} <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
+            <a href="#" onclick="javascript:return false;" @click="popoutPlayer()">{{ activePlaylist.name }} - {{ $t('playlist') }} <font-awesome-icon :icon="['fas', 'external-link-alt']" class="fa-fw" /></a>
         </div>
         <div v-if="!activePlaylist.videos.length" class="h4 text-center">
-            {{ activePlaylist.name }}
+            {{ activePlaylist.name }} - {{ $t('playlist') }}
         </div>
         <div class="table-responsive">
             <table id="playlistTable" class="table table-striped table-hover table-dark data-table">
@@ -1228,7 +1228,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>
                         <button v-if="!updateMode" type="button" class="btn btn-primary" @click="addVideo()">{{ $t('add') }}</button>
-                        <button v-if="updateMode" type="button" class="btn btn-primary" @click="updateVideo()">{{ $t('edit') }}</button>
+                        <button v-if="updateMode" type="button" class="btn btn-primary" @click="updateVideo()">{{ $t('save') }}</button>
                     </div>
                 </div>
             </div>

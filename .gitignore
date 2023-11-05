@@ -21,9 +21,10 @@ composer.phar
 gulpfile.json
 gulpfile-config.json
 # package-lock.json
+/test*
 
-# Created by https://www.toptal.com/developers/gitignore/api/node,macos,linux,windows,netbeans,phpstorm,composer
-# Edit at https://www.toptal.com/developers/gitignore?templates=node,macos,linux,windows,netbeans,phpstorm,composer
+# Created by https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,composer,netbeans,phpstorm
+# Edit at https://www.toptal.com/developers/gitignore?templates=node,linux,macos,windows,composer,netbeans,phpstorm
 
 ### Composer ###
 composer.phar
@@ -369,4 +370,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/node,macos,linux,windows,netbeans,phpstorm,composer
+# End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,composer,netbeans,phpstorm

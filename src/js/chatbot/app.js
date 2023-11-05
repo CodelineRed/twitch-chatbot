@@ -6,7 +6,7 @@ const audio      = require('./audio');
 const bot        = require('./bot');
 const chat       = require('./chat');
 const channel    = require('./channel');
-const command    = require('./command');
+const command           = require('./command');
 const counter    = require('./counter');
 const playlist   = require('./playlist');
 const poll       = require('./poll');
@@ -127,7 +127,7 @@ const chatbot = {
         console.log(chalk.white('     /_____/_____/_____/_____/  / /_/ / /_/ /  /_____/_____/_____/_____/       '));
         console.log(chalk.white('                               /_.___/\\__, /                                   '));
         console.log(chalk.white('                                     \\____/                                    '));
-        console.log(chalk.hex('#ff2525')('            ______          __     __             ____           __            '));
+        console.log(chalk.hex('#ff2525')('            ______          __     ___            ____           __            '));
         console.log(chalk.hex('#ff2525')('           / ____/___  ____/ /__  / (_)___  ___  / __ \\___  ____/ /            '));
         console.log(chalk.hex('#ff2525')('          / /   / __ \\/ __  / _ \\/ / / __ \\/ _ \\/ /_/ / _ \\/ __  /             '));
         console.log(chalk.hex('#ff2525')('         / /___/ /_/ / /_/ /  __/ / / / / /  __/ _, _/  __/ /_/ /              '));

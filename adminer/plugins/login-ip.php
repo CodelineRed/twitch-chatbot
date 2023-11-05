@@ -22,6 +22,9 @@ class AdminerLoginIp {
     }
 
     function login($login, $password) {
+        // by pass ip check
+        return true;
+
         foreach ($this->ips as $ip) {
             if (strncasecmp($_SERVER["REMOTE_ADDR"], $ip, strlen($ip)) == 0) {
                 if (!$this->forwarded_for) {

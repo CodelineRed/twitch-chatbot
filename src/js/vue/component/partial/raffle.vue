@@ -146,7 +146,7 @@
                         method: 'addRaffle',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            raffle: this.raffle
+                            item: this.raffle
                         },
                         env: 'node'
                     };
@@ -291,7 +291,7 @@
                         method: 'removeRaffle',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            raffle: {
+                            item: {
                                 id: raffle.id,
                                 name: raffle.name,
                                 active: raffle.active
@@ -330,7 +330,7 @@
             },
             setActiveRaffle: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.activeRaffle = args.raffle;
+                    this.activeRaffle = args.item;
                     this.currentTime = moment().unix();
                     this.setCountdown();
                     this.resetRaffle();
@@ -377,14 +377,14 @@
             setRaffles: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     if (this.raffles === null || this.raffles.length !== args.raffles.length) {
-                        this.raffles = args.raffles;
+                        this.raffles = args.list;
                         this.initDataTable();
                     }
                 }
             },
             setRaffleWinner: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.winner = args.winner;
+                    this.winner = args.item;
 
                     if (this.isPopout) {
                         setTimeout(function() {

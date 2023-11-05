@@ -1,3 +1,12 @@
+# ----- Unix -------- #
+# docker run --rm --interactive --tty --volume $PWD:/app composer create-project --ignore-platform-reqs --no-dev codelinered/twitch-chatbot twitch-chatbot "dev-production"
+# cd twitch-chatbot
+# docker run --rm --interactive --tty --volume $PWD:/app composer update --no-dev
+# ----- Windows ----- #
+# docker run --rm --interactive --tty --volume %cd%:/app composer create-project --ignore-platform-reqs --no-dev codelinered/twitch-chatbot twitch-chatbot "dev-production"
+# cd twitch-chatbot
+# docker run --rm --interactive --tty --volume %cd%:/app composer update --no-dev
+
 version: '3'
 
 volumes:
@@ -12,19 +21,11 @@ services:
         image: php:7-alpine
         container_name: twitch-chatbot
         working_dir: /var/www
-        command: php -S 0.0.0.0:8080 -t public
+        command: php -S 0.0.0.0:80 -t public
         environment:
             docker: "true"
         ports:
-            - 3050:8080
+            - 3050:80
         volumes:
             - .:/var/www
             - logs:/var/www/logs
-
-    # docker-compose run composer install --no-dev
-    # docker-compose run composer require user/pack
-    composer:
-        image: composer
-        volumes:
-            - .:/var/www
-        working_dir: /var/www

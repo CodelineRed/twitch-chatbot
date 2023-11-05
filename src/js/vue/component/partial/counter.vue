@@ -56,7 +56,7 @@
                         method: 'updateCounter',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            counter: this.counter
+                            item: this.counter
                         },
                         env: 'node'
                     };

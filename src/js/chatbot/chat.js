@@ -274,7 +274,7 @@ const chat = {
             const call = {
                 args: {
                     channel: args.channel,
-                    message: Object.assign({}, values)
+                    item: Object.assign({}, values)
                 },
                 method: 'setMessage',
                 ref: 'chat',

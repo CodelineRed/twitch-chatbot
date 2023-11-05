@@ -65,8 +65,12 @@ function adminer_object() {
 if (file_exists('../adminer/adminer-4.6.2.php')) {
     include '../adminer/adminer-4.6.2.php';
 } else {
+    echo '<style>';
+    echo 'body{background-color: black; color: white;}';
+    echo 'a,a:focus,a:visited,a:hover{color:white;font-style:italic;}';
+    echo '</style>';
     echo 'Adminer 4.6.2 is missing.<br>';
-    echo 'Install Adminer with Composer.<br>';
-    echo 'See: <a href="https://github.com/CodelineRed/twitch-chatbot/#install-php-adminer-and-web-ui-optional" target="_blank">Install PHP, Adminer and Web UI</a>';
+    echo 'Install Adminer with Docker.<br>';
+    echo 'See: <a href="https://github.com/CodelineRed/twitch-chatbot/#install-with-docker-optional" target="_blank">Install with Docker</a>';
 }
 //phpinfo();

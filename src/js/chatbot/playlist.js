@@ -20,15 +20,15 @@ const playlist = {
             let time = moment().unix();
             let values = {
                 channelId: chatbot.channels[args.channel].id,
-                name: args.playlist.name,
-                active: args.playlist.active,
+                name: args.item.name,
+                active: args.item.active,
                 updatedAt: time,
                 createdAt: time
             };
 
             database.insert('playlist', [values], function(insert) {
                 // if new playlist is active playlist
-                if (args.playlist.active) {
+                if (args.item.active) {
                     let where = [
                         `channel_id = '${chatbot.channels[args.channel].id}'`,
                         `id != ${insert.lastID}`
@@ -41,7 +41,7 @@ const playlist = {
                 } else {
                     playlist.getList(chatbot, args);
                 }
-                console.log(locales.t('playlist-added', [args.playlist.name]));
+                console.log(locales.t('playlist-added', [args.item.name]));
             });
         }
     },
@@ -76,7 +76,7 @@ const playlist = {
         let select = 'id, name, active, updated_at AS updatedAt, created_at AS createdAt';
         let from = 'playlist';
         let where = ['id = ?', 'channel_id = ?'];
-        let prepare = [args.playlist.id, chatbot.channels[args.channel].id];
+        let prepare = [args.item.id, chatbot.channels[args.channel].id];
 
         database.find(select, from, '', where, '', '', 1, prepare, function(rows) {
             if (rows.length) {
@@ -89,7 +89,7 @@ const playlist = {
                 from = 'playlist_video_join AS pvj';
                 where = ['pvj.playlist_id = ?'];
                 let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
-                prepare = [args.playlist.id];
+                prepare = [args.item.id];
 
                 // find videos from target playlist
                 database.find(select, from, join, where, '', 'pvj.sort', 0, prepare, function(rowsVideo) {
@@ -242,7 +242,7 @@ const playlist = {
             const call = {
                 args: {
                     channel: args.channel,
-                    config: {
+                    item: {
                         hasClientIdToken: !!chatbot.config.clientIdToken.length,
                         hasVideosFolder: fs.existsSync(chatbot.config.videosFolder),
                         hasYoutubeToken: !!chatbot.config.youtubeToken.length
@@ -298,7 +298,7 @@ const playlist = {
      * @returns {undefined}
      */
     getSearchResults: function(chatbot, args) {
-        let search = args.playlistSearch.replace(/ /g, '%');
+        let search = args.item.replace(/ /g, '%');
         let select = 'p.id, p.name, p.active, p.updated_at AS updatedAt, ';
         select += 'p.created_at AS createdAt, COUNT(pvj.playlist_id) AS videoQuantity';
         let from = 'playlist AS p';
@@ -340,20 +340,20 @@ const playlist = {
         let join = 'LEFT JOIN video AS v ON pvj.video_id = v.id';
         let where = ['pvj.playlist_id = ?'];
         let order = 'pvj.sort';
-        let limit = 0; // equal to: args.merge.from === 0 && args.merge.to === 0
-        let prepare = [args.merge.target.id];
+        let limit = 0; // equal to: args.item.from === 0 && args.item.to === 0
+        let prepare = [args.item.target.id];
 
-        if (args.merge.from > 0 && args.merge.to > 0) {
-            limit = (args.merge.from - 1) + ',' + (args.merge.to - args.merge.from) + 1;
-        } else if (args.merge.from === 0 && args.merge.to > 0) {
-            limit = '0,' + args.merge.to;
-        } else if (args.merge.from > 0 && args.merge.to === 0) {
-            limit = (args.merge.from - 1) + ',9999';
+        if (args.item.from > 0 && args.item.to > 0) {
+            limit = (args.item.from - 1) + ',' + (args.item.to - args.item.from) + 1;
+        } else if (args.item.from === 0 && args.item.to > 0) {
+            limit = '0,' + args.item.to;
+        } else if (args.item.from > 0 && args.item.to === 0) {
+            limit = (args.item.from - 1) + ',9999';
         }
 
         // find videos from target playlist
         database.find(select, from, join, where, '', order, 0, prepare, function(rowsTarget) {
-            prepare = [args.merge.source.id];
+            prepare = [args.item.source.id];
 
             // find videos from source playlist
             database.find(select, from, join, where, '', order, limit, prepare, function(rowsSource) {
@@ -364,14 +364,14 @@ const playlist = {
                 rowsSource.forEach(function(row) {
                     sort = 1 * counter++;
 
-                    if (args.merge.method === 1 
+                    if (args.item.method === 1 
                         && typeof rowsTarget[rowsTarget.length - 1] !== 'undefined') {
                         sort = 1 * (rowsTarget[rowsTarget.length - 1].sort + counter);
                     }
 
                     values.push({
                         uuid: uuidv4(),
-                        playlistId: args.merge.target.id,
+                        playlistId: args.item.target.id,
                         videoId: row.id,
                         played: 0,
                         skipped: 0,
@@ -386,21 +386,21 @@ const playlist = {
                 });
 
                 // append playlist
-                if (args.merge.method === 1) {
+                if (args.item.method === 1) {
                     database.insert('playlist_video_join', values, function(insert) {
-                        if (args.merge.target.id === playlist.activeLists[args.channel].id) {
+                        if (args.item.target.id === playlist.activeLists[args.channel].id) {
                             playlist.getActive(chatbot, args);
                         }
 
                         playlist.getList(chatbot, args);
-                        console.log(locales.t('playlist-merged', [rowsSource.length, locales.t('video', {count: rowsSource.length}), args.merge.source.name, args.merge.target.name]));
+                        console.log(locales.t('playlist-merged', [rowsSource.length, locales.t('video', {count: rowsSource.length}), args.item.source.name, args.item.target.name]));
                     });
                 } else {
                     // prepend playlist
                     rowsTarget.forEach(function(row) {
                         values.push({
                             uuid: uuidv4(),
-                            playlistId: args.merge.target.id,
+                            playlistId: args.item.target.id,
                             videoId: row.id,
                             played: row.played,
                             skipped: row.skipped,
@@ -415,15 +415,15 @@ const playlist = {
                     });
 
                     // remove current relations
-                    database.remove('playlist_video_join', ['playlist_id = ?'], [args.merge.target.id], function(remove) {
+                    database.remove('playlist_video_join', ['playlist_id = ?'], [args.item.target.id], function(remove) {
                         // insert new relations
                         database.insert('playlist_video_join', values, function(insert) {
-                            if (args.merge.target.id === playlist.activeLists[args.channel].id) {
+                            if (args.item.target.id === playlist.activeLists[args.channel].id) {
                                 playlist.getActive(chatbot, args);
                             }
 
                             playlist.getList(chatbot, args);
-                            console.log(locales.t('playlist-merged', [rowsSource.length, args.merge.source.name, args.merge.target.name]));
+                            console.log(locales.t('playlist-merged', [rowsSource.length, args.item.source.name, args.item.target.name]));
                         });
                     });
                 }
@@ -438,14 +438,14 @@ const playlist = {
      * @returns {undefined}
      */
     remove: function(chatbot, args) {
-        if (chatbot.socket !== null && args.playlist.name.toLowerCase() !== 'general') {
-            database.remove('playlist', ['id = ?'], [args.playlist.id], function(remove) {
+        if (chatbot.socket !== null && args.item.name.toLowerCase() !== 'general') {
+            database.remove('playlist', ['id = ?'], [args.item.id], function(remove) {
                 playlist.getList(chatbot, args);
 
-                if (args.playlist.active) {
+                if (args.item.active) {
                     let playlistId = playlist.lists[args.channel][0].id;
 
-                    if (playlist.lists[args.channel][0].id === args.playlist.id) {
+                    if (playlist.lists[args.channel][0].id === args.item.id) {
                         playlistId = playlist.lists[args.channel][1].id;
                     }
 
@@ -458,10 +458,10 @@ const playlist = {
 
                     database.update(from, set, where, function(update) {
                         playlist.getActive(chatbot, args);
-                        console.log(locales.t('playlist-removed', [args.playlist.name]));
+                        console.log(locales.t('playlist-removed', [args.item.name]));
                     });
                 } else {
-                    console.log(locales.t('playlist-removed', [args.playlist.name]));
+                    console.log(locales.t('playlist-removed', [args.item.name]));
                 }
             });
         }
@@ -532,10 +532,10 @@ const playlist = {
         // reset playlists to active = 0
         database.update('playlist', {active: 0, updatedAt: time}, [`channel_id = '${chatbot.channels[args.channel].id}'`], function(updateAll) {
             // set playlist to active = 1
-            database.update('playlist', {active: 1, updatedAt: time}, [`id = ${args.playlist.id}`], function(update) {
+            database.update('playlist', {active: 1, updatedAt: time}, [`id = ${args.item.id}`], function(update) {
                 playlist.getActive(chatbot, args);
                 playlist.getList(chatbot, args);
-                console.log(locales.t('playlist-swaped', [args.playlist.name]));
+                console.log(locales.t('playlist-swaped', [args.item.name]));
             });
         });
     },
@@ -547,23 +547,23 @@ const playlist = {
      * @returns {undefined}
      */
     update: function(chatbot, args) {
-        if (args.playlist.name.toLowerCase() !== 'general') {
+        if (args.item.name.toLowerCase() !== 'general') {
             let set = {
-                name: args.playlist.name,
+                name: args.item.name,
                 updatedAt: moment().unix()
             };
             let where = [
-                `id = ${args.playlist.id}`,
+                `id = ${args.item.id}`,
                 `channel_id = '${chatbot.channels[args.channel].id}'`
             ];
 
             database.update('playlist', set, where, function(update) {
-                if (args.playlist.id === playlist.activeLists[args.channel].id) {
+                if (args.item.id === playlist.activeLists[args.channel].id) {
                     playlist.getActive(chatbot, args);
                 }
 
                 playlist.getList(chatbot, args);
-                console.log(locales.t('playlist-updated', [args.playlist.name]));
+                console.log(locales.t('playlist-updated', [args.item.name]));
             });
         }
     }

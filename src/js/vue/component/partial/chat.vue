@@ -8,13 +8,13 @@
             return {
                 firstInit: true,
                 isMessagesHover: false,
-                isPause: window.localStorage.getItem('isChatPause') === 'true' ? true : false,
+                isPause: window.localStorage.getItem('isChatPause') === 'true',
                 isPopout: false,
                 messages: [],
-                showBadges: window.localStorage.getItem('showMessageBadges') === 'true' ? true : false,
+                showBadges: window.localStorage.getItem('showMessageBadges') === 'true',
                 showScrollBottom: false,
-                showTimestamp: window.localStorage.getItem('showMessageTimestamp') === 'true' ? true : false,
-                showUserColor: window.localStorage.getItem('showMessageUserColor') === 'true' ? true : false
+                showTimestamp: window.localStorage.getItem('showMessageTimestamp') === 'true',
+                showUserColor: window.localStorage.getItem('showMessageUserColor') === 'true'
             };
         },
         watch: {

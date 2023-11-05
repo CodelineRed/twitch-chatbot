@@ -19,28 +19,28 @@ const raffle = {
             let time = moment().unix();
             let values = {
                 channelId: chatbot.channels[args.channel].id,
-                audioId: typeof args.raffle.audio.id === 'number' && args.raffle.audio.id > 0 ? args.raffle.audio.id : null,
-                name: args.raffle.name,
-                keyword: args.raffle.keyword,
+                audioId: typeof args.item.audio.id === 'number' && args.item.audio.id > 0 ? args.item.audio.id : null,
+                name: args.item.name,
+                keyword: args.item.keyword,
                 active: true,
-                start: args.raffle.start,
-                end: args.raffle.end,
-                audioVolume: typeof args.raffle.audio.volume === 'number' ? args.raffle.audio.volume : 50,
-                multiplicatorPartner: args.raffle.multiplicators.partner,
-                multiplicatorModerator: args.raffle.multiplicators.moderator,
-                multiplicatorVip: args.raffle.multiplicators.vip,
-                multiplicatorSubscriber: args.raffle.multiplicators.subscriber,
-                multiplicatorTurbo: args.raffle.multiplicators.turbo,
-                multiplicatorPrime: args.raffle.multiplicators.prime,
-                multiplicatorFollower: args.raffle.multiplicators.follower,
-                multiplicatorGuest: args.raffle.multiplicators.guest,
+                start: args.item.start,
+                end: args.item.end,
+                audioVolume: typeof args.item.audio.volume === 'number' ? args.item.audio.volume : 50,
+                multiplicatorPartner: args.item.multiplicators.partner,
+                multiplicatorModerator: args.item.multiplicators.moderator,
+                multiplicatorVip: args.item.multiplicators.vip,
+                multiplicatorSubscriber: args.item.multiplicators.subscriber,
+                multiplicatorTurbo: args.item.multiplicators.turbo,
+                multiplicatorPrime: args.item.multiplicators.prime,
+                multiplicatorFollower: args.item.multiplicators.follower,
+                multiplicatorGuest: args.item.multiplicators.guest,
                 updatedAt: time,
                 createdAt: time
             };
 
             database.insert('raffle', [values], function(insert) {
                 raffle.getActive(chatbot, args);
-                console.log(locales.t('raffle-added', [args.raffle.name]));
+                console.log(locales.t('raffle-added', [args.item.name]));
             });
         }
     },
@@ -151,7 +151,7 @@ const raffle = {
                 let call = {
                     args: {
                         channel: args.channel,
-                        raffle: raffle.activeLists[args.channel]
+                        item: raffle.activeLists[args.channel]
                     },
                     method: 'setActiveRaffle',
                     ref: 'raffle',
@@ -237,7 +237,7 @@ const raffle = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        raffles: raffles
+                        list: raffles
                     },
                     method: 'setRaffles',
                     ref: 'raffle',
@@ -317,7 +317,7 @@ const raffle = {
                     const call = {
                         args: {
                             channel: args.channel,
-                            winner: winner
+                            item: winner
                         },
                         method: 'setRaffleWinner',
                         ref: 'raffle',
@@ -334,7 +334,7 @@ const raffle = {
                 const call = {
                     args: {
                         channel: args.channel,
-                        winner: winner
+                        item: winner
                     },
                     method: 'setRaffleWinner',
                     ref: 'raffle',
@@ -388,11 +388,11 @@ const raffle = {
      * @returns {undefined}
      */
     remove: function(chatbot, args) {
-        if (args.raffle.active === false) {
-            database.remove('raffle', ['id = ?'], [args.raffle.id], function(remove) {
-                database.remove('attendee', ['raffle_id = ?'], [args.raffle.id]);
+        if (args.item.active === false) {
+            database.remove('raffle', ['id = ?'], [args.item.id], function(remove) {
+                database.remove('attendee', ['raffle_id = ?'], [args.item.id]);
                 raffle.getList(chatbot, args);
-                console.log(locales.t('raffle-removed', [args.raffle.name]));
+                console.log(locales.t('raffle-removed', [args.item.name]));
             });
         }
     },

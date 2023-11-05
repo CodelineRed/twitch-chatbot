@@ -20,6 +20,10 @@
     hyphens: auto;
 }
 
+.no-wrap {
+    white-space: nowrap;
+}
+
 .tile-background {
     background-color: $theme-color-4;
     border-radius: 5px;
@@ -49,7 +53,7 @@ table {
         position: relative;
 
         .move {
-            background-color: $theme-color-1;
+            background-color: $primary;
             border-radius: 5px;
             color: $white;
             cursor: pointer;

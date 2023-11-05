@@ -6,13 +6,17 @@
         mixins: [btnAnimation, dataTable],
         data: function() {
             return {
-                commands: []
+                commands: [],
+                deprecated: ['removeCustomCommand', 'toggleCustomCommand', 'updateCustomCommand']
             };
         },
         mounted: function() {
             this.getCommands();
         },
         methods: {
+            checkDeprecated: function(name) {
+                return this.deprecated.indexOf(name) >= 0;
+            },
             getCommands: function() {
                 if (typeof socketWrite === 'function') {
                     const call = {
@@ -26,13 +30,13 @@
                     socketWrite(call);
                 }
             },
-            removeCustomCommand: function(commandIndex) {
-                if (typeof socketWrite === 'function' && this.commands[commandIndex].type === 'custom') {
+            removeCustomCommand: function(index) {
+                if (typeof socketWrite === 'function' && this.commands[index].type === 'custom') {
                     const call = {
                         method: 'removeCustomCommand',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            name: this.commands[commandIndex].name,
+                            name: this.commands[index].name,
                             say: false
                         },
                         env: 'node'
@@ -47,31 +51,31 @@
                     this.initDataTable();
                 }
             },
-            updateCommand: function(commandIndex) {
+            updateCommand: function(index) {
                 if (typeof socketWrite === 'function' 
-                    && (this.commands[commandIndex].cooldown >= 0 && this.commands[commandIndex].cooldown <= 3600)) {
+                    && (this.commands[index].cooldown >= 0 && this.commands[index].cooldown <= 3600)) {
                     const call = {
                         method: 'updateCommand',
                         args: {
                             channel: this.$root._route.params.channel.toLowerCase(),
-                            command: this.commands[commandIndex],
-                            commandIndex: commandIndex
+                            item: this.commands[index],
+                            index: index
                         },
                         env: 'node'
                     };
 
                     socketWrite(call);
                     this.btnAnimation(event.target, 'success');
-                    this.updateDataTableRow(commandIndex, 'commandsTable');
+                    this.updateDataTableRow(index, 'commandsTable');
                 } else {
                     this.btnAnimation(event.target, 'error');
-                    this.updateDataTableRow(commandIndex, 'commandsTable');
+                    this.updateDataTableRow(index, 'commandsTable');
                 }
             },
             updateCommandLastExec: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
-                    this.commands[args.commandIndex].lastExec = args.lastExec;
-                    this.updateDataTableRow(args.commandIndex, 'commandsTable');
+                    this.commands[args.index].lastExec = args.lastExec;
+                    this.updateDataTableRow(args.index, 'commandsTable');
                 }
             }
         }
@@ -106,7 +110,12 @@
                             <!-- eslint-disable-next-line vue/require-v-for-key -->
                             <tr v-for="(command, index) in commands" class="video">
                                 <td>{{ index + 1 }}</td>
-                                <td>{{ command.name }}</td>
+                                <td v-if="checkDeprecated(command.name)">
+                                    <s>{{ command.name }}</s>
+                                </td>
+                                <td v-else>
+                                    {{ command.name }}
+                                </td>
                                 <td :data-order="command.cooldown">
                                     <div class="input-group input-group-sm">
                                         <input v-model.number="commands[index].cooldown" type="number" min="0" max="3600" class="form-control" :class="{'is-invalid': commands[index].cooldown < 0 || commands[index].cooldown > 3600}">

@@ -2,7 +2,7 @@
     export default {
         methods: {
             getOauthTokenLink: function() {
-                return `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=mfatyz3gbgk3irt7sygwdfd2qa09wt&redirect_uri=${document.location.origin}&force_verify=true&scope=channel_editor+user_read`;
+                return `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=mfatyz3gbgk3irt7sygwdfd2qa09wt&redirect_uri=${document.location.origin}&force_verify=true&scope=chat:read+chat:edit+channel:moderate+whispers:read+whispers:edit+moderator:read:followers+user:edit:broadcast+channel_editor`;
             }
         }
     };
