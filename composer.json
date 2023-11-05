@@ -1,7 +1,7 @@
 {
     "name": "codelinered/twitch-chatbot",
     "description": "Twitch Chatbot made with Vue Skeleton",
-    "version": "1.13.0-dev",
+    "version": "1.13.0",
     "keywords": ["gulp", "twitch", "twitch-tmi", "chatbot", "vue", "vue router", "vue i18n", "bootstrap", "fontawesome", "docker", "jquery"],
     "homepage": "https://www.codelinered.net",
     "license": "MIT",
