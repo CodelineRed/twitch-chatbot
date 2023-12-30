@@ -17,8 +17,14 @@ const emote = {
     add: function(args) {
         let time = moment().unix();
         let from = 'emote';
-        let where = ['code = ?'];
-        let prepare = [args.code];
+        let where = [
+            'code = ?',
+            'type_id = ?'
+        ];
+        let prepare = [
+            args.code,
+            args.typeId
+        ];
 
         database.find('*', from, '', where, '', '', 1, prepare, function(rows) {
             // if emote found

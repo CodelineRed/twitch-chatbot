@@ -217,7 +217,9 @@
                                     data: args.data,
                                     fill: false,
                                     fontColor: '#fff',
-                                    label: this.$t('viewer-count')
+                                    label: this.$t('viewer-count'),
+                                    pointHoverRadius: 7,
+                                    pointRadius: 5,
                                 }]
                             },
                             options: {
@@ -254,7 +256,10 @@
                                 tooltips: {
                                     callbacks: {
                                         title: function(tooltipItem, data) {
-                                            return args.labels[tooltipItem[0].index];
+                                            let title = args.labels[tooltipItem[0].index] + "\n";
+                                            title += $this.$options.filters.formatDateTime(args.updatedTimestamps[tooltipItem[0].index], $this.$t('time-suffix'));
+
+                                            return title;
                                         },
                                         label: function(tooltipItem, data) {
                                             return $this.$t('viewer', [tooltipItem.yLabel]);

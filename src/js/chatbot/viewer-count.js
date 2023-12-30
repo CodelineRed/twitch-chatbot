@@ -56,16 +56,22 @@ const viewerCount = {
                             }
 
                             if (typeof bodyGame.data !== 'undefined' && bodyGame.data.length) {
-                                let values = {
-                                    uuid: uuidv4(),
-                                    channelId: channelId,
-                                    count: count,
-                                    game: bodyGame.data[0].game_name,
-                                    updatedAt: time,
-                                    createdAt: time
-                                };
+                                // find identical user in search result
+                                for (let j = 0; j < bodyGame.data.length; j++) {
+                                    if (bodyGame.data[j].broadcaster_login === body.data[i].user_login) {
+                                        let values = {
+                                            uuid: uuidv4(),
+                                            channelId: channelId,
+                                            count: count,
+                                            game: bodyGame.data[j].game_name,
+                                            updatedAt: time,
+                                            createdAt: time
+                                        };
 
-                                database.insert('viewer_count', [values]);
+                                        database.insert('viewer_count', [values]);
+                                        break;
+                                    }
+                                }
                             }
                         });
                     }
@@ -75,6 +81,10 @@ const viewerCount = {
                     console.log(locales.t('viewer-count-fix'));
                 }
             });
+        } else if (!oauthToken.length) {
+            viewerCount.error = true;
+            console.log(locales.t('viewer-count-error', [locales.t('oauth-undefined')]));
+            console.log(locales.t('viewer-count-fix'));
         }
     }
 };

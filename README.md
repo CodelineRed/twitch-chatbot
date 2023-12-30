@@ -10,7 +10,7 @@ This application based on [Vue Skeleton](https://github.com/CodelineRed/vue-skel
 - [Included Third Party Code](#included)
 - Install Guides
     - [Install Production Build (Recommended)](#install-production-build-recommended)
-    - [Install Master/ Develop Build](#install-master-develop-build)
+    - [Install Main/ Develop Build](#install-main-develop-build)
     - [Install with Docker (optional)](#install-with-docker-optional)
 - [`chatbot.js`](#chatbotjs-options)
 - [Project Commands](#project-commands)
@@ -56,105 +56,159 @@ This application based on [Vue Skeleton](https://github.com/CodelineRed/vue-skel
 ## Install Production Build (Recommended)
 ### Required
 - [Node.js](http://nodejs.org/en/download/) >= 12.20
-- [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
+- [npm](http://www.npmjs.com/get-npm) `npm i npm@latest -g`
 
 Open console on your OS and navigate to the place where you want to install the project.
-```bash
-+++++ COMPOSER VERSION +++++
-$ php composer create-project --ignore-platform-reqs --no-dev codelinered/twitch-chatbot twitch-chatbot "dev-production"
-$ cd twitch-chatbot
-$ npm i --only=prod
-$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
-$ node migration.js
-$ node chatbot.js
-```
 
-```bash
-+++++ GIT VERSION +++++
-$ git clone https://github.com/CodelineRed/twitch-chatbot.git
-$ cd twitch-chatbot
-$ git checkout production
-$ (optional on unix) rm -rf .git
-$ (optional on win10) rmdir .git /s
-$ npm i --only=prod
-$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
-$ node migration.js
-$ node chatbot.js
-```
+### With Composer
+````shell
+php composer create-project --ignore-platform-reqs --no-dev codelinered/twitch-chatbot twitch-chatbot "dev-production"
+cd twitch-chatbot
+npm i --only=prod
+````
 
-```bash
-+++++ ZIP VERSION +++++
-$ ---- Unix ----
-$ wget -O tcb-prod.zip https://github.com/CodelineRed/twitch-chatbot/archive/production.zip
-$ unzip tcb-prod.zip
+Add username, tmiToken, your channel and other channels to `src/app/chatbot.json`
 
-$ ---- Windows 10+ ----
-$ curl -L -o tcb-prod.zip https://github.com/CodelineRed/twitch-chatbot/archive/production.zip
-$ tar -xf tcb-prod.zip
+````shell
+node migration.js
+node chatbot.js
+````
 
-$ ---- All OS ----
-$ cd twitch-chatbot-production
-$ npm i --only=prod
-$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
-$ node migration.js
-$ node chatbot.js
-```
+### With GIT
+````shell
+git clone https://github.com/CodelineRed/twitch-chatbot.git
+cd twitch-chatbot
+git checkout production
+npm i --only=prod
+````
+
+Add username, tmiToken, your channel and other channels to `src/app/chatbot.json`
+
+````shell
+node migration.js
+node chatbot.js
+````
+
+### With ZIP
+
+Unix
+
+````shell
+wget -O tcb-prod.zip https://github.com/CodelineRed/twitch-chatbot/archive/production.zip
+unzip tcb-prod.zip
+````
+
+Windows 10+
+
+````shell
+curl -L -o tcb-prod.zip https://github.com/CodelineRed/twitch-chatbot/archive/production.zip
+tar -xf tcb-prod.zip
+````
+
+All OS
+
+````shell
+cd twitch-chatbot-production
+npm i --only=prod
+````
+
+Add username, tmiToken, your channel and other channels to `src/app/chatbot.json`
+
+````shell
+node migration.js
+node chatbot.js
+````
+
 [Generate tmiToken](https://twitchapps.com/tmi/) and click on "Connect".<br>
 If you need PHP, you have to go to [Install with Docker](#install-with-docker-optional).
 
-## Install Master/ Develop Build
+## Install Main/ Develop Build
 ### Required
 - [Node.js](http://nodejs.org/en/download/) >= 12.20
-- [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
-- [gulp-cli](https://www.npmjs.com/package/gulp-cli) `$ npm i gulp-cli@latest -g`
+- [npm](http://www.npmjs.com/get-npm) `npm i npm@latest -g`
+- [gulp-cli](https://www.npmjs.com/package/gulp-cli) `npm i gulp-cli@latest -g`
 
 Open 2 consoles on your OS and navigate to the place where you want to install the project.
-```bash
-+++++ COMPOSER VERSION +++++
-$ php composer create-project --ignore-platform-reqs codelinered/twitch-chatbot
-$ cd twitch-chatbot
-$ npm i
-$ gulp build
-$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
-$ node migration.js
-$ node chatbot.js
-$ (in 2nd console) gulp
-```
 
-```bash
-+++++ GIT VERSION +++++
-$ git clone https://github.com/CodelineRed/twitch-chatbot.git
-$ cd twitch-chatbot
-$ git checkout main
-$ (optional on unix) rm -rf .git
-$ (optional on win10) rmdir .git /s
-$ npm i
-$ gulp build
-$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
-$ node migration.js
-$ node chatbot.js
-$ (in 2nd console) gulp
-```
+### With Composer
+````shell
+php composer create-project --ignore-platform-reqs codelinered/twitch-chatbot twitch-chatbot
+cd twitch-chatbot
+npm i
+gulp build
+````
 
-```bash
-+++++ ZIP VERSION +++++
-$ ---- Unix ----
-$ wget -O tcb-main.zip https://github.com/CodelineRed/twitch-chatbot/archive/main.zip
-$ unzip tcb-main.zip
+Add username, tmiToken, your channel and other channels to `src/app/chatbot.json`
 
-$ ---- Windows 10+ ----
-$ curl -L -o tcb-main.zip https://github.com/CodelineRed/twitch-chatbot/archive/main.zip
-$ tar -xf tcb-main.zip
+````shell
+node migration.js
+node chatbot.js
+````
 
-$ ---- All OS ----
-$ cd twitch-chatbot-main
-$ npm i
-$ gulp build
-$ -- Add username, tmiToken, your channel and other channels to src/app/chatbot.json ---
-$ node migration.js
-$ node chatbot.js
-$ (in 2nd console) gulp
-```
+in 2nd console
+
+````shell
+gulp
+````
+
+### With GIT
+````shell
+git clone https://github.com/CodelineRed/twitch-chatbot.git
+cd twitch-chatbot
+git checkout main
+npm i
+gulp build
+````
+
+Add username, tmiToken, your channel and other channels to `src/app/chatbot.json`
+
+````shell
+node migration.js
+node chatbot.js
+````
+
+in 2nd console
+
+````shell
+gulp
+````
+
+### With ZIP
+
+Unix
+
+````shell
+wget -O tcb-main.zip https://github.com/CodelineRed/twitch-chatbot/archive/main.zip
+unzip tcb-main.zip
+````
+
+Windows 10+
+
+````shell
+curl -L -o tcb-main.zip https://github.com/CodelineRed/twitch-chatbot/archive/main.zip
+tar -xf tcb-main.zip
+````
+
+All OS
+
+````shell
+cd twitch-chatbot-main
+npm i
+gulp build
+````
+
+Add username, tmiToken, your channel and other channels to `src/app/chatbot.json`
+
+````shell
+node migration.js
+node chatbot.js
+````
+
+in 2nd console
+
+````shell
+gulp
+````
 [Generate tmiToken](https://twitchapps.com/tmi/) and click on "Connect".<br>
 Open [localhost:3000](http://localhost:3000) for Web UI.
 
@@ -162,32 +216,40 @@ Open [localhost:3000](http://localhost:3000) for Web UI.
 ### Required
 - [Docker](https://www.docker.com/)
 - [Node.js](http://nodejs.org/en/download/) >= 12.20
-- [npm](http://www.npmjs.com/get-npm) `$ npm i npm@latest -g`
+- [npm](http://www.npmjs.com/get-npm) `npm i npm@latest -g`
 
 Open console on your OS and navigate to the unzipped or cloned app folder.
-```bash
-$ ---- Unix ----
-$ systemctl docker start
-$ docker-compose up -d
-$ docker run --rm --interactive --tty --volume $PWD:/app composer install --no-dev
-$ docker exec -ti twitch-chatbot php /var/www/vendor/vrana/adminer/compile.php
-$ -- Ignore error messages --
-$ mv adminer-4.6.2.php ./adminer
 
-$ ---- Windows 10+ ----
-$ "c:\path\to\Docker Desktop.exe"
-$ docker-compose up -d
-$ docker run --rm --interactive --tty --volume %cd%:/app composer install --no-dev
-$ docker exec -ti twitch-chatbot php /var/www/vendor/vrana/adminer/compile.php
-$ -- Ignore error messages --
-$ move adminer-4.6.2.php ./adminer
+Unix
 
-$ ---- All OS ----
+````shell
+systemctl docker start
+docker-compose up -d
+docker run --rm --interactive --tty --volume $PWD:/app composer install --no-dev
+docker exec -ti twitch-chatbot php /var/www/vendor/vrana/adminer/compile.php
+-- Ignore error messages --
+mv adminer-4.6.2.php ./adminer
+````
+
+Windows 10+
+
+````shell
+"c:\path\to\Docker Desktop.exe"
+docker-compose up -d
+docker run --rm --interactive --tty --volume %cd%:/app composer install --no-dev
+docker exec -ti twitch-chatbot php /var/www/vendor/vrana/adminer/compile.php
+-- Ignore error messages --
+move adminer-4.6.2.php ./adminer
+````
+
+All OS
+
+````shell
 $ npm i
 $ gulp build
 $ node migration.js
 $ node chatbot.js
-```
+````
 
 | Login    | [Web UI](http://localhost:3050) | [Adminer](http://localhost:3050/adminer.php) |
 |----------|---------------------------------|----------------------------------------------|
@@ -458,7 +520,7 @@ $ node chatbot.js
 | --log               | Optional - Show logs in CLI (default: true)                                |
 | --subname, --sn     | Optional - Add date as sub name (default: true)                            |
 
-Example execution: `$ node import-videos-folder.js -c CodelineRed`
+Example execution: `node import-videos-folder.js -c CodelineRed`
 
 ### Import Requirements:
 - `videosFolder` in [`chatbot.json`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/app/chatbot.dist.json) points to existing folder
@@ -477,7 +539,7 @@ The Script only imports videos which are not in the database.
 | --locale, -l        | Optional - Locale for log messages (default: en)                        |
 | --log               | Optional - Show logs in CLI (default: true)                             |
 
-Example execution: `$ node migration.js -d up`
+Example execution: `node migration.js -d up`
 
 ## Localization
 - Web UI: [`i18n-locales.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/vue/app/i18n-locales.js)

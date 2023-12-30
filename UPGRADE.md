@@ -1,18 +1,28 @@
 ### Upgrade in general
 - Stop chatbot (<kbd>Ctrl</kbd> + <kbd>C</kbd>)
-- `$ npm install --only=prod` or `$ npm install`
+- `npm install --only=prod` or `npm install`
 - Follow the instructions below
-- Start chatbot `$ node chatbot.js`
+- Start chatbot `node chatbot.js`
+
+### Upgrade from 1.13.0 to 1.14.0
+`node migration.js -f version-1.14.0`
+
+### Upgrade from 1.12.0 to 1.13.0
+Nothing you have to do.
 
 ### Upgrade from 1.11.0 to 1.12.0
 - Before you upgrade
 - Remove node_modules
 - Remove package.json
 - Download upgrade
-```bash
-$ npm i --only=prod / npm i
-$ ----------------- / gulp build
-```
+````shell
+npm i --only=prod
+````
+OR
+````shell
+npm i
+gulp build
+````
 
 ### Upgrade from 1.10.0 to 1.11.0
 Nothing you have to do.
@@ -43,7 +53,7 @@ Add `"performance": 1,` or `"performance": 0,` in `src/app/chatbot.json`
 Add `"backup": true,` or `"backup": false,` in `src/app/chatbot.json`
 
 ### Upgrade from 1.2.x to 1.3.0
-`$ node migration.js -f version-1.3.0`
+`node migration.js -f version-1.3.0`
 
 ### Upgrade from 1.1.0 to 1.2.x
 Nothing you have to do.
