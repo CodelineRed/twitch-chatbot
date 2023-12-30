@@ -1,6 +1,7 @@
 const database = require('./database');
 const chat     = require('./chat');
 const emote    = require('./emote');
+const locales  = require('./locales');
 const moment   = require('moment');
 const request  = require('request');
 
@@ -13,7 +14,7 @@ const statistic = {
      * @returns {undefined}
      */
     getChart: function(chatbot, args) {
-        let select = 'vc.count, vc.game';
+        let select = 'vc.count, vc.game, vc.updated_at';
         let from = 'viewer_count AS vc';
         let where = [
             'vc.channel_id = $id',
@@ -32,6 +33,7 @@ const statistic = {
             let data = [];
             let labels = [];
             let shortLabels = [];
+            let updatedTimestamps = [];
 
             if (rows.length) {
                 let colors = ['#2e97bf', '#fff'];
@@ -41,6 +43,11 @@ const statistic = {
                 for (let i = 0; i < rows.length; i++) {
                     let game = rows[i].game;
 
+                    // if game is empty
+                    if (!game.length) {
+                        game = locales.t('viewer-count-wo-title');
+                    }
+
                     // shorten the game name
                     if (game.length > 15) {
                         shortLabels.push(game.substring(0, 12) + '...');
@@ -48,12 +55,13 @@ const statistic = {
                         shortLabels.push(game);
                     }
 
-                    labels.push(rows[i].game);
+                    labels.push(game);
                     data.push(rows[i].count);
+                    updatedTimestamps.push(rows[i].updated_at);
 
-                    if (rows[i].game !== currentGame) {
+                    if (game !== currentGame) {
                         colorState = !colorState;
-                        currentGame = rows[i].game;
+                        currentGame = game;
                     }
 
                     backgroundColor.push(colorState ? colors[0] : colors[1]);
@@ -67,7 +75,8 @@ const statistic = {
                         backgroundColor: backgroundColor,
                         data: data,
                         labels: labels,
-                        shortLabels: shortLabels
+                        shortLabels: shortLabels,
+                        updatedTimestamps: updatedTimestamps
                     },
                     method: 'setChart',
                     ref: 'statistic',

@@ -6,6 +6,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.0] - 2023-11-29
+### Added
+- [`migration/version-1.14.0.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/data/migration/version-1.14.0.js)
+- translations in [`chatbot/locales.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/chatbot/locales.js)
+- title/ date combinationen to `setChart()`in [`page/statistic.vue`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/vue/component/page/statistic.vue)
+- whisper output to `onMessage()` in [`chatbot.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/chatbot.js)
+
+### Changed
+- [`data/chatbot.dist.sqlite3`](https://github.com/CodelineRed/twitch-chatbot/blob/main/data/chatbot.dist.sqlite3)
+- `emote.add()` in [`chatbot/emote.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/chatbot/emote.js)
+- `statistic.getChart()` in [`chatbot/statistic.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/chatbot/statistic.js)
+- `viewerCount.add()` in [`chatbot/viewer-count.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/chatbot/viewer-count.js)
+- [`README.md`](https://github.com/CodelineRed/twitch-chatbot/blob/main/README.md)
+- @babel/core 7.23.2 to 7.23.5
+- @babel/plugin-transform-modules-amd 7.23.0 to 7.23.3
+- datatables.net 1.13.6 to 1.13.8
+- datatables.net-bs4 1.13.6 to 1.13.8
+
+### Fixed
+- viewer count from a wrong channel was saved
+- whispers breaking the bot
+
 ## [1.13.0] - 2023-11-05
 ### Added
 - styling in [`public/adminer.php`](https://github.com/CodelineRed/twitch-chatbot/blob/main/public/adminer.php)

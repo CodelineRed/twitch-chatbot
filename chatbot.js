@@ -272,6 +272,12 @@ function onMessage(channel, userstate, message, self) {
         message: message.trim()
     };
 
+    // if chat message is a whisper
+    if (typeof userstate['message-type'] === 'string' && userstate['message-type'] === 'whisper') {
+        console.log(locales.t('whisper-incoming', [userstate['display-name'], message.trim()]));
+        return;
+    }
+
     // if chat recording is disabled
     if (!argv.recordchat) {
         return;
