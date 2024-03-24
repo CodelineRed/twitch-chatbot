@@ -107,13 +107,14 @@ const emote = {
                         let emoteArgs = {
                             uuid: args.uuid,
                             code: emoteCodes[i],
+                            typeId: emote[type + 'List'][args.channel][emoteCodes[i]]['typeId'],
                             type: type
                         };
                         emote.add(emoteArgs);
                     }
                 }
 
-                message = message.replace(regex, emote.generateImage(emote[type + 'List'][args.channel][emoteCodes[i]], emoteCodes[i], args.lazy));
+                message = message.replace(regex, emote.generateImage(emote[type + 'List'][args.channel][emoteCodes[i]].image, emoteCodes[i], args.lazy));
             }
         }
         return message;
@@ -218,7 +219,12 @@ const emote = {
 
                 if (typeof body[0].id !== 'undefined') {
                     for (let i = 0; i < body.length; i++) {
-                        emote.bttvList[channel][body[i].code] = 'https://cdn.betterttv.net/emote/' + body[i].id + '/1x';
+                        emote.bttvList[channel][body[i].code] = {
+                            code: body[i].code,
+                            typeId: body[i].id,
+                            image: 'https://cdn.betterttv.net/emote/' + body[i].id + '/1x'
+                        };
+
                         let emoteArgs = {
                             code: body[i].code,
                             typeId: body[i].id,
@@ -244,7 +250,12 @@ const emote = {
 
                 if (typeof body.sharedEmotes !== 'undefined') {
                     for (let i = 0; i < body.sharedEmotes.length; i++) {
-                        emote.bttvList[channel][body.sharedEmotes[i].code] = 'https://cdn.betterttv.net/emote/' + body.sharedEmotes[i].id + '/1x';
+                        emote.bttvList[channel][body.sharedEmotes[i].code] = {
+                            code: body.sharedEmotes[i].code,
+                            typeId: body.sharedEmotes[i].id,
+                            image: 'https://cdn.betterttv.net/emote/' + body.sharedEmotes[i].id + '/1x'
+                        };
+
                         let emoteArgs = {
                             code: body.sharedEmotes[i].code,
                             typeId: body.sharedEmotes[i].id,
@@ -284,7 +295,12 @@ const emote = {
                 if (typeof body.default_sets !== 'undefined' && body.default_sets.length) {
                     let set = body.default_sets[0];
                     for (let i = 0; i < body.sets[set].emoticons.length; i++) {
-                        emote.ffzList[channel][body.sets[set].emoticons[i].name] = body.sets[set].emoticons[i].urls['1'];
+                        emote.ffzList[channel][body.sets[set].emoticons[i].name] = {
+                            code: body.sets[set].emoticons[i].name,
+                            typeId: body.sets[set].emoticons[i].id,
+                            image: body.sets[set].emoticons[i].urls['1']
+                        };
+
                         let emoteArgs = {
                             code: body.sets[set].emoticons[i].name,
                             typeId: body.sets[set].emoticons[i].id,
@@ -311,7 +327,12 @@ const emote = {
                 if (typeof body.sets !== 'undefined') {
                     let set = body.room.set;
                     for (let i = 0; i < body.sets[set].emoticons.length; i++) {
-                        emote.ffzList[channel][body.sets[set].emoticons[i].name] = body.sets[set].emoticons[i].urls['1'];
+                        emote.ffzList[channel][body.sets[set].emoticons[i].name] = {
+                            code: body.sets[set].emoticons[i].name,
+                            typeId: body.sets[set].emoticons[i].id,
+                            image: body.sets[set].emoticons[i].urls['1']
+                        };
+
                         let emoteArgs = {
                             code: body.sets[set].emoticons[i].name,
                             typeId: body.sets[set].emoticons[i].id,

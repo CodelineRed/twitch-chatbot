@@ -6,11 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.14.0] - 2023-11-29
+## [1.15.0] - 2024-03-30
+### Added
+- bug report button in [`partial/navigation.vue`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/vue/component/partial/navigation.vue)
+
+### Fixed
+- emote statistic for BTTV and FFZ
+- space in chat messages
+
+## [1.14.0] - 2023-12-30
 ### Added
 - [`migration/version-1.14.0.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/data/migration/version-1.14.0.js)
 - translations in [`chatbot/locales.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/chatbot/locales.js)
-- title/ date combinationen to `setChart()`in [`page/statistic.vue`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/vue/component/page/statistic.vue)
+- title/ date combinationen to `setChart()` in [`page/statistic.vue`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/vue/component/page/statistic.vue)
 - whisper output to `onMessage()` in [`chatbot.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/chatbot.js)
 
 ### Changed
