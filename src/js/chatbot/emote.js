@@ -6,6 +6,7 @@ const {v4: uuidv4, validate: uuidValid} = require('uuid');
 
 const emote = {
     newList: [],
+    '7tvList': {},
     bttvList: {},
     ffzList: {},
     /**
@@ -191,6 +192,51 @@ const emote = {
 
         image += '<img class="emote' + lazyClass + '" src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
         return image;
+    },
+    /**
+     * Loads 7TV emotes over API to database and 7tvList array
+     * 
+     * @param {object} args
+     * @returns {undefined}
+     */
+    prepare7tv: function(args) {
+        let channelId = args['room-id'];
+        let channel = args.channel.slice(1);
+
+        if (typeof emote['7tvList'][channel] === 'undefined') {
+            emote['7tvList'][channel] = {};
+            
+            let options = {
+                url: `https://7tv.io/v3/users/twitch/${channelId}`,
+                method: 'GET',
+                json: true
+            };
+
+            // get channel emotes
+            request(options, (err, res, body) => {
+                if (err) {
+                    return console.log(err);
+                }
+
+                if (typeof body.emote_set !== 'undefined') {
+                    for (let i = 0; i < body.emote_set.emotes.length; i++) {
+                        emote['7tvList'][channel][body.emote_set.emotes[i].name] = {
+                            code: body.emote_set.emotes[i].name,
+                            typeId: body.emote_set.emotes[i].id,
+                            image: 'https://cdn.7tv.app/emote/' + body.emote_set.emotes[i].id + '/1x.webp'
+                        };
+
+                        let emoteArgs = {
+                            code: body.emote_set.emotes[i].name,
+                            typeId: body.emote_set.emotes[i].id,
+                            type: '7tv'
+                        };
+
+                        emote.add(emoteArgs);
+                    }
+                }
+            });
+        }
     },
     /**
      * Loads BTTV emotes over API to database and bttvList array

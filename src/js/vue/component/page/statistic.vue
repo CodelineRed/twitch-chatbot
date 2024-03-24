@@ -24,6 +24,7 @@
                 topChatters: [],
                 topCommands: [],
                 topEmotesAll: [],
+                topEmotes7tv: [],
                 topEmotesBttv: [],
                 topEmotesFfz: [],
                 topEmotesTwitch: [],
@@ -61,6 +62,7 @@
                 this.getTopChatters(this.topListLimit);
                 this.getTopEmotes('\'ttv\',\'bttv\',\'ffz\'', 'All', this.topListLimit);
                 this.getTopEmotes('\'ttv\'', 'Twitch', this.topListLimit);
+                this.getTopEmotes('\'7tv\'', '7tv', this.topListLimit);
                 this.getTopEmotes('\'bttv\'', 'Bttv', this.topListLimit);
                 this.getTopEmotes('\'ffz\'', 'Ffz', this.topListLimit);
                 this.getTopWords('#', 'Hashtags', this.topListLimit);
@@ -593,6 +595,35 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
+            <div class="tile-background p-2">
+                <div class="h5 text-center pt-1">
+                    {{ $t('top-emotes-7tv', [topListLimit]) }}
+                </div>
+                <div v-if="topEmotes7tv.length" class="table-responsive mb-3">
+                    <table class="table table-striped table-hover table-dark mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">{{ $t('code') }}</th>
+                                <th scope="col">{{ $t('amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="emote in topEmotes7tv" :key="emote.uuid">
+                                <!-- eslint-disable-next-line vue/no-v-html -->
+                                <td><span v-html="emote.image"></span></td>
+                                <td>{{ emote.code }}</td>
+                                <td>{{ emote.amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else class="text-center">
+                    {{ $t('no-top-emotes') }}
                 </div>
             </div>
         </div>
