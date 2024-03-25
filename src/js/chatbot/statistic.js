@@ -383,7 +383,9 @@ const statistic = {
             for (let i = 0; i < rows.length; i++) {
                 rows[i].image = '';
 
-                if (rows[i].type === 'bttv') {
+                if (rows[i].type === '7tv') {
+                    rows[i].image = emote.encode7tv(rows[i].code, args);
+                } else if (rows[i].type === 'bttv') {
                     rows[i].image = emote.encodeBttv(rows[i].code, args);
                 } else if (rows[i].type === 'ffz') {
                     rows[i].image = emote.encodeFfz(rows[i].code, args);

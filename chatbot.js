@@ -422,6 +422,7 @@ function onReSub(channel, username, months, message, userstate, methods) {
 //  'subs-only': false,
 //  channel: '#codelinered' }
 function onRoomState(channel, state) {
+    emote.prepare7tv(state);
     emote.prepareBttv(state);
     emote.prepareFfz(state);
     chatbot.warmUpDatabase(state);

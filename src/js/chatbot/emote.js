@@ -65,6 +65,16 @@ const emote = {
         });
     },
     /**
+     * Returns message with 7TV emote images
+     * 
+     * @param {string} message
+     * @param {object} args
+     * @returns {string}
+     */
+    encode7tv: function(message, args) {
+        return emote.encodeThirdParty(message, args, '7tv');
+    },
+    /**
      * Returns message with BTTV emote images
      * 
      * @param {string} message
@@ -179,12 +189,15 @@ const emote = {
         let image = '';
 
         if (typeof config.performance === 'number' && config.performance === 0) {
-            if (/betterttv/.test(url)) {
+            if (/7tv/.test(url)) {
                 image += ' ';
-                url = 'img/bttv-placeholder-emote.png';
+                url = 'img/7tv-placeholder-emote.png';
             } else if (/frankerfacez/.test(url)) {
                 image += ' ';
                 url = 'img/ffz-placeholder-emote.png';
+            } else if (/betterttv/.test(url)) {
+                image += ' ';
+                url = 'img/bttv-placeholder-emote.png';
             } else if (/\.gif$/.test(url)) {
                 url = 'img/placeholder-emote.png';
             }

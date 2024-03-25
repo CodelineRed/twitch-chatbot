@@ -66,6 +66,7 @@ const chat = {
     format: function(args) {
         let message = args.message;
         message = emote.encodeTwitch(message, args);
+        message = emote.encode7tv(message, args);
         message = emote.encodeBttv(message, args);
         message = emote.encodeFfz(message, args);
         message = linkifyHtml(message, {
