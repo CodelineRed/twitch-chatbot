@@ -12,6 +12,14 @@
         cursor: pointer;
         margin-top: -5px;
         max-height: 25px;
+
+        + .emote {
+            &.emote-cvHazmat, // sass-lint:disable-line class-name-format
+            &.emote-cvMask, // sass-lint:disable-line class-name-format
+            &.is-stackable {
+                margin-left: -29px;
+            }
+        }
     }
 
     .messages {

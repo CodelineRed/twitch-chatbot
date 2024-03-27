@@ -125,7 +125,9 @@ const emote = {
                     }
                 }
 
-                message = message.replace(regex, emote.generateImage(emote[type + 'List'][args.channel][emoteCodes[i]].image, emoteCodes[i], args.lazy));
+                let image = emote[type + 'List'][args.channel][emoteCodes[i]].image;
+                let isStackable = emote[type + 'List'][args.channel][emoteCodes[i]].isStackable;
+                message = message.replace(regex, emote.generateImage(image, emoteCodes[i], args.lazy, isStackable));
             }
         }
         return message;
@@ -157,7 +159,7 @@ const emote = {
                             });
                             let ttvEmote = message.slice(emoteCode[0], emoteCode[1] + 1);
                             splitText = splitText.slice(0, emoteCode[0]).concat(empty).concat(splitText.slice(emoteCode[1] + 1, splitText.length));
-                            splitText.splice(emoteCode[0], 1, emote.generateImage('http://static-cdn.jtvnw.net/emoticons/v2/' + i + '/default/dark/2.0', ttvEmote, args.lazy));
+                            splitText.splice(emoteCode[0], 1, emote.generateImage('http://static-cdn.jtvnw.net/emoticons/v2/' + i + '/default/dark/2.0', ttvEmote, args.lazy, false));
 
                             if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
                                 let emoteArgs = {
@@ -181,12 +183,14 @@ const emote = {
      * 
      * @param {string} url
      * @param {string} title
-     * @param {boolean} lazy optional (default: true)
+     * @param {boolean} lazy
+     * @param {boolean} isStackable
      * @returns {string}
      */
-    generateImage: function(url, title, lazy) {
+    generateImage: function(url, title, lazy, isStackable) {
         let lazyClass = typeof lazy === 'boolean' && lazy ? ' lazy' : '';
         let image = '';
+        lazyClass += ' emote-' + title + (isStackable ? ' is-stackable' : '');
 
         if (typeof config.performance === 'number' && config.performance === 0) {
             if (/7tv/.test(url)) {
@@ -218,8 +222,40 @@ const emote = {
 
         if (typeof emote['7tvList'][channel] === 'undefined') {
             emote['7tvList'][channel] = {};
-            
+
             let options = {
+                url: 'https://7tv.io/v3/emote-sets/62cdd34e72a832540de95857',
+                method: 'GET',
+                json: true
+            };
+
+            // get global emotes
+            request(options, (err, res, body) => {
+                if (err) {
+                    return console.log(err);
+                }
+
+                if (typeof body.emotes !== 'undefined') {
+                    for (let i = 0; i < body.emotes.length; i++) {
+                        emote['7tvList'][channel][body.emotes[i].name] = {
+                            code: body.emotes[i].name,
+                            image: 'https://cdn.7tv.app/emote/' + body.emotes[i].id + '/1x.webp',
+                            typeId: body.emotes[i].id,
+                            isStackable: body.emotes[i].data.flags === 256
+                        };
+
+                        let emoteArgs = {
+                            code: body.emotes[i].name,
+                            typeId: body.emotes[i].id,
+                            type: '7tv'
+                        };
+
+                        emote.add(emoteArgs);
+                    }
+                }
+            });
+            
+            options = {
                 url: `https://7tv.io/v3/users/twitch/${channelId}`,
                 method: 'GET',
                 json: true
@@ -235,8 +271,9 @@ const emote = {
                     for (let i = 0; i < body.emote_set.emotes.length; i++) {
                         emote['7tvList'][channel][body.emote_set.emotes[i].name] = {
                             code: body.emote_set.emotes[i].name,
+                            image: 'https://cdn.7tv.app/emote/' + body.emote_set.emotes[i].id + '/1x.webp',
                             typeId: body.emote_set.emotes[i].id,
-                            image: 'https://cdn.7tv.app/emote/' + body.emote_set.emotes[i].id + '/1x.webp'
+                            isStackable: body.emote_set.emotes[i].data.flags === 256
                         };
 
                         let emoteArgs = {
@@ -280,8 +317,9 @@ const emote = {
                     for (let i = 0; i < body.length; i++) {
                         emote.bttvList[channel][body[i].code] = {
                             code: body[i].code,
+                            image: 'https://cdn.betterttv.net/emote/' + body[i].id + '/1x',
                             typeId: body[i].id,
-                            image: 'https://cdn.betterttv.net/emote/' + body[i].id + '/1x'
+                            isStackable: false
                         };
 
                         let emoteArgs = {
@@ -311,8 +349,9 @@ const emote = {
                     for (let i = 0; i < body.sharedEmotes.length; i++) {
                         emote.bttvList[channel][body.sharedEmotes[i].code] = {
                             code: body.sharedEmotes[i].code,
+                            image: 'https://cdn.betterttv.net/emote/' + body.sharedEmotes[i].id + '/1x',
                             typeId: body.sharedEmotes[i].id,
-                            image: 'https://cdn.betterttv.net/emote/' + body.sharedEmotes[i].id + '/1x'
+                            isStackable: false
                         };
 
                         let emoteArgs = {
@@ -356,8 +395,9 @@ const emote = {
                     for (let i = 0; i < body.sets[set].emoticons.length; i++) {
                         emote.ffzList[channel][body.sets[set].emoticons[i].name] = {
                             code: body.sets[set].emoticons[i].name,
+                            image: body.sets[set].emoticons[i].urls['1'],
                             typeId: body.sets[set].emoticons[i].id,
-                            image: body.sets[set].emoticons[i].urls['1']
+                            isStackable: false
                         };
 
                         let emoteArgs = {
@@ -388,8 +428,9 @@ const emote = {
                     for (let i = 0; i < body.sets[set].emoticons.length; i++) {
                         emote.ffzList[channel][body.sets[set].emoticons[i].name] = {
                             code: body.sets[set].emoticons[i].name,
+                            image: body.sets[set].emoticons[i].urls['1'],
                             typeId: body.sets[set].emoticons[i].id,
-                            image: body.sets[set].emoticons[i].urls['1']
+                            isStackable: false
                         };
 
                         let emoteArgs = {
