@@ -1,6 +1,6 @@
 {
     "name": "twitch-chatbot",
-    "version": "1.15.0-dev",
+    "version": "1.15.0",
     "commitDate": "2024-03-28T17:00:00+01:00",
     "description": "Twitch Chatbot made with Vue Skeleton",
     "keywords": [
