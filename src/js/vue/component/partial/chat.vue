@@ -190,8 +190,7 @@
                             </span>
                         </span>
                         <span v-if="message.user.length" class="user mr-1" :style="{color: showUserColor ? message.color : null}">
-                            {{ message.user }}
-                            <span v-if="message.type == 'chat'">:</span>
+                            {{ message.user }}<span v-if="message.type == 'chat'">:</span>
                         </span>
                         <!-- eslint-disable-next-line vue/no-v-html -->
                         <span class="text mr-1" :class="{action: message.type == 'action'}" :style="{color: message.type == 'action' && showUserColor ? message.color : null}" v-html="message.message"></span>

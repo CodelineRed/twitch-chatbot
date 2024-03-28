@@ -24,6 +24,7 @@
                 topChatters: [],
                 topCommands: [],
                 topEmotesAll: [],
+                topEmotes7tv: [],
                 topEmotesBttv: [],
                 topEmotesFfz: [],
                 topEmotesTwitch: [],
@@ -59,8 +60,9 @@
                 let $this = this;
                 this.completed = 0;
                 this.getTopChatters(this.topListLimit);
-                this.getTopEmotes('\'ttv\',\'bttv\',\'ffz\'', 'All', this.topListLimit);
+                this.getTopEmotes('\'ttv\',\'7tv\',\'bttv\',\'ffz\'', 'All', this.topListLimit);
                 this.getTopEmotes('\'ttv\'', 'Twitch', this.topListLimit);
+                this.getTopEmotes('\'7tv\'', '7tv', this.topListLimit);
                 this.getTopEmotes('\'bttv\'', 'Bttv', this.topListLimit);
                 this.getTopEmotes('\'ffz\'', 'Ffz', this.topListLimit);
                 this.getTopWords('#', 'Hashtags', this.topListLimit);
@@ -599,9 +601,9 @@
         <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
             <div class="tile-background p-2">
                 <div class="h5 text-center pt-1">
-                    {{ $t('top-emotes-all', [topListLimit]) }}
+                    {{ $t('top-emotes-twitch', [topListLimit]) }}
                 </div>
-                <div v-if="topEmotesAll.length" class="table-responsive mb-3">
+                <div v-if="topEmotesTwitch.length" class="table-responsive mb-3">
                     <table class="table table-striped table-hover table-dark mb-0">
                         <thead>
                             <tr>
@@ -611,7 +613,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="emote in topEmotesAll" :key="emote.uuid">
+                            <tr v-for="emote in topEmotesTwitch" :key="emote.uuid">
                                 <!-- eslint-disable-next-line vue/no-v-html -->
                                 <td><span v-html="emote.image"></span></td>
                                 <td>{{ emote.code }}</td>
@@ -628,9 +630,9 @@
         <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
             <div class="tile-background p-2">
                 <div class="h5 text-center pt-1">
-                    {{ $t('top-emotes-twitch', [topListLimit]) }}
+                    {{ $t('top-emotes-7tv', [topListLimit]) }}
                 </div>
-                <div v-if="topEmotesTwitch.length" class="table-responsive mb-3">
+                <div v-if="topEmotes7tv.length" class="table-responsive mb-3">
                     <table class="table table-striped table-hover table-dark mb-0">
                         <thead>
                             <tr>
@@ -640,7 +642,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="emote in topEmotesTwitch" :key="emote.uuid">
+                            <tr v-for="emote in topEmotes7tv" :key="emote.uuid">
                                 <!-- eslint-disable-next-line vue/no-v-html -->
                                 <td><span v-html="emote.image"></span></td>
                                 <td>{{ emote.code }}</td>
@@ -712,7 +714,36 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-4 mb-3 top-chatter">
+        <div class="col-12 col-md-6 col-lg-3 mb-3 top-emotes">
+            <div class="tile-background p-2">
+                <div class="h5 text-center pt-1">
+                    {{ $t('top-emotes-all', [topListLimit]) }}
+                </div>
+                <div v-if="topEmotesAll.length" class="table-responsive mb-3">
+                    <table class="table table-striped table-hover table-dark mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">{{ $t('code') }}</th>
+                                <th scope="col">{{ $t('amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="emote in topEmotesAll" :key="emote.uuid">
+                                <!-- eslint-disable-next-line vue/no-v-html -->
+                                <td><span v-html="emote.image"></span></td>
+                                <td>{{ emote.code }}</td>
+                                <td>{{ emote.amount }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else class="text-center">
+                    {{ $t('no-top-emotes') }}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mb-3 top-chatter">
             <div class="tile-background p-2">
                 <div class="h5 text-center pt-1">
                     {{ $t('top-chatters', [topListLimit]) }}
@@ -738,7 +769,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-4 mb-3 top-hashtags">
+        <div class="col-12 col-md-6 col-lg-3 mb-3 top-hashtags">
             <div class="tile-background p-2">
                 <div class="h5 text-center pt-1">
                     {{ $t('top-hashtags', [topListLimit]) }}
@@ -764,7 +795,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-4 mb-3 top-commands">
+        <div class="col-12 col-md-6 col-lg-3 mb-3 top-commands">
             <div class="tile-background p-2">
                 <div class="h5 text-center pt-1">
                     {{ $t('top-commands', [topListLimit]) }}
