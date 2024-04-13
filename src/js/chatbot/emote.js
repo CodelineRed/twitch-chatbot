@@ -68,40 +68,45 @@ const emote = {
      * Returns message with 7TV emote images
      * 
      * @param {string} message
+     * @param {string} rawMessage
      * @param {object} args
      * @returns {string}
      */
-    encode7tv: function(message, args) {
-        return emote.encodeThirdParty(message, args, '7tv');
+    encode7tv: function(message, rawMessage, args) {
+        return emote.encodeThirdParty(message, rawMessage, args, '7tv');
     },
     /**
      * Returns message with BTTV emote images
      * 
      * @param {string} message
+     * @param {string} rawMessage
      * @param {object} args
      * @returns {string}
      */
-    encodeBttv: function(message, args) {
-        return emote.encodeThirdParty(message, args, 'bttv');
+    encodeBttv: function(message, rawMessage, args) {
+        return emote.encodeThirdParty(message, rawMessage, args, 'bttv');
     },
     /**
      * Returns message with FFZ emote images
      * 
      * @param {string} message
+     * @param {string} rawMessage
      * @param {object} args
      * @returns {string}
      */
-    encodeFfz: function(message, args) {
-        return emote.encodeThirdParty(message, args, 'ffz');
+    encodeFfz: function(message, rawMessage, args) {
+        return emote.encodeThirdParty(message, rawMessage, args, 'ffz');
     },
     /**
      * Returns message with third party emote images
      * 
      * @param {string} message
+     * @param {string} rawMessage
      * @param {object} args
+     * @param {string} type
      * @returns {string}
      */
-    encodeThirdParty: function(message, args, type) {
+    encodeThirdParty: function(message, rawMessage, args, type) {
         let emoteCodes = Object.keys(emote[type + 'List'][args.channel]);
         for (let i = 0; i < emoteCodes.length; i++) {
             let regexEmote = emoteCodes[i].replace(/(\(|\))/g, '\\$1');
@@ -112,9 +117,9 @@ const emote = {
                 regex = new RegExp(regexEmote, 'g');
             }
 
-            if (regex.test(message)) {
+            if (regex.test(rawMessage)) {
                 if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
-                    for (let j = 0; j < (message.match(regex) || []).length; j++) {
+                    for (let j = 0; j < (rawMessage.match(regex) || []).length; j++) {
                         let emoteArgs = {
                             uuid: args.uuid,
                             code: emoteCodes[i],
@@ -127,7 +132,7 @@ const emote = {
 
                 let image = emote[type + 'List'][args.channel][emoteCodes[i]].image;
                 let isStackable = emote[type + 'List'][args.channel][emoteCodes[i]].isStackable;
-                message = message.replace(regex, emote.generateImage(image, emoteCodes[i], args.lazy, isStackable));
+                message = message.replace(regex, emote.generateImage(image, args.lazy, isStackable));
             }
         }
         return message;
@@ -159,7 +164,7 @@ const emote = {
                             });
                             let ttvEmote = message.slice(emoteCode[0], emoteCode[1] + 1);
                             splitText = splitText.slice(0, emoteCode[0]).concat(empty).concat(splitText.slice(emoteCode[1] + 1, splitText.length));
-                            splitText.splice(emoteCode[0], 1, emote.generateImage('http://static-cdn.jtvnw.net/emoticons/v2/' + i + '/default/dark/2.0', ttvEmote, args.lazy, false));
+                            splitText.splice(emoteCode[0], 1, emote.generateImage('http://static-cdn.jtvnw.net/emoticons/v2/' + i + '/default/dark/2.0', args.lazy, false));
 
                             if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
                                 let emoteArgs = {
@@ -181,16 +186,15 @@ const emote = {
     /**
      * Returns HTML emote image tag
      * 
-     * @param {string} url
-     * @param {string} title
-     * @param {boolean} lazy
-     * @param {boolean} isStackable
+     * @param {string} url Emote URL
+     * @param {boolean} isLazy Lazy load image. default: false
+     * @param {boolean} isStackable Emote overlays previous emote in chat. default: false
      * @returns {string}
      */
-    generateImage: function(url, title, lazy, isStackable) {
-        let lazyClass = typeof lazy === 'boolean' && lazy ? ' lazy' : '';
+    generateImage: function(url, isLazy = false, isStackable = false) {
         let image = '';
-        lazyClass += ' emote-' + title + (isStackable ? ' is-stackable' : '');
+        let imgClass = typeof isLazy === 'boolean' && isLazy ? ' lazy' : '';
+        imgClass += typeof isStackable === 'boolean' && isStackable ? ' is-stackable' : '';
 
         if (typeof config.performance === 'number' && config.performance === 0) {
             if (/7tv/.test(url)) {
@@ -207,7 +211,7 @@ const emote = {
             }
         }
 
-        image += '<img class="emote' + lazyClass + '" src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
+        image += '<img class="emote' + imgClass + '" src="' + url + '">';
         return image;
     },
     /**

@@ -356,18 +356,22 @@ const statistic = {
      * @returns {undefined}
      */
     getTopEmotes: function(chatbot, args) {
-        let select = 'e.uuid, e.code, e.type_id AS typeId, e.type, COUNT(e.code) AS amount, ';
-        select += 'e.updated_at AS updatedAt, e.created_at AS createdAt';
-        let from = 'chat AS ch';
-        let join = 'JOIN chat_emote_join AS cej ON ch.uuid = cej.chat_uuid ';
-        join += 'JOIN emote AS e ON cej.emote_uuid = e.uuid';
-        let where = [
-            'channel_id = $id',
-            `e.type IN (${args.where})`,
-            'cej.created_at >= strftime($format, $start)',
-            'cej.created_at <= strftime($format, $end)'
-        ];
-        let group = 'e.code';
+        // sub select
+        let subSelect = 'SELECT e.uuid, e.code, e.type_id AS typeId, e.type, COUNT(e.code) AS amount, ';
+        subSelect += 'e.updated_at AS updatedAt, e.created_at AS createdAt ';
+        let subFrom = 'FROM chat AS ch ';
+        let subJoin = 'JOIN chat_emote_join AS cej ON ch.uuid = cej.chat_uuid ';
+        subJoin += 'JOIN emote AS e ON cej.emote_uuid = e.uuid ';
+        let subWhere = 'WHERE channel_id = $id AND ' +
+            `e.type IN (${args.where}) AND ` +
+            'cej.created_at >= strftime($format, $start) AND ' +
+            'cej.created_at <= strftime($format, $end) ';
+        let subGroup = 'GROUP BY e.code, e.type';
+
+        // main select
+        let select = 'uuid, code, typeId, type, MAX(amount) AS amount, updatedAt, createdAt';
+        let from = '(' + subSelect + subFrom + subJoin + subWhere + subGroup + ')';
+        let group = 'code';
         let order = 'amount DESC, code COLLATE NOCASE ASC';
         let limit = args.limit;
         let prepare = {
@@ -378,22 +382,23 @@ const statistic = {
         };
         args.lazy = false;
 
-        database.find(select, from, join, where, group, order, limit, prepare, function(rows) {
+        database.find(select, from, '', '', group, order, limit, prepare, function(rows) {
             // get emote image
             for (let i = 0; i < rows.length; i++) {
+                let code = rows[i].code;
                 rows[i].image = '';
 
                 if (rows[i].type === '7tv') {
-                    rows[i].image = emote.encode7tv(rows[i].code, args);
+                    rows[i].image = emote.encode7tv(code, code, args);
                 } else if (rows[i].type === 'bttv') {
-                    rows[i].image = emote.encodeBttv(rows[i].code, args);
+                    rows[i].image = emote.encodeBttv(code, code, args);
                 } else if (rows[i].type === 'ffz') {
-                    rows[i].image = emote.encodeFfz(rows[i].code, args);
+                    rows[i].image = emote.encodeFfz(code, code, args);
                 } else {
                     let id = rows[i].typeId;
                     let emotes = {};
-                    emotes[id] = ['0-' + (rows[i].code.length - 1)];
-                    rows[i].image = emote.encodeTwitch(rows[i].code, {emotes: emotes, lazy: args.lazy});
+                    emotes[id] = ['0-' + (code.length - 1)];
+                    rows[i].image = emote.encodeTwitch(code, {emotes: emotes, lazy: args.lazy});
                 }
             }
 

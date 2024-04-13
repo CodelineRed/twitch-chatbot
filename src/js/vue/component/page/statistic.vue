@@ -259,12 +259,13 @@
                                     callbacks: {
                                         title: function(tooltipItem, data) {
                                             let title = args.labels[tooltipItem[0].index] + "\n";
+                                            title += $this.$options.filters.formatDateTime(args.updatedTimestamps[tooltipItem[0].index], $this.$t('date-short')) + ' ';
                                             title += $this.$options.filters.formatDateTime(args.updatedTimestamps[tooltipItem[0].index], $this.$t('time-suffix'));
 
                                             return title;
                                         },
                                         label: function(tooltipItem, data) {
-                                            return $this.$t('viewer', [tooltipItem.yLabel]);
+                                            return $this.$t('viewer', [$this.$options.filters.formatNumber(tooltipItem.yLabel, $this.$t('locale'))]);
                                         }
                                     }
                                 }
@@ -372,13 +373,13 @@
             <div class="tile-background p-2">
                 <div class="row text-white">
                     <div class="col">
-                        {{ $t('min') }}: <span v-if="misc.minViewer">{{ misc.minViewer }}</span><span v-else>0</span>
+                        {{ $t('min') }}: <span v-if="misc.minViewer">{{ misc.minViewer|formatNumber($t('locale')) }}</span><span v-else>0</span>
                     </div>
                     <div class="col text-center">
-                        {{ $t('avg') }}: <span v-if="misc.avgViewer">{{ misc.avgViewer }}</span><span v-else>0</span>
+                        {{ $t('avg') }}: <span v-if="misc.avgViewer">{{ misc.avgViewer|formatNumber($t('locale')) }}</span><span v-else>0</span>
                     </div>
                     <div class="col text-right">
-                        {{ $t('max') }}: <span v-if="misc.maxViewer">{{ misc.maxViewer }}</span><span v-else>0</span>
+                        {{ $t('max') }}: <span v-if="misc.maxViewer">{{ misc.maxViewer|formatNumber($t('locale')) }}</span><span v-else>0</span>
                     </div>
                 </div>
                 <canvas id="canvas"></canvas>
@@ -395,77 +396,77 @@
                             <tr>
                                 <td>{{ $t('new') }}</td>
                                 <td>
-                                    <span v-if="subs.new">{{ subs.new }}</span>
+                                    <span v-if="subs.new">{{ subs.new|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('new-paid') }}</td>
                                 <td>
-                                    <span v-if="subs.newPaid">{{ subs.newPaid }}</span>
+                                    <span v-if="subs.newPaid">{{ subs.newPaid|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('new-prime') }}</td>
                                 <td>
-                                    <span v-if="subs.newPrime">{{ subs.newPrime }}</span>
+                                    <span v-if="subs.newPrime">{{ subs.newPrime|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('gifted') }}</td>
                                 <td>
-                                    <span v-if="subs.gifted">{{ subs.gifted }}</span>
+                                    <span v-if="subs.gifted">{{ subs.gifted|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('gifted-random') }}</td>
                                 <td>
-                                    <span v-if="subs.giftedRandom">{{ subs.giftedRandom }}</span>
+                                    <span v-if="subs.giftedRandom">{{ subs.giftedRandom|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('resubs') }}</td>
                                 <td>
-                                    <span v-if="subs.resubs">{{ subs.resubs }}</span>
+                                    <span v-if="subs.resubs">{{ subs.resubs|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('resubs-paid') }}</td>
                                 <td>
-                                    <span v-if="subs.resubsPaid">{{ subs.resubsPaid }}</span>
+                                    <span v-if="subs.resubsPaid">{{ subs.resubsPaid|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('resubs-prime') }}</td>
                                 <td>
-                                    <span v-if="subs.resubsPrime">{{ subs.resubsPrime }}</span>
+                                    <span v-if="subs.resubsPrime">{{ subs.resubsPrime|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('sub-bombs') }}</td>
                                 <td>
-                                    <span v-if="subs.bombs">{{ subs.bombs }}</span>
+                                    <span v-if="subs.bombs">{{ subs.bombs|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('total-subs') }}</td>
                                 <td>
-                                    <span v-if="subs.new + subs.gifted + subs.giftedRandom + subs.resubs">{{ subs.new + subs.gifted + subs.giftedRandom + subs.resubs }}</span>
+                                    <span v-if="subs.new + subs.gifted + subs.giftedRandom + subs.resubs">{{ (subs.new + subs.gifted + subs.giftedRandom + subs.resubs)|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr class="d-none">
                                 <td>{{ $t('anon-gift-paid-upgrade') }}</td>
                                 <td>
-                                    <span v-if="subs.anonUpgrade">{{ subs.anonUpgrade }}</span>
+                                    <span v-if="subs.anonUpgrade">{{ subs.anonUpgrade|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
@@ -485,35 +486,35 @@
                             <tr>
                                 <td>{{ $t('deleted-messages') }}</td>
                                 <td>
-                                    <span v-if="purges.deletedMessages">{{ purges.deletedMessages }}</span>
+                                    <span v-if="purges.deletedMessages">{{ purges.deletedMessages|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('timeouted-messages') }}</td>
                                 <td>
-                                    <span v-if="purges.timeoutedMessages">{{ purges.timeoutedMessages }}</span>
+                                    <span v-if="purges.timeoutedMessages">{{ purges.timeoutedMessages|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('timeouted-users') }}</td>
                                 <td>
-                                    <span v-if="purges.timeoutedUsers">{{ purges.timeoutedUsers }}</span>
+                                    <span v-if="purges.timeoutedUsers">{{ purges.timeoutedUsers|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('banned-users') }}</td>
                                 <td>
-                                    <span v-if="purges.bannnedUsers">{{ purges.bannnedUsers }}</span>
+                                    <span v-if="purges.bannnedUsers">{{ purges.bannnedUsers|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('total-purges') }}</td>
                                 <td>
-                                    <span v-if="purges.deletedMessages + purges.timeoutedMessages + purges.bannnedUsers">{{ purges.deletedMessages + purges.timeoutedUsers + purges.bannnedUsers }}</span>
+                                    <span v-if="purges.deletedMessages + purges.timeoutedMessages + purges.bannnedUsers">{{ (purges.deletedMessages + purges.timeoutedUsers + purges.bannnedUsers)|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
@@ -533,63 +534,63 @@
                             <tr>
                                 <td>{{ $t('new-users') }}</td>
                                 <td>
-                                    <span v-if="misc.newUsers">{{ misc.newUsers }}</span>
+                                    <span v-if="misc.newUsers">{{ misc.newUsers|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('all-users') }}</td>
                                 <td>
-                                    <span v-if="misc.allUsers">{{ misc.allUsers }}</span>
+                                    <span v-if="misc.allUsers">{{ misc.allUsers|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('chat-messages') }}</td>
                                 <td>
-                                    <span v-if="misc.messages">{{ misc.messages }}</span>
+                                    <span v-if="misc.messages">{{ misc.messages|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('used-emotes') }}</td>
                                 <td>
-                                    <span v-if="misc.usedEmotes">{{ misc.usedEmotes }}</span>
+                                    <span v-if="misc.usedEmotes">{{ misc.usedEmotes|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $tc('cheer', 2) }}</td>
                                 <td>
-                                    <span v-if="misc.cheers">{{ misc.cheers }}</span>
+                                    <span v-if="misc.cheers">{{ misc.cheers|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $tc('bit', 2) }}</td>
                                 <td>
-                                    <span v-if="misc.bits">{{ misc.bits }}</span>
+                                    <span v-if="misc.bits">{{ misc.bits|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('min-viewer') }}</td>
                                 <td>
-                                    <span v-if="misc.minViewer">{{ misc.minViewer }}</span>
+                                    <span v-if="misc.minViewer">{{ misc.minViewer|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('average-viewer') }}</td>
                                 <td>
-                                    <span v-if="misc.avgViewer">{{ misc.avgViewer }}</span>
+                                    <span v-if="misc.avgViewer">{{ misc.avgViewer|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
                             <tr>
                                 <td>{{ $t('max-viewer') }}</td>
                                 <td>
-                                    <span v-if="misc.maxViewer">{{ misc.maxViewer }}</span>
+                                    <span v-if="misc.maxViewer">{{ misc.maxViewer|formatNumber($t('locale')) }}</span>
                                     <span v-else>0</span>
                                 </td>
                             </tr>
@@ -617,7 +618,7 @@
                                 <!-- eslint-disable-next-line vue/no-v-html -->
                                 <td><span v-html="emote.image"></span></td>
                                 <td>{{ emote.code }}</td>
-                                <td>{{ emote.amount }}</td>
+                                <td>{{ emote.amount|formatNumber($t('locale')) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -646,7 +647,7 @@
                                 <!-- eslint-disable-next-line vue/no-v-html -->
                                 <td><span v-html="emote.image"></span></td>
                                 <td>{{ emote.code }}</td>
-                                <td>{{ emote.amount }}</td>
+                                <td>{{ emote.amount|formatNumber($t('locale')) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -675,7 +676,7 @@
                                 <!-- eslint-disable-next-line vue/no-v-html -->
                                 <td><span v-html="emote.image"></span></td>
                                 <td>{{ emote.code }}</td>
-                                <td>{{ emote.amount }}</td>
+                                <td>{{ emote.amount|formatNumber($t('locale')) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -704,7 +705,7 @@
                                 <!-- eslint-disable-next-line vue/no-v-html -->
                                 <td><span v-html="emote.image"></span></td>
                                 <td>{{ emote.code }}</td>
-                                <td>{{ emote.amount }}</td>
+                                <td>{{ emote.amount|formatNumber($t('locale')) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -733,7 +734,7 @@
                                 <!-- eslint-disable-next-line vue/no-v-html -->
                                 <td><span v-html="emote.image"></span></td>
                                 <td>{{ emote.code }}</td>
-                                <td>{{ emote.amount }}</td>
+                                <td>{{ emote.amount|formatNumber($t('locale')) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -759,7 +760,7 @@
                         <tbody>
                             <tr v-for="chatter in topChatters" :key="chatter.name">
                                 <td>{{ chatter.name }}</td>
-                                <td>{{ chatter.amount }}</td>
+                                <td>{{ chatter.amount|formatNumber($t('locale')) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -785,7 +786,7 @@
                         <tbody>
                             <tr v-for="hashtag in topHashtags" :key="hashtag.name">
                                 <td>{{ hashtag.word }}</td>
-                                <td>{{ hashtag.amount }}</td>
+                                <td>{{ hashtag.amount|formatNumber($t('locale')) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -811,7 +812,7 @@
                         <tbody>
                             <tr v-for="command in topCommands" :key="command.name">
                                 <td>{{ command.word }}</td>
-                                <td>{{ command.amount }}</td>
+                                <td>{{ command.amount|formatNumber($t('locale')) }}</td>
                             </tr>
                         </tbody>
                     </table>

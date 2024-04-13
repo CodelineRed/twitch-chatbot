@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.0] - 2024-04-13
+### Added
+- formatNumber filter
+- list of channels loaded
+- date-short in i18n-locales.js
+- hidden OAuth Token in modal
+
+### Changed
+- lazy to isLazy = false in emote.generateImage()
+- isStackable to isStackable = false in emote.generateImage()
+
+### Removed
+- title from emote.generateImage()
+
+### Fixed
+- an error where emote count was multiplied with 2
+- an error where viewerCount.add() prompted an error where no error was
+
 ## [1.15.0] - 2024-03-28
 ### Added
 - support for 7TV emotes

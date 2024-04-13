@@ -238,6 +238,7 @@ const en = {
     'dp': '.', // decimal point
     'ts': ',', // thousands separator
     'date': 'YYYY-MM-DD',
+    'date-short': 'YY-MM-DD',
     'time': 'hh:mm',
     'time-suffix': 'hh:mm a',
     'time-long': 'hh:mm:ss',
@@ -451,6 +452,7 @@ const de = {
     'dp': ',', // decimal point
     'ts': '.', // thousands separator
     'date': 'DD.MM.YYYY',
+    'date-short': 'DD.MM.YY',
     'time': 'HH:mm',
     'time-suffix': 'HH:mm \\U\\h\\r',
     'time-long': 'HH:mm:ss',
