@@ -65,9 +65,11 @@ const chat = {
      */
     format: function(args) {
         let message = args.message;
+        let rawMessage = args.message;
         message = emote.encodeTwitch(message, args);
-        message = emote.encodeBttv(message, args);
-        message = emote.encodeFfz(message, args);
+        message = emote.encode7tv(message, rawMessage, args);
+        message = emote.encodeBttv(message, rawMessage, args);
+        message = emote.encodeFfz(message, rawMessage, args);
         message = linkifyHtml(message, {
             defaultProtocol: 'https'
         });

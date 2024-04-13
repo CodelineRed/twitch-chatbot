@@ -34,7 +34,7 @@ const viewerCount = {
                     return console.log(err);
                 }
 
-                if (typeof body.data !== 'undefined' && body.data.length) {
+                if (typeof body.data !== 'undefined') {
                     for (let i = 0; i < body.data.length; i++) {
                         let time = moment().unix();
                         let count = body.data[i].viewer_count;

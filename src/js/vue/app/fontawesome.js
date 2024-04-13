@@ -15,6 +15,7 @@ import {
 import {
     faAward as fasAward,
     faBolt as fasBolt,
+    faBug as fasBug,
     faChartPie as fasChartPie,
     faCheckCircle as fasCheckCircle,
     faChevronRight as fasChevronRight,
@@ -25,6 +26,7 @@ import {
     faDragon as fasDragon,
     faEdit as fasEdit,
     faExternalLinkAlt as fasExternalLinkAlt,
+    faEye as fasEye,
     faGavel as fasGavel,
     faGem as fasGem,
     faGift as fasGift,
@@ -57,8 +59,8 @@ import { FontAwesomeIcon, FontAwesomeLayers } from '@fortawesome/vue-fontawesome
 library.add(fabEthereum, fabFontAwesomeFlag, fabTwitch, fabYoutube);
 library.add(farSadCry, farQuestionCircle);
 library.add(
-    fasAward, fasBolt, fasChartPie, fasCheckCircle, fasChevronRight, fasCogs, 
-    fasCommentDots, fasCopy, fasCrown, fasDragon, fasEdit, fasExternalLinkAlt, fasGavel, 
+    fasAward, fasBolt, fasBug, fasChartPie, fasCheckCircle, fasChevronRight, fasCogs, 
+    fasCommentDots, fasCopy, fasCrown, fasDragon, fasEdit, fasExternalLinkAlt, fasEye, fasGavel, 
     fasGem, fasGift, fasGlobe, fasHammer, fasHdd, fasHome, fasKey, fasMoneyBill, 
     fasPlay, fasRobot, fasSave, fasSnowflake, fasStar, fasStepForward, fasSync, 
     fasTerminal, fasTh, fasTicketAlt, fasTimes, fasTrain, fasTrashAlt, 

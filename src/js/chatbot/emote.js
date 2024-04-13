@@ -6,6 +6,7 @@ const {v4: uuidv4, validate: uuidValid} = require('uuid');
 
 const emote = {
     newList: [],
+    '7tvList': {},
     bttvList: {},
     ffzList: {},
     /**
@@ -64,33 +65,48 @@ const emote = {
         });
     },
     /**
-     * Returns message with BTTV emote images
+     * Returns message with 7TV emote images
      * 
      * @param {string} message
+     * @param {string} rawMessage
      * @param {object} args
      * @returns {string}
      */
-    encodeBttv: function(message, args) {
-        return emote.encodeThirdParty(message, args, 'bttv');
+    encode7tv: function(message, rawMessage, args) {
+        return emote.encodeThirdParty(message, rawMessage, args, '7tv');
+    },
+    /**
+     * Returns message with BTTV emote images
+     * 
+     * @param {string} message
+     * @param {string} rawMessage
+     * @param {object} args
+     * @returns {string}
+     */
+    encodeBttv: function(message, rawMessage, args) {
+        return emote.encodeThirdParty(message, rawMessage, args, 'bttv');
     },
     /**
      * Returns message with FFZ emote images
      * 
      * @param {string} message
+     * @param {string} rawMessage
      * @param {object} args
      * @returns {string}
      */
-    encodeFfz: function(message, args) {
-        return emote.encodeThirdParty(message, args, 'ffz');
+    encodeFfz: function(message, rawMessage, args) {
+        return emote.encodeThirdParty(message, rawMessage, args, 'ffz');
     },
     /**
      * Returns message with third party emote images
      * 
      * @param {string} message
+     * @param {string} rawMessage
      * @param {object} args
+     * @param {string} type
      * @returns {string}
      */
-    encodeThirdParty: function(message, args, type) {
+    encodeThirdParty: function(message, rawMessage, args, type) {
         let emoteCodes = Object.keys(emote[type + 'List'][args.channel]);
         for (let i = 0; i < emoteCodes.length; i++) {
             let regexEmote = emoteCodes[i].replace(/(\(|\))/g, '\\$1');
@@ -101,19 +117,22 @@ const emote = {
                 regex = new RegExp(regexEmote, 'g');
             }
 
-            if (regex.test(message)) {
+            if (regex.test(rawMessage)) {
                 if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
-                    for (let j = 0; j < (message.match(regex) || []).length; j++) {
+                    for (let j = 0; j < (rawMessage.match(regex) || []).length; j++) {
                         let emoteArgs = {
                             uuid: args.uuid,
                             code: emoteCodes[i],
+                            typeId: emote[type + 'List'][args.channel][emoteCodes[i]]['typeId'],
                             type: type
                         };
                         emote.add(emoteArgs);
                     }
                 }
 
-                message = message.replace(regex, emote.generateImage(emote[type + 'List'][args.channel][emoteCodes[i]], emoteCodes[i], args.lazy));
+                let image = emote[type + 'List'][args.channel][emoteCodes[i]].image;
+                let isStackable = emote[type + 'List'][args.channel][emoteCodes[i]].isStackable;
+                message = message.replace(regex, emote.generateImage(image, args.lazy, isStackable));
             }
         }
         return message;
@@ -145,7 +164,7 @@ const emote = {
                             });
                             let ttvEmote = message.slice(emoteCode[0], emoteCode[1] + 1);
                             splitText = splitText.slice(0, emoteCode[0]).concat(empty).concat(splitText.slice(emoteCode[1] + 1, splitText.length));
-                            splitText.splice(emoteCode[0], 1, emote.generateImage('http://static-cdn.jtvnw.net/emoticons/v2/' + i + '/default/dark/2.0', ttvEmote, args.lazy));
+                            splitText.splice(emoteCode[0], 1, emote.generateImage('http://static-cdn.jtvnw.net/emoticons/v2/' + i + '/default/dark/2.0', args.lazy, false));
 
                             if (typeof args.uuid === 'string' && uuidValid(args.uuid)) {
                                 let emoteArgs = {
@@ -167,29 +186,111 @@ const emote = {
     /**
      * Returns HTML emote image tag
      * 
-     * @param {string} url
-     * @param {string} title
-     * @param {boolean} lazy optional (default: true)
+     * @param {string} url Emote URL
+     * @param {boolean} isLazy Lazy load image. default: false
+     * @param {boolean} isStackable Emote overlays previous emote in chat. default: false
      * @returns {string}
      */
-    generateImage: function(url, title, lazy) {
-        let lazyClass = typeof lazy === 'boolean' && lazy ? ' lazy' : '';
+    generateImage: function(url, isLazy = false, isStackable = false) {
         let image = '';
+        let imgClass = typeof isLazy === 'boolean' && isLazy ? ' lazy' : '';
+        imgClass += typeof isStackable === 'boolean' && isStackable ? ' is-stackable' : '';
 
         if (typeof config.performance === 'number' && config.performance === 0) {
-            if (/betterttv/.test(url)) {
+            if (/7tv/.test(url)) {
                 image += ' ';
-                url = 'img/bttv-placeholder-emote.png';
+                url = 'img/7tv-placeholder-emote.png';
             } else if (/frankerfacez/.test(url)) {
                 image += ' ';
                 url = 'img/ffz-placeholder-emote.png';
+            } else if (/betterttv/.test(url)) {
+                image += ' ';
+                url = 'img/bttv-placeholder-emote.png';
             } else if (/\.gif$/.test(url)) {
                 url = 'img/placeholder-emote.png';
             }
         }
 
-        image += '<img class="emote' + lazyClass + '" src="' + url + '"  data-toggle="tooltip" data-placement="top" title="' + title + '">';
+        image += '<img class="emote' + imgClass + '" src="' + url + '">';
         return image;
+    },
+    /**
+     * Loads 7TV emotes over API to database and 7tvList array
+     * 
+     * @param {object} args
+     * @returns {undefined}
+     */
+    prepare7tv: function(args) {
+        let channelId = args['room-id'];
+        let channel = args.channel.slice(1);
+
+        if (typeof emote['7tvList'][channel] === 'undefined') {
+            emote['7tvList'][channel] = {};
+
+            let options = {
+                url: 'https://7tv.io/v3/emote-sets/62cdd34e72a832540de95857',
+                method: 'GET',
+                json: true
+            };
+
+            // get global emotes
+            request(options, (err, res, body) => {
+                if (err) {
+                    return console.log(err);
+                }
+
+                if (typeof body.emotes !== 'undefined') {
+                    for (let i = 0; i < body.emotes.length; i++) {
+                        emote['7tvList'][channel][body.emotes[i].name] = {
+                            code: body.emotes[i].name,
+                            image: 'https://cdn.7tv.app/emote/' + body.emotes[i].id + '/1x.webp',
+                            typeId: body.emotes[i].id,
+                            isStackable: body.emotes[i].data.flags === 256
+                        };
+
+                        let emoteArgs = {
+                            code: body.emotes[i].name,
+                            typeId: body.emotes[i].id,
+                            type: '7tv'
+                        };
+
+                        emote.add(emoteArgs);
+                    }
+                }
+            });
+            
+            options = {
+                url: `https://7tv.io/v3/users/twitch/${channelId}`,
+                method: 'GET',
+                json: true
+            };
+
+            // get channel emotes
+            request(options, (err, res, body) => {
+                if (err) {
+                    return console.log(err);
+                }
+
+                if (typeof body.emote_set !== 'undefined') {
+                    for (let i = 0; i < body.emote_set.emotes.length; i++) {
+                        emote['7tvList'][channel][body.emote_set.emotes[i].name] = {
+                            code: body.emote_set.emotes[i].name,
+                            image: 'https://cdn.7tv.app/emote/' + body.emote_set.emotes[i].id + '/1x.webp',
+                            typeId: body.emote_set.emotes[i].id,
+                            isStackable: body.emote_set.emotes[i].data.flags === 256
+                        };
+
+                        let emoteArgs = {
+                            code: body.emote_set.emotes[i].name,
+                            typeId: body.emote_set.emotes[i].id,
+                            type: '7tv'
+                        };
+
+                        emote.add(emoteArgs);
+                    }
+                }
+            });
+        }
     },
     /**
      * Loads BTTV emotes over API to database and bttvList array
@@ -217,8 +318,16 @@ const emote = {
                 }
 
                 if (typeof body[0].id !== 'undefined') {
+                    let stackableEmotes = ['cvHazmat', 'cvMask'];
+
                     for (let i = 0; i < body.length; i++) {
-                        emote.bttvList[channel][body[i].code] = 'https://cdn.betterttv.net/emote/' + body[i].id + '/1x';
+                        emote.bttvList[channel][body[i].code] = {
+                            code: body[i].code,
+                            image: 'https://cdn.betterttv.net/emote/' + body[i].id + '/1x',
+                            typeId: body[i].id,
+                            isStackable: stackableEmotes.indexOf(body[i].code) >= 0
+                        };
+
                         let emoteArgs = {
                             code: body[i].code,
                             typeId: body[i].id,
@@ -244,7 +353,13 @@ const emote = {
 
                 if (typeof body.sharedEmotes !== 'undefined') {
                     for (let i = 0; i < body.sharedEmotes.length; i++) {
-                        emote.bttvList[channel][body.sharedEmotes[i].code] = 'https://cdn.betterttv.net/emote/' + body.sharedEmotes[i].id + '/1x';
+                        emote.bttvList[channel][body.sharedEmotes[i].code] = {
+                            code: body.sharedEmotes[i].code,
+                            image: 'https://cdn.betterttv.net/emote/' + body.sharedEmotes[i].id + '/1x',
+                            typeId: body.sharedEmotes[i].id,
+                            isStackable: false
+                        };
+
                         let emoteArgs = {
                             code: body.sharedEmotes[i].code,
                             typeId: body.sharedEmotes[i].id,
@@ -284,7 +399,13 @@ const emote = {
                 if (typeof body.default_sets !== 'undefined' && body.default_sets.length) {
                     let set = body.default_sets[0];
                     for (let i = 0; i < body.sets[set].emoticons.length; i++) {
-                        emote.ffzList[channel][body.sets[set].emoticons[i].name] = body.sets[set].emoticons[i].urls['1'];
+                        emote.ffzList[channel][body.sets[set].emoticons[i].name] = {
+                            code: body.sets[set].emoticons[i].name,
+                            image: body.sets[set].emoticons[i].urls['1'],
+                            typeId: body.sets[set].emoticons[i].id,
+                            isStackable: false
+                        };
+
                         let emoteArgs = {
                             code: body.sets[set].emoticons[i].name,
                             typeId: body.sets[set].emoticons[i].id,
@@ -311,7 +432,13 @@ const emote = {
                 if (typeof body.sets !== 'undefined') {
                     let set = body.room.set;
                     for (let i = 0; i < body.sets[set].emoticons.length; i++) {
-                        emote.ffzList[channel][body.sets[set].emoticons[i].name] = body.sets[set].emoticons[i].urls['1'];
+                        emote.ffzList[channel][body.sets[set].emoticons[i].name] = {
+                            code: body.sets[set].emoticons[i].name,
+                            image: body.sets[set].emoticons[i].urls['1'],
+                            typeId: body.sets[set].emoticons[i].id,
+                            isStackable: false
+                        };
+
                         let emoteArgs = {
                             code: body.sets[set].emoticons[i].name,
                             typeId: body.sets[set].emoticons[i].id,

@@ -12,6 +12,7 @@ Vue.component('l-empty', EmptyLayout);
 
 Vue.filter('formatDateTime', filters.formatDateTime);
 Vue.filter('formatDuration', filters.formatDuration);
+Vue.filter('formatNumber', filters.formatNumber);
 Vue.filter('localFile', filters.localFile);
 Vue.filter('twitchClipFile', filters.twitchClipFile);
 Vue.filter('twitchVideoFile', filters.twitchVideoFile);

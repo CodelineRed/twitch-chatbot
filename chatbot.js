@@ -422,6 +422,7 @@ function onReSub(channel, username, months, message, userstate, methods) {
 //  'subs-only': false,
 //  channel: '#codelinered' }
 function onRoomState(channel, state) {
+    emote.prepare7tv(state);
     emote.prepareBttv(state);
     emote.prepareFfz(state);
     chatbot.warmUpDatabase(state);
@@ -429,7 +430,7 @@ function onRoomState(channel, state) {
     countLoadedChannels++;
     if (!connected && countLoadedChannels === config.channels.length) {
         connected = true;
-        console.log(locales.t('channels-loaded'));
+        console.log(locales.t('channels-loaded', [config.channels.join(', ')]));
 
         // wait for chatbot.warmUpDatabase(state)
         setTimeout(function() {

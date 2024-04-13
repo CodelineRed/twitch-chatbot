@@ -6,11 +6,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.14.0] - 2023-11-29
+## [1.16.0] - 2024-04-13
+### Added
+- formatNumber filter
+- list of channels loaded
+- date-short in i18n-locales.js
+- hidden OAuth Token in modal
+
+### Changed
+- lazy to isLazy = false in emote.generateImage()
+- isStackable to isStackable = false in emote.generateImage()
+
+### Removed
+- title from emote.generateImage()
+
+### Fixed
+- an error where emote count was multiplied with 2
+- an error where viewerCount.add() prompted an error where no error was
+
+## [1.15.0] - 2024-03-28
+### Added
+- support for 7TV emotes
+- bug report button in [`partial/navigation.vue`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/vue/component/partial/navigation.vue)
+
+### Changed
+- @babel/core 7.23.5 to 7.24.3
+- @babel/plugin-transform-modules-amd 7.23.3 to 7.24.1
+- datatables.net 1.13.8 to 1.13.11
+- datatables.net-bs4 1.13.8 to 1.13.11
+- eslint-plugin-import 2.29.0 to 2.29.1
+- gulp-vue-single-file-component 1.2.8 to 1.2.10
+- moment 2.29.4 to 2.30.1
+- sqlite3 5.1.6 to 5.1.7
+- vanilla-lazyload 17.8.5 to 18.0.0
+- vue 2.7.15 to 2.7.16
+
+### Fixed
+- emote statistic for BTTV and FFZ
+- space in chat messages
+
+## [1.14.0] - 2023-12-30
 ### Added
 - [`migration/version-1.14.0.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/data/migration/version-1.14.0.js)
 - translations in [`chatbot/locales.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/chatbot/locales.js)
-- title/ date combinationen to `setChart()`in [`page/statistic.vue`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/vue/component/page/statistic.vue)
+- title/ date combinationen to `setChart()` in [`page/statistic.vue`](https://github.com/CodelineRed/twitch-chatbot/blob/main/src/js/vue/component/page/statistic.vue)
 - whisper output to `onMessage()` in [`chatbot.js`](https://github.com/CodelineRed/twitch-chatbot/blob/main/chatbot.js)
 
 ### Changed

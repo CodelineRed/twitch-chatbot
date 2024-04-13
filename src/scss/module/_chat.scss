@@ -12,6 +12,12 @@
         cursor: pointer;
         margin-top: -5px;
         max-height: 25px;
+
+        + .emote {
+            &.is-stackable {
+                margin-left: -29px;
+            }
+        }
     }
 
     .messages {

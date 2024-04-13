@@ -18,7 +18,8 @@
         data: function() {
             return {
                 componentsOrder: window.localStorage.getItem('componentsOrder') ? JSON.parse(window.localStorage.getItem('componentsOrder')) : null,
-                oauthToken: ''
+                oauthToken: '',
+                oauthTokenType: 'password'
             };
         },
         mounted: function() {
@@ -111,6 +112,13 @@
             setChannelToken: function(args) {
                 if (this.$root._route.params.channel.toLowerCase() === args.channel.toLowerCase()) {
                     this[args.name] = args.token;
+                }
+            },
+            toggleOauthToken: function() {
+                if (this.oauthTokenType === 'password') {
+                    this.oauthTokenType = 'text';
+                } else {
+                    this.oauthTokenType = 'password';
                 }
             }
         }
@@ -242,7 +250,12 @@
                             </button>
                         </div>
                         <div class="modal-body text-center">
-                            {{ oauthToken }}
+                            <div class="input-group">
+                                <input :type="oauthTokenType" class="form-control text-center" id="oauthToken" v-model="oauthToken">
+                                <div class="input-group-append">
+                                    <button class="btn btn-warning" type="button" @click="toggleOauthToken()"><font-awesome-icon :icon="['fas', 'eye']" class="fa-fw" /> {{ $t('show') }}</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ $t('close') }}</button>

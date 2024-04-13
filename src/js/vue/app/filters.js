@@ -33,6 +33,16 @@ const filters = {
         }
     },
     /**
+     * Returns formated number
+     * 
+     * @param {number} number 
+     * @param {string} locale 
+     * @returns {string}
+     */
+    formatNumber: function(number, locale) {
+        return new Intl.NumberFormat(locale.replace('_', '-')).format(number);
+    },
+    /**
      * Returns file without leading slash and converts backslashes to slashes
      * 
      * @param {string} file
