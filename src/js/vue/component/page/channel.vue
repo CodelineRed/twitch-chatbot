@@ -251,7 +251,7 @@
                         </div>
                         <div class="modal-body text-center">
                             <div class="input-group">
-                                <input :type="oauthTokenType" class="form-control text-center" id="oauthToken" v-model="oauthToken">
+                                <input id="oauthToken" v-model="oauthToken" :type="oauthTokenType" class="form-control text-center">
                                 <div class="input-group-append">
                                     <button class="btn btn-warning" type="button" @click="toggleOauthToken()"><font-awesome-icon :icon="['fas', 'eye']" class="fa-fw" /> {{ $t('show') }}</button>
                                 </div>

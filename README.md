@@ -479,6 +479,7 @@ $ node chatbot.js
 - Display Viewer Count as Chart
 - Top 15 Emotes All
 - Top 15 Twitch Emotes
+- Top 15 7TV Emotes
 - Top 15 BTTV Emotes
 - Top 15 FFZ Emotes
 - Top 15 Chatters
